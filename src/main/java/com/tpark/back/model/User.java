@@ -1,12 +1,27 @@
 package com.tpark.back.model;
 
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import java.beans.Transient;
 
+@NoArgsConstructor
 public class User {
     private int id;
     private String email;
     private String password;
+
+    @JsonCreator
+    public User(
+            @JsonProperty(value = "email") String email,
+            @JsonProperty(value = "password") String password
+    ) {
+        this.email = email;
+        this.password = password;
+    }
 
     public int getId() {
         return id;

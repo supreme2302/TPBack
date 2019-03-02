@@ -21,7 +21,7 @@ public class UserDAO {
     }
 
     public User getUser(String email) {
-        final String sql = "SELECT * FROM main_user WHERE email::citext = ?::citext";
+        final String sql = "SELECT * FROM main_user WHERE lower(email) = lower(?)";
         try {
             return jdbc.queryForObject(sql, userMapper, email);
         } catch (EmptyResultDataAccessException e) {

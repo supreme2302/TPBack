@@ -3,16 +3,19 @@ package com.tpark.back.service;
 import com.tpark.back.dao.UserDAO;
 import com.tpark.back.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
 
     private final UserDAO userDAO;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserDAO userDAO) {
+    public UserService(UserDAO userDAO, PasswordEncoder passwordEncoder) {
         this.userDAO = userDAO;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User getUser(String email) {
@@ -20,6 +23,11 @@ public class UserService {
     }
 
     public void createUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userDAO.createUser(user);
+    }
+
+    public boolean checkUserPassword(String rowPassword, String passwordFromDb) {
+        return passwordEncoder.matches(rowPassword, passwordFromDb);
     }
 }
