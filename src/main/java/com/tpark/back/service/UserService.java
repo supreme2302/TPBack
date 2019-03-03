@@ -27,7 +27,7 @@ public class UserService {
         userDAO.createUser(user);
     }
 
-    public boolean checkUserPassword(String rowPassword, String passwordFromDb) {
-        return passwordEncoder.matches(rowPassword, passwordFromDb);
+    public boolean checkUserPassword(String rawPassword, String passwordFromDb) {
+        return passwordEncoder.matches(rawPassword, passwordFromDb);
     }
 }
