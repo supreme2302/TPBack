@@ -44,4 +44,9 @@ public class UserDAO {
             return user;
         }
     }
+
+    public void changePassword(String email, String password) {
+        final String sql = "UPDATE main_user SET password = ? WHERE main_user.email = (?);";
+        jdbc.update(sql, password, email);
+    }
 }

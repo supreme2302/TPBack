@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.rmi.AccessException;
 
 @RestController
 @RequestMapping("/users")
@@ -102,6 +103,25 @@ public class UserController {
         sessionAuth(httpSession, user.getEmail());
         return ResponseEntity.ok(UserStatus.SUCCESSFULLY_AUTHED);
     }
+
+    @PostMapping(path = "/change")
+    public ResponseEntity change(HttpSession httpSession, @RequestBody String newPassword) {
+
+        if (httpSession.getAttribute("user") == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(UserStatus.ACCESS_ERROR);
+        }
+
+        try {
+            userService.changeUserPassword(httpSession.getAttribute("user").toString(), newPassword);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(UserStatus.WRONG_CREDENTIALS);
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(UserStatus.NOT_FOUND);
+        }
+    }
+
 
 
     private void sessionAuth(HttpSession session, String email){

@@ -30,4 +30,8 @@ public class UserService {
     public boolean checkUserPassword(String rawPassword, String passwordFromDb) {
         return passwordEncoder.matches(rawPassword, passwordFromDb);
     }
+
+    public void changeUserPassword(String email, String password) {
+        userDAO.changePassword(email,password);
+    }
 }
