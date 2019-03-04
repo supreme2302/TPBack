@@ -26,3 +26,4 @@ HELP.md
 /build/
 
 .mvn
+/src/main/resources/test.sql

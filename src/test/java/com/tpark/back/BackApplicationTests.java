@@ -1,6 +1,7 @@
 package com.tpark.back;
 
 import com.google.gson.Gson;
+import com.tpark.back.model.ChangePassword;
 import com.tpark.back.model.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,11 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpSession;
 import java.nio.charset.Charset;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -54,6 +58,52 @@ public class BackApplicationTests {
         User user = new User();
         user.setEmail("exist@e.ru");
         user.setPassword("123");
+        this.mockMvc.perform(post("/users/auth")
+                .contentType(contentType)
+                .content(gson.toJson(user)))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void logoutAccessErrorTest() throws Exception {
+        this.mockMvc.perform(post("/users/logout")
+                .contentType(contentType))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void logoutOkTest() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", "exist@e.ru");
+        this.mockMvc.perform(post("/users/logout")
+                .contentType(contentType)
+                .session(session))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void changePasswordOkTest() throws Exception {
+        User user = new User();
+        user.setEmail("exist@e.ru");
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", user.getEmail());
+        ChangePassword changePassword = new ChangePassword();
+        changePassword.setOldPassword("123");
+        changePassword.setNewPassword("321");
+        this.mockMvc.perform(post("/users/change")
+                .contentType(contentType)
+                .content(gson.toJson(changePassword))
+                .session(session))
+                .andDo(print())
+                .andExpect(status().isOk());
+        this.mockMvc.perform(post("/users/logout")
+                .contentType(contentType)
+                .session(session))
+                .andDo(print())
+                .andExpect(status().isOk());
+        user.setPassword("321");
         this.mockMvc.perform(post("/users/auth")
                 .contentType(contentType)
                 .content(gson.toJson(user)))

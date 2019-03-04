@@ -1,5 +1,6 @@
 package com.tpark.back.controller;
 
+import com.tpark.back.model.ChangePassword;
 import com.tpark.back.model.User;
 import com.tpark.back.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,9 @@ public class UserController {
         NOT_UNIQUE_EMAIL,
         EMPTY_FIELDS_IN_REQUEST,
         WRONG_CREDENTIALS,
-        SUCCESSFULLY_AUTHED
+        SUCCESSFULLY_AUTHED,
+        SUCCESSFULLY_CHANGED,
+        SUCCESSFULLY_LOGGED_OUT
     }
 
     private final UserService userService;
@@ -105,27 +108,41 @@ public class UserController {
     }
 
     @PostMapping(path = "/change")
-    public ResponseEntity change(HttpSession httpSession, @RequestBody String newPassword) {
+    public ResponseEntity change(HttpSession httpSession,
+                                 @RequestBody ChangePassword changePassword) {
 
-        if (httpSession.getAttribute("user") == null) {
+        Object userSession = httpSession.getAttribute("user");
+        if (userSession == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(UserStatus.ACCESS_ERROR);
         }
 
-        try {
-            userService.changeUserPassword(httpSession.getAttribute("user").toString(), newPassword);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(UserStatus.WRONG_CREDENTIALS);
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(UserStatus.NOT_FOUND);
+        User userFromDb = userService.getUser(userSession.toString());
+        boolean passwordIsValid = userService.checkUserPassword(
+                changePassword.getOldPassword(),
+                userFromDb.getPassword());
+
+        if (passwordIsValid) {
+            userService.changeUserPassword(userSession.toString(), changePassword.getNewPassword());
+            return ResponseEntity.ok(UserStatus.SUCCESSFULLY_CHANGED);
         }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(UserStatus.WRONG_CREDENTIALS);
+    }
+
+    @PostMapping(path = "/logout")
+    public ResponseEntity logout(HttpSession httpSession) {
+        if (httpSession.getAttribute("user") == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(UserStatus.ACCESS_ERROR);
+        }
+        httpSession.invalidate();
+        return ResponseEntity.ok(UserStatus.SUCCESSFULLY_LOGGED_OUT);
     }
 
 
-
     private void sessionAuth(HttpSession session, String email){
-        session.setAttribute("user",email);
+        session.setAttribute("user", email);
         session.setMaxInactiveInterval(7*24*60*60);
     }
 

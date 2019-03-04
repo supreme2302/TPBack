@@ -46,7 +46,7 @@ public class UserDAO {
     }
 
     public void changePassword(String email, String password) {
-        final String sql = "UPDATE main_user SET password = ? WHERE main_user.email = (?);";
+        final String sql = "UPDATE main_user SET password = ? WHERE lower(main_user.email) = lower(?);";
         jdbc.update(sql, password, email);
     }
 }
