@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
-import java.rmi.AccessException;
 
 @RestController
 @RequestMapping("/users")
@@ -123,7 +122,8 @@ public class UserController {
                 userFromDb.getPassword());
 
         if (passwordIsValid) {
-            userService.changeUserPassword(userSession.toString(), changePassword.getNewPassword());
+            userService.changeUserPassword(userSession.toString(),
+                    changePassword.getNewPassword());
             return ResponseEntity.ok(UserStatus.SUCCESSFULLY_CHANGED);
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
