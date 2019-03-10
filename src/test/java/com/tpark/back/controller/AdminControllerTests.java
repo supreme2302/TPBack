@@ -1,4 +1,4 @@
-package com.tpark.back;
+package com.tpark.back.controller;
 
 import com.google.gson.Gson;
 import com.tpark.back.model.ChangePassword;
@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource("/application-test.properties")
 @SpringBootTest
 @Sql(value = {"/db/migration/test/V1__test-set-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class BackApplicationTests {
+public class AdminControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -40,10 +40,10 @@ public class BackApplicationTests {
 
     @Test
     public void signUpTest() throws Exception {
-        Admin user = new Admin();
-        user.setEmail("test@s.ru");
-        user.setPassword("123");
-        String authJSON = gson.toJson(user);
+        Admin admin = new Admin();
+        admin.setEmail("test@s.ru");
+        admin.setPassword("123");
+        String authJSON = gson.toJson(admin);
         this.mockMvc.perform(post("/admin/register")
                 .contentType(contentType)
                 .content(authJSON))

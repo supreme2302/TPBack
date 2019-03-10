@@ -34,7 +34,7 @@ public class AdminController {
 
         String email = sessionAttribute.toString();
 
-        Admin user = adminService.getUserByEmail(email);
+        Admin user = adminService.getAdminByEmail(email);
 
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -57,7 +57,7 @@ public class AdminController {
         }
 
         try {
-            adminService.addUser(user);
+            adminService.addAdmin(user);
             sessionAuth(session, user.getEmail());
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(UserStatus.SUCCESSFULLY_CREATED);
@@ -75,7 +75,7 @@ public class AdminController {
                     .body(UserStatus.ALREADY_AUTHENTICATED);
         }
 
-        Admin userFromDb = adminService.getUserByEmail(user.getEmail());
+        Admin userFromDb = adminService.getAdminByEmail(user.getEmail());
         if (userFromDb == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(UserStatus.NOT_FOUND);
@@ -104,7 +104,7 @@ public class AdminController {
                     .body(UserStatus.ACCESS_ERROR);
         }
 
-        Admin userFromDb = adminService.getUserByEmail(userSession.toString());
+        Admin userFromDb = adminService.getAdminByEmail(userSession.toString());
         boolean passwordIsValid = adminService.checkAdminPassword(
                 changePassword.getOldPassword(),
                 userFromDb.getPassword());

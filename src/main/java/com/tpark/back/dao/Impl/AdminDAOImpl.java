@@ -14,7 +14,7 @@ import java.sql.SQLException;
 public class AdminDAOImpl implements AdminDAO {
 
     private final JdbcTemplate jdbc;
-    private final static adminMapper adminMapper = new adminMapper();
+    private final static AdminMapper adminMapper = new AdminMapper();
 
     @Autowired
     public AdminDAOImpl(JdbcTemplate jdbc) {
@@ -38,7 +38,7 @@ public class AdminDAOImpl implements AdminDAO {
         jdbc.update(sql, admin.getEmail(), admin.getPassword());
     }
 
-    public static class adminMapper implements RowMapper<Admin> {
+    public static class AdminMapper implements RowMapper<Admin> {
         @Override
         public Admin mapRow(ResultSet resultSet, int i) throws SQLException {
             Admin admin = new Admin();

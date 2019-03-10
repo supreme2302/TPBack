@@ -9,6 +9,7 @@ import com.tpark.back.service.Impl.SchoolServiceImpl;
 import com.tpark.back.service.SchoolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,10 +34,14 @@ public class SchoolController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
         }
-        return ResponseEntity.status(HttpStatus.OK)
-             .body(schoolService.getSchoolByAdmin(session.getAttribute("user").toString()));
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(schoolService.getSchoolByAdmin(session.getAttribute("user").toString()));
             //TODO: Запилить хранение параметров приложения в базке, и вместе с инфой по приложению кидать сюда json
-
+        } catch (EmptyResultDataAccessException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(UserStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping(path = "/create")
