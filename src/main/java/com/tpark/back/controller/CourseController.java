@@ -1,13 +1,11 @@
 package com.tpark.back.controller;
 
 
-import com.tpark.back.model.ChangePassword;
-import com.tpark.back.model.School;
+
+import com.tpark.back.model.Course;
 import com.tpark.back.model.UserStatus;
 import com.tpark.back.service.AdminService;
-import com.tpark.back.service.Impl.AdminServiceImpl;
-import com.tpark.back.service.Impl.SchoolServiceImpl;
-import com.tpark.back.service.SchoolService;
+import com.tpark.back.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -19,15 +17,15 @@ import javax.servlet.http.HttpSession;
 
 
 @RestController
-@RequestMapping("/school")
-public class SchoolController {
+@RequestMapping("/course")
+public class CourseController {
 
-    private final SchoolService schoolService;
+    private final CourseService courseService;
     private final AdminService adminService;
 
     @Autowired
-    public SchoolController(SchoolService schoolService, AdminService adminService) {
-        this.schoolService = schoolService;
+    public CourseController(CourseService courseService, AdminService adminService) {
+        this.courseService = courseService;
         this.adminService = adminService;
     }
 
@@ -44,7 +42,7 @@ public class SchoolController {
 
         try {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(schoolService.getSchoolByAdmin(session.getAttribute("user").toString()));
+                    .body(courseService.getCoursesByAdmin(session.getAttribute("user").toString()));
             //TODO: Запилить хранение параметров приложения в базке, и вместе с инфой по приложению кидать сюда json
         } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -53,7 +51,7 @@ public class SchoolController {
     }
 
     @PostMapping(path = "/create")
-    public ResponseEntity create(HttpSession session, @RequestBody School school) {
+    public ResponseEntity create(HttpSession session, @RequestBody Course course) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -63,9 +61,29 @@ public class SchoolController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            schoolService.createSchool(school);
+            courseService.createCourse(course);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(UserStatus.SUCCESSFULLY_CREATED);
+        } catch (DuplicateKeyException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(UserStatus.ALREADY_EXISTS);
+        }
+    }
+
+    @PostMapping(path = "/delete")
+    public ResponseEntity create(HttpSession session, @RequestBody Integer id) {
+        if (session.getAttribute("user") == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(UserStatus.ACCESS_ERROR);
+        }
+        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(UserStatus.ACCESS_ERROR);
+        }
+        try {
+            courseService.deleteCourse(id);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(UserStatus.SUCCESSFULLY_CHANGED);
         } catch (DuplicateKeyException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(UserStatus.ALREADY_EXISTS);
