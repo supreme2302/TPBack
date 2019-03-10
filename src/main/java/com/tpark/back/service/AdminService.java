@@ -4,9 +4,9 @@ import com.tpark.back.model.Admin;
 
 public interface AdminService {
 
-    Admin getUserByEmail(String email);
+    Admin getAdminByEmail(String email);
 
-    void addUser(Admin user);
+    void addAdmin(Admin admin);
 
     boolean checkAdminPassword(String rawPassword, String passwordFromDb);
 

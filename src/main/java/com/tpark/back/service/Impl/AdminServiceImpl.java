@@ -20,13 +20,13 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Admin getUserByEmail(String email) {
+    public Admin getAdminByEmail(String email) {
         return adminDAO.getAdminByEmail(email);
     }
 
 
     @Override
-    public void addUser(Admin user) {
+    public void addAdmin(Admin user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         adminDAO.addAdmin(user);
     }

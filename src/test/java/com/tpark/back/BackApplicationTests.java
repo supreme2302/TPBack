@@ -40,10 +40,10 @@ public class BackApplicationTests {
 
     @Test
     public void signUpTest() throws Exception {
-        Admin user = new Admin();
-        user.setEmail("test@s.ru");
-        user.setPassword("123");
-        String authJSON = gson.toJson(user);
+        Admin admin = new Admin();
+        admin.setEmail("test@s.ru");
+        admin.setPassword("123");
+        String authJSON = gson.toJson(admin);
         this.mockMvc.perform(post("/admin/register")
                 .contentType(contentType)
                 .content(authJSON))
