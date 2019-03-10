@@ -7,7 +7,7 @@
     <li> Admins - для работы с пользователями на Web (создателями приложения). ("/users")
     <ul>
         <li>GET /admin/info - получение ирнформации о авторизованном пользователе(Эмейл)
-        <li>POST /admin/register - регистрация пользователя json : {email:"", pasword:""}
+        <li>POST /admin/register - регистрация пользователя json : {email:"", password:""}
         <li>POST /admin/auth - авторизация пользователя, json тот же что и в регистрации
         <li>POST /admin/change -  изменение пароля пользователя , передаете строчку с новым паролем
     </ul>
