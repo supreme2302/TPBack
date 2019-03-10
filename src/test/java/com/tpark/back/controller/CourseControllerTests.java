@@ -66,6 +66,7 @@ public class CourseControllerTests {
 
     @Test
     public void deleteCourseTest() throws Exception {
+        //todo желательно проверить, что удаление действительно произошло
         String authJSON = "{id: 1}";
         MockHttpSession session = new MockHttpSession();
         session.setAttribute("user", "existforkostyan@e.ru");
