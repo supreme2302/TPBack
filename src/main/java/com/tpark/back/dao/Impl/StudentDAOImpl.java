@@ -34,11 +34,12 @@ public class StudentDAOImpl implements StudentDAO {
 
     @Override
     public Student getStudentByEmailWithoutGroupId(String email) {
-        final String sql = "SELECT email, first_name, last_name, password, school_id " +
+        final String sql = "SELECT id, email, first_name, last_name, password, school_id " +
                 "FROM student WHERE lower(email) = lower(?)";
         try {
             return jdbc.queryForObject(sql, ((resultSet, i) -> {
                 Student student = new Student();
+                student.setId(resultSet.getInt("id"));
                 student.setEmail(resultSet.getString("email"));
                 student.setName(resultSet.getString("first_name"));
                 student.setSurname(resultSet.getString("last_name"));
@@ -53,7 +54,7 @@ public class StudentDAOImpl implements StudentDAO {
 
     @Override
     public Student getStudentByEmailWithGroupId(String email) {
-        final String sql = "SELECT email, first_name, last_name, password, group_id, school_id " +
+        final String sql = "SELECT id, email, first_name, last_name, password, group_id, school_id " +
                 "FROM student JOIN student_group g on student.id = g.student_id " +
                 "WHERE lower(email) = lower(?)";
         try {
@@ -67,6 +68,7 @@ public class StudentDAOImpl implements StudentDAO {
         @Override
         public Student mapRow(ResultSet resultSet, int i) throws SQLException {
             Student student = new Student();
+            student.setId(resultSet.getInt("id"));
             student.setEmail(resultSet.getString("email"));
             student.setName(resultSet.getString("first_name"));
             student.setSurname(resultSet.getString("last_name"));
