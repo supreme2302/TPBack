@@ -1,35 +1,34 @@
 package com.tpark.back.service.Impl;
 
-import com.tpark.back.dao.Impl.UserDAOImpl;
-import com.tpark.back.model.User;
-import com.tpark.back.service.UserService;
+import com.tpark.back.dao.Impl.AdminDAOImpl;
+import com.tpark.back.model.Admin;
+import com.tpark.back.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class AdminServiceImpl implements AdminService {
 
-    private final UserDAOImpl userDAO;
+    private final AdminDAOImpl adminDAO;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserDAOImpl userDAO, PasswordEncoder passwordEncoder) {
-        this.userDAO = userDAO;
+    public AdminServiceImpl(AdminDAOImpl adminDAO, PasswordEncoder passwordEncoder) {
+        this.adminDAO = adminDAO;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public User getUserByEmail(String email) {
-        return userDAO.getUserByEmail(email);
+    public Admin getUserByEmail(String email) {
+        return adminDAO.getAdminByEmail(email);
     }
 
 
     @Override
-    public void addUser(User user) {
+    public void addUser(Admin user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userDAO.addUser(user);
+        adminDAO.addAdmin(user);
     }
 
     public boolean checkUserPassword(String rawPassword, String passwordFromDb) {
@@ -37,6 +36,6 @@ public class UserServiceImpl implements UserService {
     }
 
     public void changeUserPassword(String email, String password) {
-        userDAO.changePassword(email, passwordEncoder.encode(password));
+        adminDAO.changePassword(email, passwordEncoder.encode(password));
     }
 }

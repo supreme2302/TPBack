@@ -10,13 +10,13 @@ import javax.validation.constraints.Min;
 import java.beans.Transient;
 
 @NoArgsConstructor
-public class User {
+public class Admin {
     private int id;
     private String email;
     private String password;
 
     @JsonCreator
-    public User(
+    public Admin(
             @JsonProperty(value = "email") String email,
             @JsonProperty(value = "password") String password
     ) {

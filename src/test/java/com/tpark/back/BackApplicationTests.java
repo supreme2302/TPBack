@@ -2,7 +2,7 @@ package com.tpark.back;
 
 import com.google.gson.Gson;
 import com.tpark.back.model.ChangePassword;
-import com.tpark.back.model.User;
+import com.tpark.back.model.Admin;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +15,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpSession;
 import java.nio.charset.Charset;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -42,11 +40,11 @@ public class BackApplicationTests {
 
     @Test
     public void signUpTest() throws Exception {
-        User user = new User();
+        Admin user = new Admin();
         user.setEmail("test@s.ru");
         user.setPassword("123");
         String authJSON = gson.toJson(user);
-        this.mockMvc.perform(post("/users/register")
+        this.mockMvc.perform(post("/admin/register")
                 .contentType(contentType)
                 .content(authJSON))
                 .andDo(print())
@@ -55,10 +53,10 @@ public class BackApplicationTests {
 
     @Test
     public void signInOkTest() throws Exception {
-        User user = new User();
+        Admin user = new Admin();
         user.setEmail("exist@e.ru");
         user.setPassword("123");
-        this.mockMvc.perform(post("/users/auth")
+        this.mockMvc.perform(post("/admin/auth")
                 .contentType(contentType)
                 .content(gson.toJson(user)))
                 .andDo(print())
@@ -67,7 +65,7 @@ public class BackApplicationTests {
 
     @Test
     public void logoutAccessErrorTest() throws Exception {
-        this.mockMvc.perform(post("/users/logout")
+        this.mockMvc.perform(post("/admin/logout")
                 .contentType(contentType))
                 .andExpect(status().isUnauthorized());
     }
@@ -76,7 +74,7 @@ public class BackApplicationTests {
     public void logoutOkTest() throws Exception {
         MockHttpSession session = new MockHttpSession();
         session.setAttribute("user", "exist@e.ru");
-        this.mockMvc.perform(post("/users/logout")
+        this.mockMvc.perform(post("/admin/logout")
                 .contentType(contentType)
                 .session(session))
                 .andDo(print())
@@ -85,26 +83,26 @@ public class BackApplicationTests {
 
     @Test
     public void changePasswordOkTest() throws Exception {
-        User user = new User();
+        Admin user = new Admin();
         user.setEmail("exist@e.ru");
         MockHttpSession session = new MockHttpSession();
         session.setAttribute("user", user.getEmail());
         ChangePassword changePassword = new ChangePassword();
         changePassword.setOldPassword("123");
         changePassword.setNewPassword("321");
-        this.mockMvc.perform(post("/users/change")
+        this.mockMvc.perform(post("/admin/change")
                 .contentType(contentType)
                 .content(gson.toJson(changePassword))
                 .session(session))
                 .andDo(print())
                 .andExpect(status().isOk());
-        this.mockMvc.perform(post("/users/logout")
+        this.mockMvc.perform(post("/admin/logout")
                 .contentType(contentType)
                 .session(session))
                 .andDo(print())
                 .andExpect(status().isOk());
         user.setPassword("321");
-        this.mockMvc.perform(post("/users/auth")
+        this.mockMvc.perform(post("/admin/auth")
                 .contentType(contentType)
                 .content(gson.toJson(user)))
                 .andDo(print())

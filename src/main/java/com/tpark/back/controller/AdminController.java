@@ -1,8 +1,8 @@
 package com.tpark.back.controller;
 
 import com.tpark.back.model.ChangePassword;
-import com.tpark.back.model.User;
-import com.tpark.back.service.Impl.UserServiceImpl;
+import com.tpark.back.model.Admin;
+import com.tpark.back.service.Impl.AdminServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 
 @RestController
-@RequestMapping("/users")
-public class UserController {
+@RequestMapping("/admin")
+public class AdminController {
 
     private enum UserStatus {
         ACCESS_ERROR,
@@ -28,10 +28,10 @@ public class UserController {
         SUCCESSFULLY_LOGGED_OUT
     }
 
-    private final UserServiceImpl userService;
+    private final AdminServiceImpl userService;
 
     @Autowired
-    public UserController(UserServiceImpl userService) {
+    public AdminController(AdminServiceImpl userService) {
         this.userService = userService;
     }
 
@@ -46,7 +46,7 @@ public class UserController {
 
         String email = sessionAttribute.toString();
 
-        User user = userService.getUserByEmail(email);
+        Admin user = userService.getUserByEmail(email);
 
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -57,7 +57,7 @@ public class UserController {
     }
 
     @PostMapping(path = "/register")
-    public ResponseEntity register(HttpSession session, @RequestBody User user) {
+    public ResponseEntity register(HttpSession session, @RequestBody Admin user) {
         if (session.getAttribute("user") != null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(UserStatus.ALREADY_AUTHENTICATED);
@@ -80,14 +80,14 @@ public class UserController {
     }
 
     @PostMapping(path = "/auth")
-    public ResponseEntity auth(HttpSession httpSession, @RequestBody User user) {
+    public ResponseEntity auth(HttpSession httpSession, @RequestBody Admin user) {
 
         if (httpSession.getAttribute("user") != null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(UserStatus.ALREADY_AUTHENTICATED);
         }
 
-        User userFromDb = userService.getUserByEmail(user.getEmail());
+        Admin userFromDb = userService.getUserByEmail(user.getEmail());
         if (userFromDb == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(UserStatus.NOT_FOUND);
@@ -116,7 +116,7 @@ public class UserController {
                     .body(UserStatus.ACCESS_ERROR);
         }
 
-        User userFromDb = userService.getUserByEmail(userSession.toString());
+        Admin userFromDb = userService.getUserByEmail(userSession.toString());
         boolean passwordIsValid = userService.checkUserPassword(
                 changePassword.getOldPassword(),
                 userFromDb.getPassword());
