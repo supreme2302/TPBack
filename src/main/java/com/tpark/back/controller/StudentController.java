@@ -5,6 +5,7 @@ import com.tpark.back.model.Student;
 import com.tpark.back.model.UserStatus;
 import com.tpark.back.service.AdminService;
 import com.tpark.back.service.StudentService;
+import com.tpark.back.util.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,9 +42,11 @@ public class StudentController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(UserStatus.ACCESS_ERROR);
         }
 
+        String password = RandomString.getShortTokenString();
+        student.setPassword(password);
         studentService.addStudent(student);
-
+        student.setPassword(password);
         return ResponseEntity.status(HttpStatus.CREATED).body(student);
     }
-    
+
 }
