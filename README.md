@@ -46,7 +46,7 @@
         <li>GET /student/{email} - вывод студента
         <li>POST /student/change - изменение данных студента json как и у create
         <li>POST /student/delete - удаление студента из школы  json{email:} 
-        <li>POST /student/login - авторизация студента json: {email:"", password:""}
+        <li>POST /student/auth - авторизация студента json: {email:"", password:""}
     </ul>
     P.S. Поиск по фамилии студента надо бы сделать
     <li> Tasks - для создания/изменения заданий ("/task/")
