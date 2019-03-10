@@ -5,10 +5,12 @@ import com.tpark.back.model.School;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@Repository
 public class SchoolDAOImpl implements SchoolDAO {
     private final JdbcTemplate jdbc;
     private final static SchoolMapper schoolMapper = new SchoolMapper();
@@ -26,9 +28,8 @@ public class SchoolDAOImpl implements SchoolDAO {
 
     @Override
     public School getSchoolByAdmin(String admin) {
-        School school = new School();
-        final String sql = "SELECT * FROM school JOIN admin ON admin.school_id = school.id AND admin.email = ?::citext; ";
-        return(jdbc.queryForObject(sql,schoolMapper,school));
+        final String sql = "SELECT * FROM school JOIN admin ON admin.school_id = school.id AND lower(admin.email) = lower(?); ";
+        return jdbc.queryForObject(sql, schoolMapper, admin);
     }
 
     private final static class SchoolMapper implements RowMapper<School> {

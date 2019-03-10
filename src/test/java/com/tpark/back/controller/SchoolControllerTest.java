@@ -69,7 +69,7 @@ public class SchoolControllerTest {
     @Test
     public void getSchoolTest() throws Exception {
         MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", "existForKostyan@e.ru");
+        session.setAttribute("user", "existforkostyan@e.ru");
         this.mockMvc.perform(get("/school/")
                 .contentType(contentType)
                 .session(session))
