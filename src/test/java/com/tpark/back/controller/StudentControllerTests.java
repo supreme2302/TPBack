@@ -3,6 +3,7 @@ package com.tpark.back.controller;
 
 import com.google.gson.Gson;
 import com.tpark.back.model.Admin;
+import com.tpark.back.model.LocalStorage;
 import com.tpark.back.model.Student;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +21,7 @@ import java.nio.charset.Charset;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -40,14 +42,20 @@ public class StudentControllerTests {
 
     @Test
     public void createStudentTestOk() throws Exception {
-        Admin user = new Admin();
-        user.setEmail("exist@e.ru");
+        Admin admin = new Admin();
+        admin.setEmail("exist@e.ru");
         MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", user.getEmail());
+        session.setAttribute("user", admin.getEmail());
         Student student = new Student();
         student.setName("test_name");
         student.setSurname("test_surname");
         student.setEmail("test_student@e.ru");
         student.setSchool_id(1);
+        this.mockMvc.perform(post("/student/create")
+                .contentType(contentType)
+                .content(gson.toJson(student))
+                .session(session))
+                .andDo(print())
+                .andExpect(status().isCreated());
     }
 }
