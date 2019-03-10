@@ -2,7 +2,7 @@ package com.tpark.back.controller;
 
 import com.tpark.back.model.ChangePassword;
 import com.tpark.back.model.User;
-import com.tpark.back.service.UserServiceImpl;
+import com.tpark.back.service.Impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
