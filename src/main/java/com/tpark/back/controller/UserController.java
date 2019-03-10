@@ -2,7 +2,7 @@ package com.tpark.back.controller;
 
 import com.tpark.back.model.ChangePassword;
 import com.tpark.back.model.User;
-import com.tpark.back.service.UserService;
+import com.tpark.back.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -28,10 +28,10 @@ public class UserController {
         SUCCESSFULLY_LOGGED_OUT
     }
 
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserServiceImpl userService) {
         this.userService = userService;
     }
 
@@ -46,7 +46,7 @@ public class UserController {
 
         String email = sessionAttribute.toString();
 
-        User user = userService.getUser(email);
+        User user = userService.getUserByEmail(email);
 
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -69,7 +69,7 @@ public class UserController {
         }
 
         try {
-            userService.createUser(user);
+            userService.addUser(user);
             sessionAuth(session, user.getEmail());
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(UserStatus.SUCCESSFULLY_CREATED);
@@ -87,7 +87,7 @@ public class UserController {
                     .body(UserStatus.ALREADY_AUTHENTICATED);
         }
 
-        User userFromDb = userService.getUser(user.getEmail());
+        User userFromDb = userService.getUserByEmail(user.getEmail());
         if (userFromDb == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(UserStatus.NOT_FOUND);
@@ -116,7 +116,7 @@ public class UserController {
                     .body(UserStatus.ACCESS_ERROR);
         }
 
-        User userFromDb = userService.getUser(userSession.toString());
+        User userFromDb = userService.getUserByEmail(userSession.toString());
         boolean passwordIsValid = userService.checkUserPassword(
                 changePassword.getOldPassword(),
                 userFromDb.getPassword());
