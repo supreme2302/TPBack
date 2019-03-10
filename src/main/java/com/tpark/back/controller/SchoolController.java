@@ -4,6 +4,7 @@ package com.tpark.back.controller;
 import com.tpark.back.model.ChangePassword;
 import com.tpark.back.model.School;
 import com.tpark.back.model.UserStatus;
+import com.tpark.back.service.AdminService;
 import com.tpark.back.service.Impl.AdminServiceImpl;
 import com.tpark.back.service.Impl.SchoolServiceImpl;
 import com.tpark.back.service.SchoolService;
@@ -22,18 +23,25 @@ import javax.servlet.http.HttpSession;
 public class SchoolController {
 
     private final SchoolService schoolService;
+    private final AdminService adminService;
 
     @Autowired
-    public SchoolController(SchoolService schoolService) {
+    public SchoolController(SchoolService schoolService, AdminService adminService) {
         this.schoolService = schoolService;
+        this.adminService = adminService;
     }
 
     @GetMapping(path = "/")
     public ResponseEntity getSchool(HttpSession session) {
-        if (session.getAttribute("user") == null) {
+        if (session.getAttribute("user") == null ) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
         }
+        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(UserStatus.ACCESS_ERROR);
+        }
+
         try {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(schoolService.getSchoolByAdmin(session.getAttribute("user").toString()));
@@ -48,6 +56,10 @@ public class SchoolController {
     public ResponseEntity create(HttpSession session, @RequestBody School school) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(UserStatus.ACCESS_ERROR);
+        }
+        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
