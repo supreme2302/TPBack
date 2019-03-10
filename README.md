@@ -51,6 +51,9 @@
     <li> Tasks - для создания/изменения заданий ("/tasks/")
     <ul>
         <li>GET /tasks/{unit_id} - вывод всех тасков в юните
-        <li>POST /create/ - создание нового таска json:{
+        <li>POST /create/ - создание нового таска json:{name:"", descripson:"",type:"",password:"", unit_id:"",task_data:""(это json внутри jsonа для создания таска, в формочке делать будем)}
+        <li>GET /tasks/ - выводит все таски в школе
+        <li>POST /tasks/change - изменение данных tasks json как и у create
+        <li>POST /tasks/delete - удаление tasks из школы  json{id:""} 
     </ul>
 </ul>
