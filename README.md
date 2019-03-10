@@ -4,10 +4,10 @@
 
 Описание апишки:
 <ul>
-    <li> Admins - для работы с пользователями на Web (создателями приложения). ("/users")
+    <li> Admins - для работы с пользователями на Web (создателями приложения). ("/admin")
     <ul>
         <li>GET /admin/info - получение ирнформации о авторизованном пользователе(Эмейл)
-        <li>POST /admin/register - регистрация пользователя json : {email:"", pasword:""}
+        <li>POST /admin/register - регистрация пользователя json : {email:"", password:""}
         <li>POST /admin/auth - авторизация пользователя, json тот же что и в регистрации
         <li>POST /admin/change -  изменение пароля пользователя , передаете строчку с новым паролем
     </ul>
@@ -43,6 +43,7 @@
         <li>POST /student/create - создание студента json:{ email:"", name:"", surname: "", password: "", group_id: "", school_id: "", phone: ""}
         <li>GET /student/course/{course_id} - вывод студентов в курсе
         <li>GET /student/group/{group_id} - вывод студентов в группе
+        <li>GET /student/{email} - вывод студента
         <li>POST /student/change - изменение данных студента json как и у create
         <li>POST /student/delete - удаление студента из школы  json{email:} 
         <li>POST /student/login - авторизация студента json: {email:"", password:""}
