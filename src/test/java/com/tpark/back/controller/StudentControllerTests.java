@@ -64,7 +64,6 @@ public class StudentControllerTests {
 
     @Test
     public void authStudentTestOk() throws Exception {
-        //todo падает
         Admin admin = new Admin();
         admin.setEmail("exist@e.ru");
         MockHttpSession session = new MockHttpSession();
@@ -88,5 +87,54 @@ public class StudentControllerTests {
                 .contentType(contentType)
                 .content(gson.toJson(authStudent)))
                 .andDo(print()).andExpect(status().isOk());
+    }
+
+    @Test
+    public void authStudentTestForbidden() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("student", "a@a.ru");
+        Student student = new Student();
+        this.mockMvc.perform(post("/student/auth")
+                .contentType(contentType)
+                .session(session)
+                .content(gson.toJson(student)))
+                .andDo(print()).andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void authStudentTestNotFound() throws Exception {
+        Student student = new Student();
+        student.setEmail("notexitstemail@e.ru");
+        this.mockMvc.perform(post("/student/auth")
+                .contentType(contentType)
+                .content(gson.toJson(student)))
+                .andDo(print()).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void authStudentTestWrongCredentials() throws Exception {
+        Admin admin = new Admin();
+        admin.setEmail("exist@e.ru");
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", admin.getEmail());
+        Student student = new Student();
+        student.setName("test_name");
+        student.setSurname("test_surname");
+        student.setEmail("test_student@e.ru");
+        student.setSchool_id(1);
+        this.mockMvc.perform(post("/student/create")
+                .contentType(contentType)
+                .content(gson.toJson(student))
+                .session(session))
+                .andDo(print())
+                .andExpect(status().isCreated());
+
+        Student authStudent = new Student();
+        authStudent.setEmail("test_student@e.ru");
+        authStudent.setPassword("000wrongpassword");
+        this.mockMvc.perform(post("/student/auth")
+                .contentType(contentType)
+                .content(gson.toJson(authStudent)))
+                .andDo(print()).andExpect(status().isBadRequest());
     }
 }
