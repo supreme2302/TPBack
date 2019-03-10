@@ -5,4 +5,6 @@ import com.tpark.back.model.Student;
 public interface StudentDAO {
 
     void addStudent(Student student);
+
+    Student getStudentByEmail(String email);
 }

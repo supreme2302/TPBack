@@ -69,21 +69,21 @@ public class AdminController {
     }
 
     @PostMapping(path = "/auth")
-    public ResponseEntity auth(HttpSession httpSession, @RequestBody Admin user) {
+    public ResponseEntity auth(HttpSession httpSession, @RequestBody Admin admin) {
 
         if (httpSession.getAttribute("user") != null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(UserStatus.ALREADY_AUTHENTICATED);
         }
 
-        Admin userFromDb = adminService.getAdminByEmail(user.getEmail());
+        Admin userFromDb = adminService.getAdminByEmail(admin.getEmail());
         if (userFromDb == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(UserStatus.NOT_FOUND);
         }
 
         boolean userIsValid = adminService.checkAdminPassword(
-                user.getPassword(),
+                admin.getPassword(),
                 userFromDb.getPassword());
 
         if (!userIsValid) {
@@ -91,7 +91,7 @@ public class AdminController {
                     .body(UserStatus.WRONG_CREDENTIALS);
         }
 
-        sessionAuth(httpSession, user.getEmail());
+        sessionAuth(httpSession, admin.getEmail());
         return ResponseEntity.ok(UserStatus.SUCCESSFULLY_AUTHED);
     }
 

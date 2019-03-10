@@ -3,6 +3,7 @@ package com.tpark.back.dao.Impl;
 import com.tpark.back.dao.StudentDAO;
 import com.tpark.back.model.Student;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -31,6 +32,18 @@ public class StudentDAOImpl implements StudentDAO {
                 student.getPassword(), student.getSchool_id());
     }
 
+    @Override
+    public Student getStudentByEmail(String email) {
+        final String sql = "SELECT email, first_name, last_name, password, group_id, school_id " +
+                "FROM student JOIN student_group g on student.id = g.student_id " +
+                "WHERE lower(email) = lower(?)";
+        try {
+            return jdbc.queryForObject(sql, studentMapper, email);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
     private static final class StudentMapper implements RowMapper<Student> {
         @Override
         public Student mapRow(ResultSet resultSet, int i) throws SQLException {
@@ -40,6 +53,7 @@ public class StudentDAOImpl implements StudentDAO {
             student.setSurname(resultSet.getString("last_name"));
             student.setGroup_id(resultSet.getString("group_id"));
             student.setPassword(resultSet.getString("password"));
+            student.setSchool_id(resultSet.getInt("school_id"));
             return student;
         }
     }

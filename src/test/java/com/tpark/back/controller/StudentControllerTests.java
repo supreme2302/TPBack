@@ -2,6 +2,8 @@ package com.tpark.back.controller;
 
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.tpark.back.model.Admin;
 import com.tpark.back.model.LocalStorage;
 import com.tpark.back.model.Student;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
@@ -57,5 +60,33 @@ public class StudentControllerTests {
                 .session(session))
                 .andDo(print())
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void authStudentTestOk() throws Exception {
+        //todo падает
+        Admin admin = new Admin();
+        admin.setEmail("exist@e.ru");
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", admin.getEmail());
+        Student student = new Student();
+        student.setName("test_name");
+        student.setSurname("test_surname");
+        student.setEmail("test_student@e.ru");
+        student.setSchool_id(1);
+        String response = this.mockMvc.perform(post("/student/create")
+                .contentType(contentType)
+                .content(gson.toJson(student))
+                .session(session))
+                .andDo(print())
+                .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+        Student element = gson.fromJson (response, Student.class);
+        Student authStudent = new Student();
+        authStudent.setEmail(element.getEmail());
+        authStudent.setPassword(element.getPassword());
+        this.mockMvc.perform(post("/student/auth")
+                .contentType(contentType)
+                .content(gson.toJson(authStudent)))
+                .andDo(print()).andExpect(status().isOk());
     }
 }

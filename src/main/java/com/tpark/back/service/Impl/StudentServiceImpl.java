@@ -25,4 +25,14 @@ public class StudentServiceImpl implements StudentService {
         student.setPassword(passwordEncoder.encode(student.getPassword()));
         studentDAO.addStudent(student);
     }
+
+    @Override
+    public boolean checkStudent(String rawPassword, String passwordFromDb) {
+        return passwordEncoder.matches(rawPassword, passwordFromDb);
+    }
+
+    @Override
+    public Student getStudentByEmail(String email) {
+        return studentDAO.getStudentByEmail(email);
+    }
 }
