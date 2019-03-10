@@ -43,6 +43,7 @@
         <li>POST /student/create - создание студента json:{ email:"", name:"", surname: "", password: "", group_id: "", school_id: "", phone: ""}
         <li>GET /student/course/{course_id} - вывод студентов в курсе
         <li>GET /student/group/{group_id} - вывод студентов в группе
+        <li>GET /student/{email} - вывод студента
         <li>POST /student/change - изменение данных студента json как и у create
         <li>POST /student/delete - удаление студента из школы  json{email:} 
         <li>POST /student/login - авторизация студента json: {email:"", password:""}
