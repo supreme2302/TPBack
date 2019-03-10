@@ -8,5 +8,5 @@ public interface StudentService {
 
     boolean checkStudent(String rawPassword, String passwordFromDb);
 
-    Student getStudentByEmail(String email);
+    Student getStudentByEmailWithoutGroupId(String email);
 }

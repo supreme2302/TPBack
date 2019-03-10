@@ -3,7 +3,6 @@ package com.tpark.back.service.Impl;
 import com.tpark.back.dao.StudentDAO;
 import com.tpark.back.model.Student;
 import com.tpark.back.service.StudentService;
-import com.tpark.back.util.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,7 +31,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Student getStudentByEmail(String email) {
-        return studentDAO.getStudentByEmail(email);
+    public Student getStudentByEmailWithoutGroupId(String email) {
+        return studentDAO.getStudentByEmailWithoutGroupId(email);
     }
 }

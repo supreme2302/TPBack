@@ -6,5 +6,7 @@ public interface StudentDAO {
 
     void addStudent(Student student);
 
-    Student getStudentByEmail(String email);
+    Student getStudentByEmailWithGroupId(String email);
+
+    Student getStudentByEmailWithoutGroupId(String email);
 }

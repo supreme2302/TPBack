@@ -57,7 +57,7 @@ public class StudentController {
                     .body(UserStatus.ALREADY_AUTHENTICATED);
         }
 
-        Student studentFromDb = studentService.getStudentByEmail(student.getEmail());
+        Student studentFromDb = studentService.getStudentByEmailWithoutGroupId(student.getEmail());
 
         if (studentFromDb == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
