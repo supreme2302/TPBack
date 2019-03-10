@@ -1,9 +1,8 @@
 package com.tpark.back.controller;
 
+
 import com.google.gson.Gson;
-import com.tpark.back.model.ChangePassword;
-import com.tpark.back.model.Admin;
-import com.tpark.back.model.School;
+import com.tpark.back.model.Course;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource("/application-test.properties")
 @SpringBootTest
 @Sql(value = {"/db/migration/test/V1__test-set-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class SchoolControllerTest {
-
+public class CourseControllerTests {
     @Autowired
     private MockMvc mockMvc;
 
@@ -40,46 +38,44 @@ public class SchoolControllerTest {
             Charset.forName("utf8"));
 
     @Test
-    public void getNoneSchoolTest() throws Exception {
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", "exist@e.ru");
-        this.mockMvc.perform(get("/school/")
-                .contentType(contentType)
-                .session(session))
-                .andDo(print())
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    public void CreateSchoolTest() throws Exception {
-        School school = new School();
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", "exist@e.ru");
-        school.setName("ESS");
-        school.setDev_id("123");
-        String authJSON = gson.toJson(school);
-        this.mockMvc.perform(post("/school/create")
-                .contentType(contentType)
-                .session(session)
-                .content(authJSON))
-                .andDo(print())
-                .andExpect(status().isCreated());
-    }
-
-    @Test
-    public void getSchoolTest() throws Exception {
+    public void getCoursesTest() throws Exception {
         MockHttpSession session = new MockHttpSession();
         session.setAttribute("user", "existforkostyan@e.ru");
-        this.mockMvc.perform(get("/school/")
+        this.mockMvc.perform(get("/course/")
                 .contentType(contentType)
                 .session(session))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
 
+    @Test
+    public void createCourseTest() throws Exception {
+        Course course = new Course();
+        course.setName("BES");
+        course.setSchoolId(1);
+        String authJSON = gson.toJson(course);
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", "existforkostyan@e.ru");
+        this.mockMvc.perform(post("/course/create")
+                .contentType(contentType)
+                .content(authJSON)
+                .session(session))
+                .andDo(print())
+                .andExpect(status().isCreated());
+    }
 
-
-
+    @Test
+    public void deleteCourseTest() throws Exception {
+        String authJSON = "{id: 1}";
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", "existforkostyan@e.ru");
+        this.mockMvc.perform(post("/course/delete")
+                .contentType(contentType)
+                .content("1")
+                .session(session))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
 
 
 }
