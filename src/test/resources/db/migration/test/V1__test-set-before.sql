@@ -7,4 +7,6 @@ CREATE TABLE IF NOT EXISTS admin(
   password VARCHAR (255) NOT NULL
 );
 
+CREATE
+
 INSERT INTO admin (email, password) VALUES ('exist@e.ru', '$2a$10$rXn4xiRPY45wJVi39KAm.eKElUDcBQI4b58sqiEjrTXaTFrRn5nOW');
