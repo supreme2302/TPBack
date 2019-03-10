@@ -2,7 +2,8 @@ package com.tpark.back.controller;
 
 import com.tpark.back.model.ChangePassword;
 import com.tpark.back.model.Admin;
-import com.tpark.back.service.Impl.AdminServiceImpl;
+import com.tpark.back.model.UserStatus;
+import com.tpark.back.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -15,24 +16,11 @@ import javax.servlet.http.HttpSession;
 @RequestMapping("/admin")
 public class AdminController {
 
-    private enum UserStatus {
-        ACCESS_ERROR,
-        NOT_FOUND,
-        ALREADY_AUTHENTICATED,
-        SUCCESSFULLY_CREATED,
-        NOT_UNIQUE_EMAIL,
-        EMPTY_FIELDS_IN_REQUEST,
-        WRONG_CREDENTIALS,
-        SUCCESSFULLY_AUTHED,
-        SUCCESSFULLY_CHANGED,
-        SUCCESSFULLY_LOGGED_OUT
-    }
-
-    private final AdminServiceImpl userService;
+    private final AdminService adminService;
 
     @Autowired
-    public AdminController(AdminServiceImpl userService) {
-        this.userService = userService;
+    public AdminController(AdminService adminService) {
+        this.adminService = adminService;
     }
 
     @GetMapping(path = "/info")
@@ -46,7 +34,7 @@ public class AdminController {
 
         String email = sessionAttribute.toString();
 
-        Admin user = userService.getUserByEmail(email);
+        Admin user = adminService.getUserByEmail(email);
 
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -69,7 +57,7 @@ public class AdminController {
         }
 
         try {
-            userService.addUser(user);
+            adminService.addUser(user);
             sessionAuth(session, user.getEmail());
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(UserStatus.SUCCESSFULLY_CREATED);
@@ -87,13 +75,13 @@ public class AdminController {
                     .body(UserStatus.ALREADY_AUTHENTICATED);
         }
 
-        Admin userFromDb = userService.getUserByEmail(user.getEmail());
+        Admin userFromDb = adminService.getUserByEmail(user.getEmail());
         if (userFromDb == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(UserStatus.NOT_FOUND);
         }
 
-        boolean userIsValid = userService.checkUserPassword(
+        boolean userIsValid = adminService.checkAdminPassword(
                 user.getPassword(),
                 userFromDb.getPassword());
 
@@ -116,13 +104,13 @@ public class AdminController {
                     .body(UserStatus.ACCESS_ERROR);
         }
 
-        Admin userFromDb = userService.getUserByEmail(userSession.toString());
-        boolean passwordIsValid = userService.checkUserPassword(
+        Admin userFromDb = adminService.getUserByEmail(userSession.toString());
+        boolean passwordIsValid = adminService.checkAdminPassword(
                 changePassword.getOldPassword(),
                 userFromDb.getPassword());
 
         if (passwordIsValid) {
-            userService.changeUserPassword(userSession.toString(),
+            adminService.changeAdminPassword(userSession.toString(),
                     changePassword.getNewPassword());
             return ResponseEntity.ok(UserStatus.SUCCESSFULLY_CHANGED);
         }

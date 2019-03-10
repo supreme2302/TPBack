@@ -31,11 +31,13 @@ public class AdminServiceImpl implements AdminService {
         adminDAO.addAdmin(user);
     }
 
-    public boolean checkUserPassword(String rawPassword, String passwordFromDb) {
+    @Override
+    public boolean checkAdminPassword(String rawPassword, String passwordFromDb) {
         return passwordEncoder.matches(rawPassword, passwordFromDb);
     }
 
-    public void changeUserPassword(String email, String password) {
+    @Override
+    public void changeAdminPassword(String email, String password) {
         adminDAO.changePassword(email, passwordEncoder.encode(password));
     }
 }
