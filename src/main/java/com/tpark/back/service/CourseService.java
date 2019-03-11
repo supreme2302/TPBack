@@ -8,4 +8,8 @@ public interface CourseService {
     List<Course> getCoursesByAdmin(String email);
     void createCourse(Course course);
     void deleteCourse(int id);
+
+    Course getCourse(int courseID);
+
+    void changeCourse(Course course);
 }

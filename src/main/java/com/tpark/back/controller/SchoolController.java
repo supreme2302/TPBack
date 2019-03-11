@@ -1,12 +1,9 @@
 package com.tpark.back.controller;
 
 
-import com.tpark.back.model.ChangePassword;
 import com.tpark.back.model.School;
 import com.tpark.back.model.UserStatus;
 import com.tpark.back.service.AdminService;
-import com.tpark.back.service.Impl.AdminServiceImpl;
-import com.tpark.back.service.Impl.SchoolServiceImpl;
 import com.tpark.back.service.SchoolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;

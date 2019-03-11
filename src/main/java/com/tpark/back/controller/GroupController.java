@@ -1,11 +1,10 @@
 package com.tpark.back.controller;
 
 
-
-import com.tpark.back.model.Course;
+import com.tpark.back.model.Group;
 import com.tpark.back.model.UserStatus;
 import com.tpark.back.service.AdminService;
-import com.tpark.back.service.CourseService;
+import com.tpark.back.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -15,22 +14,21 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 
-
 @RestController
-@RequestMapping("/course")
-public class CourseController {
+@RequestMapping("/group")
+public class GroupController {
 
-    private final CourseService courseService;
+    private final GroupService groupService;
     private final AdminService adminService;
 
     @Autowired
-    public CourseController(CourseService courseService, AdminService adminService) {
-        this.courseService = courseService;
+    public GroupController(GroupService groupService, AdminService adminService) {
+        this.groupService = groupService;
         this.adminService = adminService;
     }
 
     @GetMapping(path = "/{courseId}")
-    public ResponseEntity getCourse(HttpSession session,@PathVariable int courseID) {
+    public ResponseEntity getGroups(HttpSession session,@PathVariable Integer courseId) {
         if (session.getAttribute("user") == null ) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -40,18 +38,13 @@ public class CourseController {
                     .body(UserStatus.ACCESS_ERROR);
         }
 
-        try {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(courseService.getCourse(courseID));
-            //TODO: Запилить хранение параметров приложения в базке, и вместе с инфой по приложению кидать сюда json
-        } catch (EmptyResultDataAccessException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(UserStatus.NOT_FOUND);
-        }
+        return ResponseEntity.status(HttpStatus.OK)
+               .body(groupService.getGroupsByCourse(courseId));
+
     }
 
-    @GetMapping(path = "/")
-    public ResponseEntity getSchoolCourses(HttpSession session) {
+    @GetMapping(path = "/find/{groupId}")
+    public ResponseEntity getGroup(HttpSession session,@PathVariable Integer groupId) {
         if (session.getAttribute("user") == null ) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -63,8 +56,7 @@ public class CourseController {
 
         try {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(courseService.getCoursesByAdmin(session.getAttribute("user").toString()));
-            //TODO: Запилить хранение параметров приложения в базке, и вместе с инфой по приложению кидать сюда json
+                    .body(groupService.getGroup(groupId));
         } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(UserStatus.NOT_FOUND);
@@ -72,7 +64,7 @@ public class CourseController {
     }
 
     @PostMapping(path = "/create")
-    public ResponseEntity create(HttpSession session, @RequestBody Course course) {
+    public ResponseEntity create(HttpSession session, @RequestBody Group group) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -82,7 +74,7 @@ public class CourseController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            courseService.createCourse(course);
+            groupService.createGroup(group);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(UserStatus.SUCCESSFULLY_CREATED);
         } catch (DuplicateKeyException e) {
@@ -92,7 +84,7 @@ public class CourseController {
     }
 
     @PostMapping(path = "/change")
-    public ResponseEntity change(HttpSession session, @RequestBody Course course) {
+    public ResponseEntity change(HttpSession session, @RequestBody Group group) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -102,17 +94,17 @@ public class CourseController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            courseService.changeCourse(course);
+            groupService.changeGroup(group);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(UserStatus.SUCCESSFULLY_CHANGED);
         } catch (DuplicateKeyException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(UserStatus.ALREADY_EXISTS);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(UserStatus.NOT_FOUND);
         }
     }
 
     @PostMapping(path = "/delete")
-    public ResponseEntity create(HttpSession session, @RequestBody Integer id) {
+    public ResponseEntity delete(HttpSession session, @RequestBody int id) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -122,13 +114,12 @@ public class CourseController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            courseService.deleteCourse(id);
+            groupService.deleteGroup(id);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(UserStatus.SUCCESSFULLY_CHANGED);
         } catch (DuplicateKeyException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(UserStatus.ALREADY_EXISTS);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(UserStatus.NOT_FOUND);
         }
     }
-
 }
