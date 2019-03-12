@@ -2,7 +2,7 @@ package com.tpark.back.controller;
 
 
 import com.google.gson.Gson;
-import com.tpark.back.model.Course;
+import com.tpark.back.model.Group;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource("/application-test.properties")
 @SpringBootTest
 @Sql(value = {"/db/migration/test/V1__test-set-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class CourseControllerTests {
+public class GroupControllerTest {
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -38,10 +39,10 @@ public class CourseControllerTests {
             Charset.forName("utf8"));
 
     @Test
-    public void getCoursesTest() throws Exception {
+    public void getNoneGroupsTest() throws Exception {
         MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", "existforkostyan@e.ru");
-        this.mockMvc.perform(get("/course/")
+        session.setAttribute("user", "exist@e.ru");
+        this.mockMvc.perform(get("/group/1")
                 .contentType(contentType)
                 .session(session))
                 .andDo(print())
@@ -49,14 +50,37 @@ public class CourseControllerTests {
     }
 
     @Test
-    public void createCourseTest() throws Exception {
-        Course course = new Course();
-        course.setName("BES");
-        course.setSchoolId(1);
-        String authJSON = gson.toJson(course);
+    public void getGroupTest() throws Exception {
         MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", "existforkostyan@e.ru");
-        this.mockMvc.perform(post("/course/create")
+        session.setAttribute("user", "exist@e.ru");
+        this.mockMvc.perform(get("/group/find/1")
+                .contentType(contentType)
+                .session(session))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getNoneGroupTest() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", "exist@e.ru");
+        this.mockMvc.perform(get("/group/find/100")
+                .contentType(contentType)
+                .session(session))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void createGroupTest() throws Exception {
+        Group group = new Group();
+        group.setName("Fuckji");
+        group.setCourse_id(1);
+        group.setCurr_unit(1);
+        String authJSON = gson.toJson(group);
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", "exist@e.ru");
+        this.mockMvc.perform(post("/group/create")
                 .contentType(contentType)
                 .content(authJSON)
                 .session(session))
@@ -65,18 +89,14 @@ public class CourseControllerTests {
     }
 
     @Test
-    public void deleteCourseTest() throws Exception {
-        //todo желательно проверить, что удаление действительно произошло
-        String authJSON = "{id: 1}";
+    public void deleteGroupTest() throws Exception {
         MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", "existforkostyan@e.ru");
-        this.mockMvc.perform(post("/course/delete")
+        session.setAttribute("user", "exist@e.ru");
+        this.mockMvc.perform(post("/group/delete/")
                 .contentType(contentType)
                 .content("1")
                 .session(session))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
-
-
 }

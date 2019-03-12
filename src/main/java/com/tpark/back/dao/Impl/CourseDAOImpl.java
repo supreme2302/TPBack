@@ -38,9 +38,23 @@ public class CourseDAOImpl implements CourseDAO {
 
     @Override
     public void deleteCourse(int id) {
-        final String sql = "DELETE FROM course WHERE id = ?;";
+        String sql = "DELETE FROM group_course WHERE course_id = ?;";
+        jdbc.update(sql,id);
+        sql = "DELETE FROM course WHERE id = ?;\n";
         jdbc.update(sql,id);
     }
+
+    @Override
+    public Course getCourse(int id){
+        final String sql = "SELECT * FROM course WHERE id=? LIMIT 1;";
+        return jdbc.queryForObject(sql, courseMapper, id);
+    }
+
+    @Override
+    public void changeCourse(Course course){
+        final String sql = "UPDATE course SET course_name = ? WHERE id = ?;";
+        jdbc.update(sql,course.getName(), course.getId());
+    };
 
     public static class CourseMapper implements RowMapper<Course> {
         @Override

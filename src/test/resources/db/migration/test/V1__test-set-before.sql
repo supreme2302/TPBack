@@ -55,6 +55,7 @@ CREATE TABLE IF NOT EXISTS student_group (
   student_id INTEGER REFERENCES student(id)
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS courseIx ON course(course_name, school_id);
 CREATE UNIQUE INDEX IF NOT EXISTS unitIx ON unit(current_position, course_id);
 CREATE UNIQUE INDEX IF NOT EXISTS group_courseIx ON group_course(group_name, course_id);
 
@@ -63,6 +64,8 @@ INSERT INTO admin (email, password) VALUES ('exist@e.ru', '$2a$10$rXn4xiRPY45wJV
 INSERT INTO school (id, school_name, device_id) VALUES (1,'SSOE','8893');
 INSERT INTO school (id, school_name, device_id) VALUES (2,'EFG','3219');
 INSERT INTO admin (email, password, school_id) VALUES ('existForKostyan@e.ru', '$2a$10$rXn4xiRPY45wJVi39KAm.eKElUDcBQI4b58sqiEjrTXaTFrRn5nOW', 1);
-INSERT INTO course (course_name, school_id) VALUES ('TOEFL prep',1);
+INSERT INTO course (id,course_name, school_id) VALUES (1,'TOEFL prep',1);
 INSERT INTO course (course_name, school_id) VALUES ('IELTS prep',1);
 INSERT INTO course (course_name, school_id) VALUES ('English for g...',2);
+INSERT INTO unit (unit_name, course_id,current_position) VALUES ('English for g...',2,1);
+INSERT INTO group_course (group_name, course_id, current_unit) VALUES ('HyperGroup',1,1);

@@ -8,4 +8,7 @@ public interface CourseDAO {
     List<Course> getCoursesByAdmin(String email);
     void createCourse(Course course);
     void deleteCourse(int id);
+    Course getCourse(int id);
+
+    void changeCourse(Course course);
 }

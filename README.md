@@ -21,12 +21,15 @@
     <ul>
         <li>POST /course/create - создание курса json: {name: ""}(нам нужно только имя)
         <li>GET /course/ - вытащить названия и id всех курсов данной школы.
-        <li>POST /course/delete - удаление курса json: {name: ""}
+        <li>GET /course/{courseId} - получить курс по Id.
+        <li>POST /course/change - изменение курса json: {name: ""}
+        <li>POST /course/delete - удаление курса json: id(без ничего)
     </ul>   
     <li> Groups - для просмотра и редактирования групп ("/group/{school_id}/{course_id}")  
     <ul>
-        <li>POST /group/newgroup - создание группы у данного курса json: {name: "", courseid: "", start_date: "", curr_unit:" " - необязательно)} 
+        <li>POST /group/create - создание группы у данного курса json: {name: "", courseid: "", start_date: "", curr_unit:" " - необязательно)} 
         <li>GET /group/{course_id} - вывести все группы для данного курса
+        <li>GET /group/{group_id} - вывести группу по id
         <li>POST /group/delete - удаление группы у курса
         <li>POST /group/change - изменение информации о группе json: {name: "",courseid: "", start_date: "", curr_unit:" " - необязательно)}
     </ul>
