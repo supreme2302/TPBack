@@ -16,6 +16,7 @@ import javax.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/group")
+@CrossOrigin(origins = {"http://localhost:8080"}, allowCredentials = "true")
 public class GroupController {
 
     private final GroupService groupService;
