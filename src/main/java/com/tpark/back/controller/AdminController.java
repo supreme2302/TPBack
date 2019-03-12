@@ -144,4 +144,9 @@ public class AdminController {
         session.setMaxInactiveInterval(7*24*60*60);
     }
 
+    @GetMapping(path = "/test")
+    public ResponseEntity testGetMethod() {
+        logger.info("TEEEEEEESTTT");
+        return ResponseEntity.ok("OOOOOOOOOOOOOOOOOKKKKKK");
+    }
 }
