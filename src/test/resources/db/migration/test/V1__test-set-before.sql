@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS course (
   school_id INTEGER REFERENCES school(id)
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS courseIx ON course(course_name, school_id);
+
 CREATE TABLE IF NOT EXISTS unit (
   id SERIAL NOT NULL PRIMARY KEY ,
   unit_name VARCHAR(255) NOT NULL ,
@@ -53,7 +55,6 @@ CREATE TABLE IF NOT EXISTS student_group (
   student_id INTEGER REFERENCES student(id)
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS courseIx ON course(course_name, school_id);
 CREATE UNIQUE INDEX IF NOT EXISTS unitIx ON unit(current_position, course_id);
 CREATE UNIQUE INDEX IF NOT EXISTS group_courseIx ON group_course(group_name, course_id);
 

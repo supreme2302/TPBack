@@ -64,6 +64,7 @@ public class CourseControllerTests {
                 .andExpect(status().isCreated());
     }
 
+
     @Test
     public void deleteCourseTest() throws Exception {
         //todo желательно проверить, что удаление действительно произошло

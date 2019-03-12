@@ -71,7 +71,7 @@ public class CourseController {
     }
 
     @PostMapping(path = "/delete")
-    public ResponseEntity create(HttpSession session, @RequestBody Integer id) {
+    public ResponseEntity delete(HttpSession session, @RequestBody Integer id) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
