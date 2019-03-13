@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS course (
   school_id INTEGER REFERENCES school(id)
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS courseIx ON course(course_name, school_id);
+
 CREATE TABLE IF NOT EXISTS unit (
   id SERIAL NOT NULL PRIMARY KEY ,
   unit_name VARCHAR(255) NOT NULL ,

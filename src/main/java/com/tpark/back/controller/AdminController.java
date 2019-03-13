@@ -4,6 +4,8 @@ import com.tpark.back.model.ChangePassword;
 import com.tpark.back.model.Admin;
 import com.tpark.back.model.UserStatus;
 import com.tpark.back.service.AdminService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,7 @@ import javax.servlet.http.HttpSession;
 public class AdminController {
 
     private final AdminService adminService;
+    private final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
     @Autowired
     public AdminController(AdminService adminService) {
@@ -52,13 +55,19 @@ public class AdminController {
                     .body(UserStatus.ALREADY_AUTHENTICATED);
         }
 
+        logger.info("register");
+
         if (user.getEmail() == null || user.getPassword() == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(UserStatus.EMPTY_FIELDS_IN_REQUEST);
         }
 
+        logger.info("register - valid");
+
         try {
+            logger.info("register - try");
             adminService.addAdmin(user);
+            logger.info("register - added");
             sessionAuth(session, user.getEmail());
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(UserStatus.SUCCESSFULLY_CREATED);
@@ -135,4 +144,9 @@ public class AdminController {
         session.setMaxInactiveInterval(7*24*60*60);
     }
 
+    @GetMapping(path = "/test")
+    public ResponseEntity testGetMethod() {
+        logger.info("TEEEEEEESTTT");
+        return ResponseEntity.ok("OOOOOOOOOOOOOOOOOKKKKKK");
+    }
 }

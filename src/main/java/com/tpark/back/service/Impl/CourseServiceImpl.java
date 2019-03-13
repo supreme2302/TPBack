@@ -11,10 +11,10 @@ import java.util.List;
 
 @Service
 public class CourseServiceImpl implements CourseService {
-    private final CourseDAOImpl courseDAO;
+    private final CourseDAO courseDAO;
 
     @Autowired
-    CourseServiceImpl(CourseDAOImpl courseDAO){
+    CourseServiceImpl(CourseDAO courseDAO){
         this.courseDAO = courseDAO;
     }
 
