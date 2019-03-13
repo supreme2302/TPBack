@@ -7,6 +7,6 @@ import lombok.Data;
 public class Task {
     Integer id;
     String task_ref;
-    String descriptiom;
+    String description;
     Integer task_type;
 }

@@ -1,8 +1,6 @@
 package com.tpark.back.controller;
 
 import com.google.gson.Gson;
-import com.tpark.back.model.ChangePassword;
-import com.tpark.back.model.Admin;
 import com.tpark.back.model.School;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,12 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.servlet.http.Cookie;
 import java.nio.charset.Charset;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -43,11 +41,11 @@ public class SchoolControllerTests {
 
     @Test
     public void getNoneSchoolTest() throws Exception {
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", "exist@e.ru");
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
         this.mockMvc.perform(get("/school/")
                 .contentType(contentType)
-                .session(session))
+                .cookie(allCookies))
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }
@@ -55,14 +53,14 @@ public class SchoolControllerTests {
     @Test
     public void CreateSchoolTest() throws Exception {
         School school = new School();
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", "exist@e.ru");
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
         school.setName("ESS");
         school.setDev_id("123");
         String authJSON = gson.toJson(school);
         this.mockMvc.perform(post("/school/create")
                 .contentType(contentType)
-                .session(session)
+                .cookie(allCookies)
                 .content(authJSON))
                 .andDo(print())
                 .andExpect(status().isCreated());
@@ -70,11 +68,11 @@ public class SchoolControllerTests {
 
     @Test
     public void getSchoolTest() throws Exception {
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", "existforkostyan@e.ru");
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getAdminCookie("existforkostyan@e.ru");
         this.mockMvc.perform(get("/school/")
                 .contentType(contentType)
-                .session(session))
+                .cookie(allCookies))
                 .andDo(print())
                 .andExpect(status().isOk());
     }

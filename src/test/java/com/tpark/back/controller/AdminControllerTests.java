@@ -15,11 +15,13 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.servlet.http.Cookie;
 import java.nio.charset.Charset;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
@@ -32,6 +34,7 @@ public class AdminControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
+
 
     private Gson gson = new Gson();
 
@@ -74,14 +77,16 @@ public class AdminControllerTests {
 
     @Test
     public void logoutOkTest() throws Exception {
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", "exist@e.ru");
+
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
         this.mockMvc.perform(post("/admin/logout")
                 .contentType(contentType)
-                .session(session))
+                .cookie(allCookies))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
+
 
     @Test
     public void changePasswordOkTest() throws Exception {
@@ -92,15 +97,17 @@ public class AdminControllerTests {
         ChangePassword changePassword = new ChangePassword();
         changePassword.setOldPassword("123");
         changePassword.setNewPassword("321");
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
         this.mockMvc.perform(post("/admin/change")
                 .contentType(contentType)
                 .content(gson.toJson(changePassword))
-                .session(session))
+                .cookie(allCookies))
                 .andDo(print())
                 .andExpect(status().isOk());
         this.mockMvc.perform(post("/admin/logout")
                 .contentType(contentType)
-                .session(session))
+                .cookie(allCookies))
                 .andDo(print())
                 .andExpect(status().isOk());
         user.setPassword("321");

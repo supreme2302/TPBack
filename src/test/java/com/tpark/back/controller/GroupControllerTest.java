@@ -9,12 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.servlet.http.Cookie;
 import java.nio.charset.Charset;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -42,33 +42,33 @@ public class GroupControllerTest {
 
     @Test
     public void getNoneGroupsTest() throws Exception {
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", "exist@e.ru");
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
         this.mockMvc.perform(get("/group/1")
                 .contentType(contentType)
-                .session(session))
+                .cookie(allCookies))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
 
     @Test
     public void getGroupTest() throws Exception {
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", "exist@e.ru");
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
         this.mockMvc.perform(get("/group/find/1")
                 .contentType(contentType)
-                .session(session))
+                .cookie(allCookies))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
 
     @Test
     public void getNoneGroupTest() throws Exception {
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", "exist@e.ru");
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
         this.mockMvc.perform(get("/group/find/100")
                 .contentType(contentType)
-                .session(session))
+                .cookie(allCookies))
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }
@@ -80,24 +80,24 @@ public class GroupControllerTest {
         group.setCourse_id(1);
         group.setCurr_unit(1);
         String authJSON = gson.toJson(group);
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", "exist@e.ru");
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
         this.mockMvc.perform(post("/group/create")
                 .contentType(contentType)
                 .content(authJSON)
-                .session(session))
+                .cookie(allCookies))
                 .andDo(print())
                 .andExpect(status().isCreated());
     }
 
     @Test
     public void deleteGroupTest() throws Exception {
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", "exist@e.ru");
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
         this.mockMvc.perform(post("/group/delete/")
                 .contentType(contentType)
                 .content("1")
-                .session(session))
+                .cookie(allCookies))
                 .andDo(print())
                 .andExpect(status().isOk());
     }

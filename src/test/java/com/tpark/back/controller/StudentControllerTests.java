@@ -2,10 +2,7 @@ package com.tpark.back.controller;
 
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.tpark.back.model.Admin;
-import com.tpark.back.model.LocalStorage;
 import com.tpark.back.model.Student;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,18 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.servlet.http.Cookie;
 import java.nio.charset.Charset;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -34,7 +30,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(value = {"/db/migration/test/test_session.sql",
         "/db/migration/test/V1__test-set-before.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-
 public class StudentControllerTests {
     @Autowired
     private MockMvc mockMvc;
@@ -47,10 +42,8 @@ public class StudentControllerTests {
 
     @Test
     public void createStudentTestOk() throws Exception {
-        Admin admin = new Admin();
-        admin.setEmail("exist@e.ru");
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", admin.getEmail());
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
         Student student = new Student();
         student.setName("test_name");
         student.setSurname("test_surname");
@@ -59,17 +52,15 @@ public class StudentControllerTests {
         this.mockMvc.perform(post("/student/create")
                 .contentType(contentType)
                 .content(gson.toJson(student))
-                .session(session))
+                .cookie(allCookies))
                 .andDo(print())
                 .andExpect(status().isCreated());
     }
 
     @Test
     public void authStudentTestOk() throws Exception {
-        Admin admin = new Admin();
-        admin.setEmail("exist@e.ru");
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", admin.getEmail());
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
         Student student = new Student();
         student.setName("test_name");
         student.setSurname("test_surname");
@@ -78,7 +69,7 @@ public class StudentControllerTests {
         String response = this.mockMvc.perform(post("/student/create")
                 .contentType(contentType)
                 .content(gson.toJson(student))
-                .session(session))
+                .cookie(allCookies))
                 .andDo(print())
                 .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
         Student element = gson.fromJson (response, Student.class);
@@ -93,14 +84,14 @@ public class StudentControllerTests {
 
     @Test
     public void authStudentTestForbidden() throws Exception {
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("student", "a@a.ru");
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getStudentCookie("a@a.ru");
         Student student = new Student();
         this.mockMvc.perform(post("/student/auth")
                 .contentType(contentType)
-                .session(session)
+                .cookie(allCookies)
                 .content(gson.toJson(student)))
-                .andDo(print()).andExpect(status().isForbidden());
+                .andDo(print()).andExpect(status().isNotFound());
     }
 
     @Test
@@ -117,8 +108,8 @@ public class StudentControllerTests {
     public void authStudentTestWrongCredentials() throws Exception {
         Admin admin = new Admin();
         admin.setEmail("exist@e.ru");
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", admin.getEmail());
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
         Student student = new Student();
         student.setName("test_name");
         student.setSurname("test_surname");
@@ -127,7 +118,7 @@ public class StudentControllerTests {
         this.mockMvc.perform(post("/student/create")
                 .contentType(contentType)
                 .content(gson.toJson(student))
-                .session(session))
+                .cookie(allCookies))
                 .andDo(print())
                 .andExpect(status().isCreated());
 

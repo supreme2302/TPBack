@@ -1,11 +1,10 @@
 package com.tpark.back.controller;
 
 
-
-import com.tpark.back.model.Course;
+import com.tpark.back.model.Task;
 import com.tpark.back.model.UserStatus;
 import com.tpark.back.service.AdminService;
-import com.tpark.back.service.CourseService;
+import com.tpark.back.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -15,23 +14,56 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 
-
 @RestController
-@RequestMapping("/course")
+@RequestMapping("/task")
 @CrossOrigin(origins = {"http://localhost:8080"}, allowCredentials = "true")
-public class CourseController {
+public class TaskController {
 
-    private final CourseService courseService;
+    private final TaskService taskService;
     private final AdminService adminService;
 
     @Autowired
-    public CourseController(CourseService courseService, AdminService adminService) {
-        this.courseService = courseService;
+    public TaskController(TaskService taskService, AdminService adminService) {
+        this.taskService = taskService;
         this.adminService = adminService;
     }
 
-    @GetMapping(path = "/{courseId}")
-    public ResponseEntity getCourse(HttpSession session,@PathVariable int courseID) {
+    @GetMapping(path = "/")
+    public ResponseEntity getAll(HttpSession session ) {
+        if (session.getAttribute("user") == null ) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(UserStatus.ACCESS_ERROR);
+        }
+        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(UserStatus.ACCESS_ERROR);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(taskService.getTasks(session.getAttribute("user").toString()));
+        //TODO: Промежуточная таблица для taskов
+
+    }
+
+    @GetMapping(path = "/{unitId}")
+    public ResponseEntity getTasks(HttpSession session, @PathVariable Integer unitId) {
+        if (session.getAttribute("user") == null ) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(UserStatus.ACCESS_ERROR);
+        }
+        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(UserStatus.ACCESS_ERROR);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(taskService.getTasksByUnit(unitId));
+        //TODO: Промежуточная таблица для taskов
+
+    }
+
+    @GetMapping(path = "/find/{taskId}")
+    public ResponseEntity getTask(HttpSession session,@PathVariable Integer taskId) {
         if (session.getAttribute("user") == null ) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -43,36 +75,15 @@ public class CourseController {
 
         try {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(courseService.getCourse(courseID));
-            //TODO: Запилить хранение параметров приложения в базке, и вместе с инфой по приложению кидать сюда json
+                    .body(taskService.getTask(taskId));
         } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(UserStatus.NOT_FOUND);
         }
     }
 
-    @GetMapping(path = "/")
-    public ResponseEntity getSchoolCourses(HttpSession session) {
-        if (session.getAttribute("user") == null ) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(UserStatus.ACCESS_ERROR);
-        }
-        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(UserStatus.ACCESS_ERROR);
-        }
-
-        try {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(courseService.getCoursesByAdmin(session.getAttribute("user").toString()));
-                   } catch (EmptyResultDataAccessException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(UserStatus.NOT_FOUND);
-        }
-    }
-
     @PostMapping(path = "/create")
-    public ResponseEntity create(HttpSession session, @RequestBody Course course) {
+    public ResponseEntity create(HttpSession session, @RequestBody Task task) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -82,7 +93,7 @@ public class CourseController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            courseService.createCourse(course);
+            taskService.createTask(task);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(UserStatus.SUCCESSFULLY_CREATED);
         } catch (DuplicateKeyException e) {
@@ -92,7 +103,7 @@ public class CourseController {
     }
 
     @PostMapping(path = "/change")
-    public ResponseEntity change(HttpSession session, @RequestBody Course course) {
+    public ResponseEntity change(HttpSession session, @RequestBody Task task) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -102,17 +113,17 @@ public class CourseController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            courseService.changeCourse(course);
+            taskService.changeTask(task);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(UserStatus.SUCCESSFULLY_CHANGED);
         } catch (DuplicateKeyException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(UserStatus.ALREADY_EXISTS);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(UserStatus.NOT_FOUND);
         }
     }
 
     @PostMapping(path = "/delete")
-    public ResponseEntity create(HttpSession session, @RequestBody Integer id) {
+    public ResponseEntity delete(HttpSession session, @RequestBody int id) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -122,13 +133,12 @@ public class CourseController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            courseService.deleteCourse(id);
+            taskService.deleteTask(id);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(UserStatus.SUCCESSFULLY_CHANGED);
         } catch (DuplicateKeyException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(UserStatus.ALREADY_EXISTS);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(UserStatus.NOT_FOUND);
         }
     }
-
 }

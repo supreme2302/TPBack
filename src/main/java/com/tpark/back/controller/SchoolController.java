@@ -43,8 +43,7 @@ public class SchoolController {
         try {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(schoolService.getSchoolByAdmin(session.getAttribute("user").toString()));
-            //TODO: Запилить хранение параметров приложения в базке, и вместе с инфой по приложению кидать сюда json
-        } catch (EmptyResultDataAccessException e) {
+                    } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(UserStatus.NOT_FOUND);
         }

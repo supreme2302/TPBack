@@ -16,6 +16,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.servlet.http.Cookie;
 import java.nio.charset.Charset;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -27,7 +28,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestPropertySource("/application-test.properties")
 @SpringBootTest
-@Sql(value = {"/db/migration/test/V1__test-set-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = {"/db/migration/test/test_session.sql",
+        "/db/migration/test/V1__test-set-before.sql"},
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class UnitControllerTest {
 
     @Autowired
@@ -41,33 +44,33 @@ public class UnitControllerTest {
 
     @Test
     public void getNoneUnitsTest() throws Exception {
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", "exist@e.ru");
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
         this.mockMvc.perform(get("/unit/1")
                 .contentType(contentType)
-                .session(session))
+                .cookie(allCookies))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
 
     @Test
     public void getUnitTest() throws Exception {
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", "exist@e.ru");
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
         this.mockMvc.perform(get("/unit/find/1")
                 .contentType(contentType)
-                .session(session))
+                .cookie(allCookies))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
 
     @Test
     public void getNoneUnitTest() throws Exception {
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", "exist@e.ru");
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
         this.mockMvc.perform(get("/unit/find/100")
                 .contentType(contentType)
-                .session(session))
+                .cookie(allCookies))
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }
@@ -79,24 +82,24 @@ public class UnitControllerTest {
         unit.setCourse_id(1);
         unit.setPosition(2);
         String authJSON = gson.toJson(unit);
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", "exist@e.ru");
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
         this.mockMvc.perform(post("/unit/create")
                 .contentType(contentType)
                 .content(authJSON)
-                .session(session))
+                .cookie(allCookies))
                 .andDo(print())
                 .andExpect(status().isCreated());
     }
 
     @Test
     public void deleteUnitTest() throws Exception {
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", "exist@e.ru");
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
         this.mockMvc.perform(post("/unit/delete/")
                 .contentType(contentType)
                 .content("1")
-                .session(session))
+                .cookie(allCookies))
                 .andDo(print())
                 .andExpect(status().isOk());
     }

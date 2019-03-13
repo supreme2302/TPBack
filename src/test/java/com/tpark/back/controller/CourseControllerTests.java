@@ -9,12 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.servlet.http.Cookie;
 import java.nio.charset.Charset;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -41,11 +41,11 @@ public class CourseControllerTests {
 
     @Test
     public void getCoursesTest() throws Exception {
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", "existforkostyan@e.ru");
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
         this.mockMvc.perform(get("/course/")
                 .contentType(contentType)
-                .session(session))
+                .cookie(allCookies))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -56,12 +56,12 @@ public class CourseControllerTests {
         course.setName("BES");
         course.setSchoolId(1);
         String authJSON = gson.toJson(course);
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", "existforkostyan@e.ru");
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getAdminCookie("existforkostyan@e.ru");
         this.mockMvc.perform(post("/course/create")
                 .contentType(contentType)
                 .content(authJSON)
-                .session(session))
+                .cookie(allCookies))
                 .andDo(print())
                 .andExpect(status().isCreated());
     }
@@ -70,12 +70,12 @@ public class CourseControllerTests {
     public void deleteCourseTest() throws Exception {
         //todo желательно проверить, что удаление действительно произошло
         String authJSON = "{id: 1}";
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", "existforkostyan@e.ru");
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getAdminCookie("existforkostyan@e.ru");
         this.mockMvc.perform(post("/course/delete")
                 .contentType(contentType)
                 .content("1")
-                .session(session))
+                .cookie(allCookies))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
