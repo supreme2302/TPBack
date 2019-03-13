@@ -69,5 +69,6 @@ INSERT INTO course (course_name, school_id) VALUES ('IELTS prep',1);
 INSERT INTO course (course_name, school_id) VALUES ('English for g...',2);
 INSERT INTO unit (unit_name, course_id,current_position) VALUES ('English for g...',2,1);
 INSERT INTO group_course (group_name, course_id, current_unit) VALUES ('HyperGroup',2,1);
+INSERT INTO student (email, first_name, last_name, password, school_id) VALUES ('student@mail.ru', 'Polkovnik', 'Shatilov',  '$2a$10$rXn4xiRPY45wJVi39KAm.eKElUDcBQI4b58sqiEjrTXaTFrRn5nOW',2);
 
 -- TODO: Сделать так, чтобы нельзя было создать group_course с юнитом из другого курса

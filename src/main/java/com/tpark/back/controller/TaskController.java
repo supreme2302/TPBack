@@ -4,6 +4,7 @@ package com.tpark.back.controller;
 import com.tpark.back.model.Task;
 import com.tpark.back.model.UserStatus;
 import com.tpark.back.service.AdminService;
+import com.tpark.back.service.StudentService;
 import com.tpark.back.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -21,20 +22,23 @@ public class TaskController {
 
     private final TaskService taskService;
     private final AdminService adminService;
+    private final StudentService studentService;
 
     @Autowired
-    public TaskController(TaskService taskService, AdminService adminService) {
+    public TaskController(TaskService taskService, AdminService adminService, StudentService studentService) {
         this.taskService = taskService;
         this.adminService = adminService;
+        this.studentService = studentService;
     }
 
     @GetMapping(path = "/")
     public ResponseEntity getAll(HttpSession session ) {
-        if (session.getAttribute("user") == null ) {
+        if (session.getAttribute("user") == null && session.getAttribute("student") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
         }
-        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null){
+        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null &&
+                studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null){
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(UserStatus.ACCESS_ERROR);
         }
@@ -47,11 +51,12 @@ public class TaskController {
 
     @GetMapping(path = "/{unitId}")
     public ResponseEntity getTasks(HttpSession session, @PathVariable Integer unitId) {
-        if (session.getAttribute("user") == null ) {
+        if (session.getAttribute("user") == null && session.getAttribute("student") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
         }
-        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null){
+        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null &&
+                studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null){
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(UserStatus.ACCESS_ERROR);
         }
@@ -64,11 +69,12 @@ public class TaskController {
 
     @GetMapping(path = "/find/{taskId}")
     public ResponseEntity getTask(HttpSession session,@PathVariable Integer taskId) {
-        if (session.getAttribute("user") == null ) {
+        if (session.getAttribute("user") == null && session.getAttribute("student") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
         }
-        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null){
+        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null &&
+                studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null){
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(UserStatus.ACCESS_ERROR);
         }

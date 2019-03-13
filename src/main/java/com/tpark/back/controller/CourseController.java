@@ -6,6 +6,7 @@ import com.tpark.back.model.Course;
 import com.tpark.back.model.UserStatus;
 import com.tpark.back.service.AdminService;
 import com.tpark.back.service.CourseService;
+import com.tpark.back.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -23,20 +24,23 @@ public class CourseController {
 
     private final CourseService courseService;
     private final AdminService adminService;
+    private final StudentService studentService;
 
     @Autowired
-    public CourseController(CourseService courseService, AdminService adminService) {
+    public CourseController(CourseService courseService, AdminService adminService, StudentService studentService) {
         this.courseService = courseService;
         this.adminService = adminService;
+        this.studentService = studentService;
     }
 
     @GetMapping(path = "/{courseId}")
     public ResponseEntity getCourse(HttpSession session,@PathVariable int courseID) {
-        if (session.getAttribute("user") == null ) {
+        if (session.getAttribute("user") == null && session.getAttribute("student") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
         }
-        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null){
+        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null &&
+                studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null){
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(UserStatus.ACCESS_ERROR);
         }
@@ -53,15 +57,15 @@ public class CourseController {
 
     @GetMapping(path = "/")
     public ResponseEntity getSchoolCourses(HttpSession session) {
-        if (session.getAttribute("user") == null ) {
+        if (session.getAttribute("user") == null && session.getAttribute("student") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
         }
-        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null){
+        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null &&
+                studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null){
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(UserStatus.ACCESS_ERROR);
         }
-
         try {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(courseService.getCoursesByAdmin(session.getAttribute("user").toString()));

@@ -20,20 +20,23 @@ public class UnitController {
 
     private final UnitServiceImpl unitService;
     private final AdminService adminService;
+    private final StudentService studentService;
 
     @Autowired
-    public UnitController(UnitServiceImpl unitService, AdminService adminService) {
+    public UnitController(UnitServiceImpl unitService, AdminService adminService, StudentService studentService) {
         this.unitService = unitService;
         this.adminService = adminService;
+        this.studentService = studentService;
     }
 
     @GetMapping(path = "/{courseId}")
     public ResponseEntity getGroups(HttpSession session, @PathVariable Integer courseId) {
-        if (session.getAttribute("user") == null ) {
+        if (session.getAttribute("user") == null && session.getAttribute("student") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
         }
-        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null){
+        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null &&
+                studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null){
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(UserStatus.ACCESS_ERROR);
         }
@@ -45,11 +48,12 @@ public class UnitController {
 
     @GetMapping(path = "/find/{unitId}")
     public ResponseEntity getGroup(HttpSession session,@PathVariable Integer unitId) {
-        if (session.getAttribute("user") == null ) {
+        if (session.getAttribute("user") == null && session.getAttribute("student") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
         }
-        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null){
+        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null &&
+                studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null){
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(UserStatus.ACCESS_ERROR);
         }
