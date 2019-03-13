@@ -1,0 +1,1 @@
+ALTER TABLE unit ADD COLUMN unit_name citext;

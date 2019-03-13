@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS group_course (
   id SERIAL NOT NULL PRIMARY KEY,
   group_name VARCHAR (255),
   course_id INTEGER REFERENCES course(id),
-  current_unit INTEGER REFERENCES unit(current_position)
+  current_unit INTEGER NULL REFERENCES unit(current_position)
 );
 
 
@@ -66,4 +66,6 @@ INSERT INTO course (id,course_name, school_id) VALUES (1,'TOEFL prep',1);
 INSERT INTO course (course_name, school_id) VALUES ('IELTS prep',1);
 INSERT INTO course (course_name, school_id) VALUES ('English for g...',2);
 INSERT INTO unit (unit_name, course_id,current_position) VALUES ('English for g...',2,1);
-INSERT INTO group_course (group_name, course_id, current_unit) VALUES ('HyperGroup',1,1);
+INSERT INTO group_course (group_name, course_id, current_unit) VALUES ('HyperGroup',2,1);
+
+-- TODO: Сделать так, чтобы нельзя было создать group_course с юнитом из другого курса
