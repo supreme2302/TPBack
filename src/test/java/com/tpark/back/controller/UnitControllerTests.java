@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(value = {"/db/migration/test/test_session.sql",
         "/db/migration/test/V1__test-set-before.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class UnitControllerTest {
+public class UnitControllerTests {
 
     @Autowired
     private MockMvc mockMvc;

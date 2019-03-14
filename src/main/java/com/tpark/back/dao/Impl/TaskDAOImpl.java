@@ -40,23 +40,26 @@ public class TaskDAOImpl implements TaskDAO {
 
     @Override
     public void createTask(Task task) {
-        final String sql = "INSERT INTO task(description, task_ref, task_type) VALUES (?, ?, ?);";
+        final String sql = "INSERT INTO task (description, task_ref, task_type) VALUES (?, ?, ?);";
         jdbc.update(sql, task.getDescription(), task.getTask_ref(), task.getTask_type());
     }
 
     @Override
     public Task getTask(Integer taskId) {
-        return null;
+        final String sql = "SELECT * FROM task WHERE id = ? LIMIT 1;";
+        return jdbc.queryForObject(sql, taskMapper, taskId);
     }
 
     @Override
     public List<Task> getTasksByUnit(Integer unitId) {
-        return null;
+        final String sql = "SELECT * FROM task WHERE unit_id = ?;";
+        return jdbc.query(sql, taskMapper, unitId);
     }
 
     @Override
     public List<Task> getAllTasks(String admin) {
-        return null;
+        final String sql = "SELECT * FROM task;";
+        return jdbc.query(sql, taskMapper);
     }
 
     private static final class TaskMapper implements RowMapper<Task> {
