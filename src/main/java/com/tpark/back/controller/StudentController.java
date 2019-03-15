@@ -73,7 +73,8 @@ public class StudentController {
         }
 
         sessionAuth(session, student.getEmail());
-        return ResponseEntity.ok(student);
+        studentFromDb.setPassword("fuck you");
+        return ResponseEntity.ok(studentFromDb);
     }
 
     private void sessionAuth(HttpSession session, String email) {
