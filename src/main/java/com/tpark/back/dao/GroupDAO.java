@@ -14,4 +14,8 @@ public interface GroupDAO {
     Group getGroup(int groupID);
 
     List<Group> getGroupsByCourse(int courseID);
+
+    List<Group> getGroupsForAdmin(String user);
+
+    List<Group> getGroupsForStudent(String student);
 }

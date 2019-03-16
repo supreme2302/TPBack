@@ -56,6 +56,39 @@ public class GroupDAOImpl implements GroupDAO {
 
     }
 
+    @Override
+    public List<Group> getGroupsForAdmin(String user) {
+        final String sql = "SELECT * FROM group_course JOIN " +
+                "(course JOIN (SELECT school_id, email FROM admin) AS t ON t.school_id = course.school_id AND lower(t.email) = lower(?)) AS corse" +
+                " ON corse.id = group_course.course_id;";
+        return jdbc.query(sql, groupMapper,user);
+    }
+
+    @Override
+    public List<Group> getGroupsForStudent(String student) {
+        final String sql = "SELECT * FROM group_course JOIN " +
+                "(student JOIN student_group ON student.id = student_group.student_id " +
+                "AND  student.email = ?) AS gr_r " +
+                "ON group_course.id = gr_r.group_id;";
+        return jdbc.query(sql, groupMapper, student);
+    }
+
+    public Group getGroupByStudent(Integer courseId, String student) {
+        final String sql = "SELECT * FROM group_course  JOIN " +
+                "(student JOIN student_group " +
+                "ON student.id = student_group.student_id AND  lower(student.email) = lower(?)) AS gr_id " +
+                "ON gr_id.group_id = group_course.id AND  group_course = (?) LIMIT 1;";
+        return jdbc.queryForObject(sql, groupMapper,student, courseId);
+    }
+
+    public Group getGroupForStudent(String student, Integer id) {
+        final String sql = "SELECT * FROM group_course JOIN " +
+                "(student JOIN student_group ON student.id = student_group.student_id " +
+                "AND  student.email = ?) AS gr_r " +
+                "ON group_course.id = ? AND group_course.id = gr_r.group_id LIMIT 1;";
+        return jdbc.queryForObject(sql, groupMapper, student, id);
+    }
+
     public static class GroupMapper implements RowMapper<Group> {
         @Override
         public Group mapRow(ResultSet resultSet, int rowNum) throws SQLException {

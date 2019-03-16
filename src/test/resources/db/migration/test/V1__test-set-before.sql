@@ -88,6 +88,6 @@ INSERT INTO group_course (group_name, course_id, current_unit) VALUES ('HyperGro
 INSERT INTO student (email, first_name, last_name, password, school_id) VALUES ('student@mail.ru', 'Polkovnik', 'Shatilov',  '$2a$10$rXn4xiRPY45wJVi39KAm.eKElUDcBQI4b58sqiEjrTXaTFrRn5nOW',2);
 INSERT INTO task_type (type_value, type_name) VALUES (1, 'Test na muzhika');
 INSERT INTO task (task_type, unit_id, task_ref,description) VALUES (1,1, 'Test na muzhika', 'Test nachala');
-
+INSERT INTO student_group (group_id, student_id) VALUES (1,1);
 
 -- TODO: Сделать так, чтобы нельзя было создать group_course с юнитом из другого курса

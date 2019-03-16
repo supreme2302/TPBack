@@ -54,6 +54,10 @@ public class StudentController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(UserStatus.ALREADY_AUTHENTICATED);
         }
+        Object adminSession = session.getAttribute("user");
+        if (adminSession != null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(UserStatus.ALREADY_AUTHENTICATED);
+        }
 
         Student studentFromDb = studentService.getStudentByEmailWithoutGroupId(student.getEmail());
 

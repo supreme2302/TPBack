@@ -34,19 +34,21 @@ public class SchoolController {
 
     @GetMapping(path = "/")
     public ResponseEntity getSchool(HttpSession session) {
-        if (session.getAttribute("user") == null && session.getAttribute("student") == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(UserStatus.ACCESS_ERROR);
-        }
-        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null &&
-                studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(UserStatus.ACCESS_ERROR);
+        if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {
+            if(session.getAttribute("student") == null || studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(UserStatus.ACCESS_ERROR);
+            }
         }
 
         try {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(schoolService.getSchoolByAdmin(session.getAttribute("user").toString()));
+            if(session.getAttribute("user") != null) {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(schoolService.getSchoolByAdmin(session.getAttribute("user").toString()));
+            } else {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(schoolService.getSchoolByStudent(session.getAttribute("student").toString()));
+            }
                     } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(UserStatus.NOT_FOUND);

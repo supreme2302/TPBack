@@ -32,6 +32,12 @@ public class SchoolDAOImpl implements SchoolDAO {
         return jdbc.queryForObject(sql, schoolMapper, admin);
     }
 
+    @Override
+    public School getSchoolByStudent(String student) {
+        final String sql = "SELECT * FROM school JOIN student ON student.school_id = school.id AND lower(student.email) = lower(?); ";
+        return jdbc.queryForObject(sql, schoolMapper, student);
+    }
+
     private final static class SchoolMapper implements RowMapper<School> {
         @Override
         public School mapRow(ResultSet rs, int rowNum) throws SQLException {

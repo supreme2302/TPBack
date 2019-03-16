@@ -31,38 +31,59 @@ public class GroupController {
         this.studentService = studentService;
     }
 
-    @GetMapping(path = "/{courseId}")
+
+    @GetMapping(path = "/")
+    public ResponseEntity getAllGroups(HttpSession session,@PathVariable Integer courseId) {
+        if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {
+            if(session.getAttribute("student") == null || studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(UserStatus.ACCESS_ERROR);
+            }
+        }
+        if(session.getAttribute("user") != null) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(groupService.getGroupsForAdmin(session.getAttribute("user").toString()));
+        } else {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(groupService.getGroupsForStudent(session.getAttribute("student").toString()));
+        }
+    }
+
+
+    @GetMapping(path = "/course/{courseId}")
     public ResponseEntity getGroups(HttpSession session,@PathVariable Integer courseId) {
-        if (session.getAttribute("user") == null && session.getAttribute("student") == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(UserStatus.ACCESS_ERROR);
+        if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {
+            if(session.getAttribute("student") == null || studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(UserStatus.ACCESS_ERROR);
+            }
         }
-        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null &&
-                studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(UserStatus.ACCESS_ERROR);
+        if(session.getAttribute("user") != null) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(groupService.getGroupsByCourse(courseId));
+        } else {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(groupService.getGroupByCourseForStudent(courseId,session.getAttribute("student").toString()));
         }
-
-        return ResponseEntity.status(HttpStatus.OK)
-               .body(groupService.getGroupsByCourse(courseId));
-
     }
 
     @GetMapping(path = "/find/{groupId}")
     public ResponseEntity getGroup(HttpSession session,@PathVariable Integer groupId) {
-        if (session.getAttribute("user") == null && session.getAttribute("student") == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(UserStatus.ACCESS_ERROR);
-        }
-        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null &&
-                studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(UserStatus.ACCESS_ERROR);
+        if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {
+            if(session.getAttribute("student") == null || studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(UserStatus.ACCESS_ERROR);
+            }
         }
 
         try {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(groupService.getGroup(groupId));
+            if(session.getAttribute("user") != null) {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(groupService.getGroup(groupId));
+            } else {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(groupService.getGroupForStudent(session.getAttribute("student").toString(),groupId));
+            }
         } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(UserStatus.NOT_FOUND);

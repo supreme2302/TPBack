@@ -44,7 +44,7 @@ public class GroupControllerTest {
     public void getNoneGroupsTest() throws Exception {
         CookieAssistant assistant= new CookieAssistant(mockMvc);
         Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
-        this.mockMvc.perform(get("/group/1")
+        this.mockMvc.perform(get("/group/course/1")
                 .contentType(contentType)
                 .cookie(allCookies))
                 .andDo(print())
@@ -55,6 +55,28 @@ public class GroupControllerTest {
     public void getGroupTest() throws Exception {
         CookieAssistant assistant= new CookieAssistant(mockMvc);
         Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
+        this.mockMvc.perform(get("/group/find/1")
+                .contentType(contentType)
+                .cookie(allCookies))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getGroupsStudentTest() throws Exception {
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getStudentCookie("student@mail.ru");
+        this.mockMvc.perform(get("/group/")
+                .contentType(contentType)
+                .cookie(allCookies))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getGroupStudentTest() throws Exception {
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getStudentCookie("student@mail.ru");
         this.mockMvc.perform(get("/group/find/1")
                 .contentType(contentType)
                 .cookie(allCookies))
