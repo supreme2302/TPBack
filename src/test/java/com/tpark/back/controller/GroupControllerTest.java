@@ -44,7 +44,7 @@ public class GroupControllerTest {
     public void getNoneGroupsTest() throws Exception {
         CookieAssistant assistant= new CookieAssistant(mockMvc);
         Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
-        this.mockMvc.perform(get("/group/course/1")
+        this.mockMvc.perform(get("/group/1")
                 .contentType(contentType)
                 .cookie(allCookies))
                 .andDo(print())

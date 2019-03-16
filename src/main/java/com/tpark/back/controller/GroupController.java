@@ -33,7 +33,7 @@ public class GroupController {
 
 
     @GetMapping(path = "/")
-    public ResponseEntity getAllGroups(HttpSession session,@PathVariable Integer courseId) {
+    public ResponseEntity getAllGroups(HttpSession session) {
         if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {
             if(session.getAttribute("student") == null || studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -50,7 +50,7 @@ public class GroupController {
     }
 
 
-    @GetMapping(path = "/course/{courseId}")
+    @GetMapping(path = "/{courseId}")
     public ResponseEntity getGroups(HttpSession session,@PathVariable Integer courseId) {
         if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {
             if(session.getAttribute("student") == null || studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null) {
