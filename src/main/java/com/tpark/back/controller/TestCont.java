@@ -62,16 +62,15 @@ public class TestCont {
         }
 
 
-        String email = sessionAttribute.toString();
-
-        Admin user = adminService.getAdminByEmail(email);
-
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(com.tpark.back.model.UserStatus.NOT_FOUND);
-        } else {
-            return ResponseEntity.status(HttpStatus.OK).body(user);
+        try {
+            adminService.addAdmin(auth);
+        } catch (DuplicateKeyException error) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body((UserStatus.NOT_UNIQUE_USERNAME_OR_EMAIL));
         }
+        sessionAuth(session, auth);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body((UserStatus.SUCCESSFULLY_REGISTERED));
     }
 
 
