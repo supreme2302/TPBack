@@ -34,19 +34,20 @@ public class CourseController {
 
     @GetMapping(path = "/{courseId}")
     public ResponseEntity getCourse(HttpSession session,@PathVariable int courseID) {
-        if (session.getAttribute("user") == null && session.getAttribute("student") == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(UserStatus.ACCESS_ERROR);
+        if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {
+            if(session.getAttribute("student") == null || studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(UserStatus.ACCESS_ERROR);
+            }
         }
-        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null &&
-                studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(UserStatus.ACCESS_ERROR);
-        }
-
         try {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(courseService.getCourse(courseID));
+            if (session.getAttribute("user") != null) {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(courseService.getCourse(courseID,session.getAttribute("user").toString()));
+            }   else {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(courseService.getStudentCourse(courseID,session.getAttribute("student").toString()));
+            }
             //TODO: Запилить хранение параметров приложения в базке, и вместе с инфой по приложению кидать сюда json
         } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -56,18 +57,20 @@ public class CourseController {
 
     @GetMapping(path = "/")
     public ResponseEntity getSchoolCourses(HttpSession session) {
-        if (session.getAttribute("user") == null && session.getAttribute("student") == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(UserStatus.ACCESS_ERROR);
-        }
-        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null &&
-                studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(UserStatus.ACCESS_ERROR);
+        if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {
+            if(session.getAttribute("student") == null || studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(UserStatus.ACCESS_ERROR);
+            }
         }
         try {
+            if(session.getAttribute("user") != null){
             return ResponseEntity.status(HttpStatus.OK)
                     .body(courseService.getCoursesByAdmin(session.getAttribute("user").toString()));
+            }  else {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(courseService.getCoursesByStudent(session.getAttribute("student").toString()));
+            }
                    } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(UserStatus.NOT_FOUND);

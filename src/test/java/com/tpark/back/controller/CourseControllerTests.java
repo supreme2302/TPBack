@@ -40,9 +40,20 @@ public class CourseControllerTests {
             Charset.forName("utf8"));
 
     @Test
-    public void getCoursesTest() throws Exception {
+    public void getCoursesTestAdmin() throws Exception {
         CookieAssistant assistant= new CookieAssistant(mockMvc);
         Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
+        this.mockMvc.perform(get("/course/")
+                .contentType(contentType)
+                .cookie(allCookies))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getCoursesTestStudent() throws Exception {
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getStudentCookie("student@mail.ru");
         this.mockMvc.perform(get("/course/")
                 .contentType(contentType)
                 .cookie(allCookies))

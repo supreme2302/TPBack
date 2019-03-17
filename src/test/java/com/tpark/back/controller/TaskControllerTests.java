@@ -2,7 +2,8 @@ package com.tpark.back.controller;
 
 
 import com.google.gson.Gson;
-import com.tpark.back.model.Group;
+import com.tpark.back.model.Student;
+import com.tpark.back.model.Task;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(value = {"/db/migration/test/test_session.sql",
         "/db/migration/test/V1__test-set-before.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class GroupControllerTest {
+public class TaskControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -41,21 +42,26 @@ public class GroupControllerTest {
             Charset.forName("utf8"));
 
     @Test
-    public void getNoneGroupsTest() throws Exception {
+    public void createTaskOk() throws Exception {
         CookieAssistant assistant= new CookieAssistant(mockMvc);
         Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
-        this.mockMvc.perform(get("/group/1")
+        Task task = new Task();
+        task.setDescription("test_name");
+        task.setTask_ref("test_surname");
+        task.setTask_type(1);
+        this.mockMvc.perform(post("/task/create")
                 .contentType(contentType)
+                .content(gson.toJson(task))
                 .cookie(allCookies))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
     }
 
     @Test
-    public void getGroupTest() throws Exception {
+    public void getNoneTasksTest() throws Exception {
         CookieAssistant assistant= new CookieAssistant(mockMvc);
         Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
-        this.mockMvc.perform(get("/group/find/1")
+        this.mockMvc.perform(get("/task/1")
                 .contentType(contentType)
                 .cookie(allCookies))
                 .andDo(print())
@@ -63,32 +69,21 @@ public class GroupControllerTest {
     }
 
     @Test
-    public void getGroupsStudentTest() throws Exception {
-        CookieAssistant assistant= new CookieAssistant(mockMvc);
-        Cookie[] allCookies = assistant.getStudentCookie("student@mail.ru");
-        this.mockMvc.perform(get("/group/")
-                .contentType(contentType)
-                .cookie(allCookies))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void getGroupStudentTest() throws Exception {
-        CookieAssistant assistant= new CookieAssistant(mockMvc);
-        Cookie[] allCookies = assistant.getStudentCookie("student@mail.ru");
-        this.mockMvc.perform(get("/group/find/1")
-                .contentType(contentType)
-                .cookie(allCookies))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void getNoneGroupTest() throws Exception {
+    public void getTaskTest() throws Exception {
         CookieAssistant assistant= new CookieAssistant(mockMvc);
         Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
-        this.mockMvc.perform(get("/group/find/100")
+        this.mockMvc.perform(get("/task/find/1")
+                .contentType(contentType)
+                .cookie(allCookies))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getNoneTaskTest() throws Exception {
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
+        this.mockMvc.perform(get("/task/find/100")
                 .contentType(contentType)
                 .cookie(allCookies))
                 .andDo(print())
@@ -96,27 +91,10 @@ public class GroupControllerTest {
     }
 
     @Test
-    public void createGroupTest() throws Exception {
-        Group group = new Group();
-        group.setName("Fuckji");
-        group.setCourse_id(1);
-        group.setCurr_unit(1);
-        String authJSON = gson.toJson(group);
+    public void deleteTaskTest() throws Exception {
         CookieAssistant assistant= new CookieAssistant(mockMvc);
         Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
-        this.mockMvc.perform(post("/group/create")
-                .contentType(contentType)
-                .content(authJSON)
-                .cookie(allCookies))
-                .andDo(print())
-                .andExpect(status().isCreated());
-    }
-
-    @Test
-    public void deleteGroupTest() throws Exception {
-        CookieAssistant assistant= new CookieAssistant(mockMvc);
-        Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
-        this.mockMvc.perform(post("/group/delete/")
+        this.mockMvc.perform(post("/task/delete/")
                 .contentType(contentType)
                 .content("1")
                 .cookie(allCookies))

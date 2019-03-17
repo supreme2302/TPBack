@@ -55,6 +55,22 @@ CREATE TABLE IF NOT EXISTS student_group (
   student_id INTEGER REFERENCES student(id)
 );
 
+CREATE TABLE IF NOT EXISTS task_type (
+                                       id SERIAl NOT NULL PRIMARY KEY ,
+                                       type_value INTEGER NOT NULL ,
+                                       type_name VARCHAR (255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS task (
+  id SERIAL NOT NULL PRIMARY KEY ,
+  task_type INTEGER NOT NULL REFERENCES task_type(id),
+  unit_id INTEGER REFERENCES unit(id),
+  task_ref VARCHAR (255) NOT NULL,
+  description VARCHAR(255)
+);
+
+
+
 CREATE UNIQUE INDEX IF NOT EXISTS courseIx ON course(course_name, school_id);
 CREATE UNIQUE INDEX IF NOT EXISTS unitIx ON unit(current_position, course_id);
 CREATE UNIQUE INDEX IF NOT EXISTS group_courseIx ON group_course(group_name, course_id);
@@ -70,5 +86,8 @@ INSERT INTO course (course_name, school_id) VALUES ('English for g...',2);
 INSERT INTO unit (unit_name, course_id,current_position) VALUES ('English for g...',2,1);
 INSERT INTO group_course (group_name, course_id, current_unit) VALUES ('HyperGroup',2,1);
 INSERT INTO student (email, first_name, last_name, password, school_id) VALUES ('student@mail.ru', 'Polkovnik', 'Shatilov',  '$2a$10$rXn4xiRPY45wJVi39KAm.eKElUDcBQI4b58sqiEjrTXaTFrRn5nOW',2);
+INSERT INTO task_type (type_value, type_name) VALUES (1, 'Test na muzhika');
+INSERT INTO task (task_type, unit_id, task_ref,description) VALUES (1,1, 'Test na muzhika', 'Test nachala');
+INSERT INTO student_group (group_id, student_id) VALUES (1,1);
 
 -- TODO: Сделать так, чтобы нельзя было создать group_course с юнитом из другого курса

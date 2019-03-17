@@ -31,36 +31,38 @@ public class UnitController {
 
     @GetMapping(path = "/{courseId}")
     public ResponseEntity getGroups(HttpSession session, @PathVariable Integer courseId) {
-        if (session.getAttribute("user") == null && session.getAttribute("student") == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(UserStatus.ACCESS_ERROR);
+        if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {
+            if(session.getAttribute("student") == null || studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(UserStatus.ACCESS_ERROR);
+            }
         }
-        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null &&
-                studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(UserStatus.ACCESS_ERROR);
+        if(session.getAttribute("user") != null) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(unitService.getUnitsByCourse(courseId));
+        } else {
+            return null;
         }
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(unitService.getUnitsByCourse(courseId));
 
     }
 
     @GetMapping(path = "/find/{unitId}")
     public ResponseEntity getGroup(HttpSession session,@PathVariable Integer unitId) {
-        if (session.getAttribute("user") == null && session.getAttribute("student") == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(UserStatus.ACCESS_ERROR);
-        }
-        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null &&
-                studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(UserStatus.ACCESS_ERROR);
+        if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {
+            if(session.getAttribute("student") == null || studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(UserStatus.ACCESS_ERROR);
+            }
         }
 
         try {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(unitService.getUnit(unitId));
+            if(session.getAttribute("user") != null) {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(unitService.getUnit(unitId));
+            } else {
+                return null;
+
+            }
         } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(UserStatus.NOT_FOUND);

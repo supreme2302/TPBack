@@ -53,6 +53,10 @@ public class StudentController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(UserStatus.ALREADY_AUTHENTICATED);
         }
+        Object adminSession = session.getAttribute("user");
+        if (adminSession != null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(UserStatus.ALREADY_AUTHENTICATED);
+        }
 
         Student studentFromDb = studentService.getStudentByEmailWithoutGroupId(student.getEmail());
 
@@ -72,7 +76,8 @@ public class StudentController {
         }
 
         sessionAuth(session, student.getEmail());
-        return ResponseEntity.ok(student);
+        studentFromDb.setPassword("fuck you");
+        return ResponseEntity.ok(studentFromDb);
     }
 
     private void sessionAuth(HttpSession session, String email) {

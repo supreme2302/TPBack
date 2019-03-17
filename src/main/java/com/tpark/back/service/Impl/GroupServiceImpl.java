@@ -43,4 +43,24 @@ public class GroupServiceImpl implements GroupService {
     public void deleteGroup(int id){
         groupDAO.deleteGroup(id);
     }
+
+    @Override
+    public Group getGroupByCourseForStudent(Integer courseId, String student) {
+        return groupDAO.getGroupByStudent(courseId, student);
+    }
+
+    @Override
+    public Object getGroupForStudent(String student, Integer id) {
+        return groupDAO.getGroupForStudent(student,id );
+    }
+
+    @Override
+    public Object getGroupsForAdmin(String user) {
+        return groupDAO.getGroupsForAdmin(user);
+    }
+
+    @Override
+    public Object getGroupsForStudent(String student) {
+        return groupDAO.getGroupsForStudent(student);
+    }
 }

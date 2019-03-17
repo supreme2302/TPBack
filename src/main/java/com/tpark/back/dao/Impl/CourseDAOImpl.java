@@ -45,16 +45,37 @@ public class CourseDAOImpl implements CourseDAO {
     }
 
     @Override
-    public Course getCourse(int id){
-        final String sql = "SELECT * FROM course WHERE id=? LIMIT 1;";
-        return jdbc.queryForObject(sql, courseMapper, id);
+    public Course getCourse(int id, String admin){
+        final String sql = "SELECT * FROM course JOIN admin ON course.id=? AND lower(admin.email) = lower(?) LIMIT 1;";
+        return jdbc.queryForObject(sql, courseMapper, id, admin);
     }
 
     @Override
     public void changeCourse(Course course){
         final String sql = "UPDATE course SET course_name = ? WHERE id = ?;";
         jdbc.update(sql,course.getName(), course.getId());
-    };
+    }
+
+    @Override
+    public Course getStudentCourse(Integer courseID, String student) {
+        final String sql = "SELECT * FROM course JOIN ((student JOIN student_group ON " +
+                "student.id = student_group.student_id AND lower(student.email) = lower(?))" +
+                " AS connecti JOIN group_course ON group_course.id = connecti.group_id) AS res" +
+                " ON course.id = res.course_id AND course.id = ? LIMIT 1;";
+        return jdbc.queryForObject(sql, courseMapper, student, courseID);
+    }
+
+    @Override
+    public List<Course> getCoursesByStudent(String student) {
+        final String sql = "SELECT * FROM course JOIN ((SELECT group_id FROM student JOIN student_group ON\n" +
+                "                student.id = student_group.student_id AND lower(student.email) = lower(?))\n" +
+                "                AS connecti JOIN group_course ON group_course.id = connecti.group_id) AS res\n" +
+                "                 ON course.id = res.course_id;\n";
+        return jdbc.query(sql, courseMapper, student);
+
+    }
+
+    ;
 
     public static class CourseMapper implements RowMapper<Course> {
         @Override
@@ -67,5 +88,8 @@ public class CourseDAOImpl implements CourseDAO {
         }
     }
 }
+
+
+
 
 

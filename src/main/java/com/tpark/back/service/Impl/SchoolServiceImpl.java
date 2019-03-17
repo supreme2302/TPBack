@@ -26,4 +26,9 @@ public class SchoolServiceImpl implements SchoolService {
     public School getSchoolByAdmin(String email) {
         return schoolDAO.getSchoolByAdmin(email);
     }
+
+    @Override
+    public School getSchoolByStudent(String student) {
+        return schoolDAO.getSchoolByStudent(student);
+    }
 }

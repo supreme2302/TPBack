@@ -32,14 +32,11 @@ public class TaskController {
 
     @GetMapping(path = "/")
     public ResponseEntity getAll(HttpSession session ) {
-        if (session.getAttribute("user") == null && session.getAttribute("student") == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(UserStatus.ACCESS_ERROR);
-        }
-        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null &&
-                studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(UserStatus.ACCESS_ERROR);
+        if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {
+            if(session.getAttribute("student") == null || studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(UserStatus.ACCESS_ERROR);
+            }
         }
 
         return ResponseEntity.status(HttpStatus.OK)
@@ -60,27 +57,32 @@ public class TaskController {
                     .body(UserStatus.ACCESS_ERROR);
         }
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(taskService.getTasksByUnit(unitId));
-        //TODO: Промежуточная таблица для taskов
+        if(session.getAttribute("user") != null) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(taskService.getTasksByUnit(unitId));
+        } else {
+            return null;
+        }
 
     }
 
     @GetMapping(path = "/find/{taskId}")
     public ResponseEntity getTask(HttpSession session,@PathVariable Integer taskId) {
-        if (session.getAttribute("user") == null && session.getAttribute("student") == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(UserStatus.ACCESS_ERROR);
-        }
-        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null &&
-                studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(UserStatus.ACCESS_ERROR);
+        if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {
+            if(session.getAttribute("student") == null || studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(UserStatus.ACCESS_ERROR);
+            }
         }
 
         try {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(taskService.getTask(taskId));
+            if(session.getAttribute("user") != null) {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(taskService.getTask(taskId));
+            } else {
+                return null;
+
+            }
         } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(UserStatus.NOT_FOUND);

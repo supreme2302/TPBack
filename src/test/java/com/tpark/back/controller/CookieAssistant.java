@@ -32,11 +32,11 @@ public class CookieAssistant {
             Charset.forName("utf8"));
 
 
-    public CookieAssistant(MockMvc mock){
+    CookieAssistant(MockMvc mock){
         this.mockMvc = mock;
     }
 
-    public Cookie[] getAdminCookie(String email) throws Exception {
+    Cookie[] getAdminCookie(String email) throws Exception {
         Admin user = new Admin();
         user.setEmail(email);
         user.setPassword("123");
@@ -49,7 +49,7 @@ public class CookieAssistant {
         return cook;
     }
 
-    public Cookie[] getStudentCookie(String email) throws Exception {
+    Cookie[] getStudentCookie(String email) throws Exception {
         Student user = new Student();
         user.setEmail(email);
         user.setPassword("123");

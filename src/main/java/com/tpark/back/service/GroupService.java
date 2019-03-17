@@ -13,4 +13,11 @@ public interface GroupService {
     void deleteGroup( int id);
 
 
+    Group getGroupByCourseForStudent(Integer courseId, String student);
+
+    Object getGroupForStudent(String student, Integer id);
+
+    Object getGroupsForAdmin(String user);
+
+    Object getGroupsForStudent(String student);
 }
