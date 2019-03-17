@@ -31,7 +31,7 @@ public class AdminController {
     @GetMapping(path = "/info")
     public ResponseEntity getUser(HttpSession session) {
 
-        logger.info("info");
+        logger.info("info session - ", session.getId());
 
         Object sessionAttribute = session.getAttribute("user");
         if (sessionAttribute == null) {
@@ -54,7 +54,7 @@ public class AdminController {
     @PostMapping(path = "/register")
     public ResponseEntity register(HttpSession session, @RequestBody Admin user) {
 
-        logger.info("register");
+        logger.info("register session - ", session.getId());
 
         if (session.getAttribute("user") != null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
