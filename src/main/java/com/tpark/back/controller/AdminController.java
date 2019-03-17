@@ -29,6 +29,8 @@ public class AdminController {
     @GetMapping(path = "/info")
     public ResponseEntity getUser(HttpSession session) {
 
+        logger.info("info");
+
         Object sessionAttribute = session.getAttribute("user");
         if (sessionAttribute == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -49,12 +51,13 @@ public class AdminController {
 
     @PostMapping(path = "/register")
     public ResponseEntity register(HttpSession session, @RequestBody Admin user) {
+
+        logger.info("register");
+
         if (session.getAttribute("user") != null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(UserStatus.ALREADY_AUTHENTICATED);
         }
-
-        logger.info("register");
 
         if (user.getEmail() == null || user.getPassword() == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
