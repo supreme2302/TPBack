@@ -17,7 +17,6 @@ import javax.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/task")
-@CrossOrigin(origins = {"http://localhost:8080"}, allowCredentials = "true")
 public class TaskController {
 
     private final TaskService taskService;

@@ -19,7 +19,6 @@ import javax.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/course")
-@CrossOrigin(origins = {"http://localhost:8080"}, allowCredentials = "true")
 public class CourseController {
 
     private final CourseService courseService;

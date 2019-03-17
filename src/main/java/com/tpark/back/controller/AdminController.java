@@ -16,7 +16,6 @@ import javax.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/admin")
-@CrossOrigin(origins = {"http://localhost:8080"}, allowCredentials = "true")
 public class AdminController {
 
     private final AdminService adminService;
