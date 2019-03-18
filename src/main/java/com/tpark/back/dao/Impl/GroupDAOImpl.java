@@ -17,42 +17,51 @@ public class GroupDAOImpl implements GroupDAO {
 
     private final JdbcTemplate jdbc;
     private final static GroupMapper groupMapper = new GroupMapper();
+    private final SchoolIDDAO schoolIDDAO;
+
+
 
     @Autowired
-    public GroupDAOImpl(JdbcTemplate jdbc) {
+    public GroupDAOImpl(JdbcTemplate jdbc, SchoolIDDAO schoolIDDAO) {
         this.jdbc = jdbc;
+        this.schoolIDDAO = schoolIDDAO;
     }
 
 
     @Override
-    public void deleteGroup(int id) {
-        final String sql ="DELETE FROM group_course WHERE id = ?;";
-        jdbc.update(sql,id);
+    public void deleteGroup(int id, String email) {
+        Integer school_id = schoolIDDAO.GetSchoolId(email);
+        final String sql ="DELETE FROM group_course WHERE id = ? and school_id=?;";
+        jdbc.update(sql,id, school_id);
     }
 
     @Override
-    public void changeGroup(Group group) {
-        final String sql = "UPDATE group_course SET group_name = ?, course_id = ?, current_unit=? WHERE id = ?;";
-        jdbc.update(sql,group.getName(), group.getCourse_id(), group.getCurr_unit(), group.getId());
+    public void changeGroup(Group group, String email) {
+        Integer school_id = schoolIDDAO.GetSchoolId(email);
+        final String sql = "UPDATE group_course SET group_name = ?, course_id = ?, current_unit=? WHERE id = ? AND  school_id =?;";
+        jdbc.update(sql,group.getName(), group.getCourse_id(), group.getCurr_unit(), group.getId(), school_id);
     }
 
     @Override
-    public void createGroup(Group group) {
-        final String sql = "INSERT INTO group_course(group_name, course_id, current_unit) VALUES (?, ?, ?);";
-        jdbc.update(sql, group.getName(), group.getCourse_id(), group.getCurr_unit());
+    public void createGroup(Group group, String email) {
+        Integer school_id = schoolIDDAO.GetSchoolId(email);
+        final String sql = "INSERT INTO group_course(group_name, course_id, current_unit,school_id) VALUES (?, ?, ?,?);";
+        jdbc.update(sql, group.getName(), group.getCourse_id(), group.getCurr_unit(), school_id);
     }
 
     @Override
-    public Group getGroup(int groupID) {
-        final String sql = "SELECT * FROM group_course WHERE id = ? LIMIT 1;";
-        return jdbc.queryForObject(sql, groupMapper, groupID);
+    public Group getGroup(int groupID, String email) {
+        Integer school_id = schoolIDDAO.GetSchoolId(email);
+        final String sql = "SELECT * FROM group_course WHERE id = ? AND  school_id = ? LIMIT 1;";
+        return jdbc.queryForObject(sql, groupMapper, groupID, school_id);
 
     }
 
     @Override
-    public List<Group> getGroupsByCourse(int courseID) {
-        final String sql = "SELECT * FROM group_course WHERE course_id = ?;";
-        return jdbc.query(sql, groupMapper, courseID);
+    public List<Group> getGroupsByCourse(int courseID, String email) {
+        Integer school_id = schoolIDDAO.GetSchoolId(email);
+        final String sql = "SELECT * FROM group_course WHERE course_id = ? AND school_id = ?;";
+        return jdbc.query(sql, groupMapper, courseID, school_id);
 
     }
 

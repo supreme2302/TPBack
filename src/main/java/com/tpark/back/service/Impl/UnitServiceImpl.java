@@ -18,27 +18,39 @@ public class UnitServiceImpl implements UnitService {
     }
 
     @Override
-    public Object getUnitsByCourse(Integer courseId) {
-        return unitDAO.getUnitsByCourse(courseId);
+    public Object getUnitsByCourse(Integer courseId, String email) {
+        return unitDAO.getUnitsByCourse(courseId, email);
     }
 
     @Override
-    public Object getUnit(Integer groupId) {
-        return unitDAO.getUnit(groupId);
+    public Object getUnit(Integer groupId, String email) {
+        return unitDAO.getUnit(groupId, email);
     }
 
     @Override
-    public void createUnit(Unit unit) {
-        unitDAO.createUnit(unit);
+    public void createUnit(Unit unit, String email) {
+        unitDAO.createUnit(unit, email);
     }
 
     @Override
-    public void changeUnit(Unit unit) {
-        unitDAO.changeUnit(unit);
+    public void changeUnit(Unit unit, String email) {
+        unitDAO.changeUnit(unit, email);
     }
 
     @Override
-    public void deleteUnit(int id) {
-        unitDAO.deleteUnit(id);
+    public void deleteUnit(int id, String email) {
+        unitDAO.deleteUnit(id, email);
     }
+
+    @Override
+    public Object getUnitForStudent(Integer unitId, String student) {
+        return unitDAO.getUnitForStudent(unitId, student);
+    }
+
+    @Override
+    public Object getUnitsByCourseForStudent(Integer courseId, String student) {
+        return unitDAO.getUnitByCourseForStudent(courseId, student);
+    }
+
+
 }

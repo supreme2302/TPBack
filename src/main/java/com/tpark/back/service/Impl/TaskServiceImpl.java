@@ -23,32 +23,42 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void deleteTask(int id) {
-        taskDAO.deleteTask(id);
+    public void deleteTask(String admin, int id) {
+        taskDAO.deleteTask(admin ,id);
     }
 
     @Override
-    public void changeTask(Task task) {
-        taskDAO.changeTask(task);
+    public void changeTask(String admin ,Task task) {
+        taskDAO.changeTask(admin ,task);
     }
 
     @Override
-    public void createTask(Task task) {
-        taskDAO.createTask(task);
+    public void createTask(String admin ,Task task) {
+        taskDAO.createTask(admin ,task);
     }
 
     @Override
-    public Task getTask(Integer taskId) {
-        return taskDAO.getTask(taskId);
+    public Task getTask(String admin ,Integer taskId) {
+        return taskDAO.getTask(admin ,taskId);
     }
 
     @Override
-    public List<Task> getTasksByUnit(Integer unitId) {
-        return taskDAO.getTasksByUnit(unitId);
+    public List<Task> getTasksByUnit(String admin ,Integer unitId) {
+        return taskDAO.getTasksByUnit(admin, unitId);
     }
 
     @Override
     public List<Task> getTasks(String admin) {
         return taskDAO.getAllTasks(admin);
+    }
+
+    @Override
+    public Object getTaskStudent(Integer taskId, String student) {
+        return taskDAO.getTaskStudent(taskId, student);
+    }
+
+    @Override
+    public Object getTasksByUnitStudent(Integer unitId, String student) {
+        return taskDAO.getTasksByUnitStudent(unitId, student);
     }
 }

@@ -61,9 +61,10 @@ public class TaskController {
 
         if(session.getAttribute("user") != null) {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(taskService.getTasksByUnit(unitId));
+                    .body(taskService.getTasksByUnit(session.getAttribute("user").toString(), unitId));
         } else {
-            return null;
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(taskService.getTasksByUnitStudent(unitId, session.getAttribute("student").toString()));
         }
 
     }
@@ -80,9 +81,10 @@ public class TaskController {
         try {
             if(session.getAttribute("user") != null) {
                 return ResponseEntity.status(HttpStatus.OK)
-                        .body(taskService.getTask(taskId));
+                        .body(taskService.getTask(session.getAttribute("user").toString(), taskId));
             } else {
-                return null;
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(taskService.getTaskStudent(taskId, session.getAttribute("student").toString()));
 
             }
         } catch (EmptyResultDataAccessException e) {
@@ -102,7 +104,7 @@ public class TaskController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            taskService.createTask(task);
+            taskService.createTask(session.getAttribute("user").toString(), task);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(UserStatus.SUCCESSFULLY_CREATED);
         } catch (DuplicateKeyException e) {
@@ -122,7 +124,7 @@ public class TaskController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            taskService.changeTask(task);
+            taskService.changeTask(session.getAttribute("user").toString(), task);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(UserStatus.SUCCESSFULLY_CHANGED);
         } catch (DuplicateKeyException e) {
@@ -142,7 +144,7 @@ public class TaskController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            taskService.deleteTask(id);
+            taskService.deleteTask(session.getAttribute("user").toString(), id);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(UserStatus.SUCCESSFULLY_CHANGED);
         } catch (DuplicateKeyException e) {

@@ -17,10 +17,12 @@ public class CourseDAOImpl implements CourseDAO {
 
     private final JdbcTemplate jdbc;
     private final static CourseMapper courseMapper = new CourseMapper();
+    private final SchoolIDDAO schoolIDDAO;
 
     @Autowired
-    public CourseDAOImpl(JdbcTemplate jdbc) {
+    public CourseDAOImpl(JdbcTemplate jdbc, SchoolIDDAO schoolIDDAO) {
         this.jdbc = jdbc;
+        this.schoolIDDAO = schoolIDDAO;
     }
 
     @Override
@@ -31,29 +33,33 @@ public class CourseDAOImpl implements CourseDAO {
     }
 
     @Override
-    public void createCourse(Course course) {
+    public void createCourse(Course course, String email) {
+        Integer school_id = schoolIDDAO.GetSchoolId(email);
         final String sql = "INSERT INTO course(course_name, school_id) VALUES (?, ?);";
-        jdbc.update(sql,course.getName(),course.getSchoolId());
+        jdbc.update(sql,course.getName(),school_id);
     }
 
     @Override
-    public void deleteCourse(int id) {
-        String sql = "DELETE FROM group_course WHERE course_id = ?;";
-        jdbc.update(sql,id);
-        sql = "DELETE FROM course WHERE id = ?;\n";
-        jdbc.update(sql,id);
+    public void deleteCourse(int id, String email) {
+        Integer school_id = schoolIDDAO.GetSchoolId(email);
+        String sql = "DELETE FROM group_course WHERE school_id = ? AND course_id = ?;";
+        jdbc.update(sql,school_id, id);
+        sql = "DELETE FROM course WHERE id = ? AND school_id = ?;\n";
+        jdbc.update(sql,id, school_id);
     }
 
     @Override
     public Course getCourse(int id, String admin){
-        final String sql = "SELECT * FROM course JOIN admin ON course.id=? AND lower(admin.email) = lower(?) LIMIT 1;";
+        final String sql = "SELECT * FROM course JOIN admin ON course.id=? AND " +
+                "lower(admin.email) = lower(?) AND admin.school_id = course.school_id LIMIT 1;";
         return jdbc.queryForObject(sql, courseMapper, id, admin);
     }
 
     @Override
-    public void changeCourse(Course course){
-        final String sql = "UPDATE course SET course_name = ? WHERE id = ?;";
-        jdbc.update(sql,course.getName(), course.getId());
+    public void changeCourse(Course course, String admin){
+        Integer school_id = schoolIDDAO.GetSchoolId(admin);
+        final String sql = "UPDATE course SET course_name = ? WHERE id = ? AND school_id = ?;";
+        jdbc.update(sql,course.getName(), course.getId(),school_id);
     }
 
     @Override

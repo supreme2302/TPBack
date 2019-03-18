@@ -14,6 +14,7 @@ import java.sql.SQLException;
 public class AdminDAOImpl implements AdminDAO {
 
     private final JdbcTemplate jdbc;
+
     private final static AdminMapper adminMapper = new AdminMapper();
 
     @Autowired

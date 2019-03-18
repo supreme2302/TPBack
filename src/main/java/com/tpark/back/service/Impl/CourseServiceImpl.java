@@ -24,20 +24,20 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public void createCourse(Course course) {
-        courseDAO.createCourse(course);
+    public void createCourse(Course course, String email) {
+        courseDAO.createCourse(course, email);
     }
 
     @Override
-    public void deleteCourse(int id) {
-        courseDAO.deleteCourse(id);
+    public void deleteCourse(int id , String email) {
+        courseDAO.deleteCourse(id, email);
     }
 
     @Override
     public Course getCourse(int courseID, String email){ return courseDAO.getCourse(courseID, email); };
 
     @Override
-    public void changeCourse(Course course){ courseDAO.changeCourse(course); }
+    public void changeCourse(Course course, String admin){ courseDAO.changeCourse(course, admin); }
 
     @Override
     public Course getStudentCourse(Integer id, String student) {

@@ -41,9 +41,10 @@ public class UnitController {
         }
         if(session.getAttribute("user") != null) {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(unitService.getUnitsByCourse(courseId));
+                    .body(unitService.getUnitsByCourse(courseId, session.getAttribute("user").toString()));
         } else {
-            return null;
+            return  ResponseEntity.status(HttpStatus.OK)
+                    .body(unitService.getUnitsByCourseForStudent(courseId, session.getAttribute("student").toString()));
         }
 
     }
@@ -60,9 +61,10 @@ public class UnitController {
         try {
             if(session.getAttribute("user") != null) {
                 return ResponseEntity.status(HttpStatus.OK)
-                        .body(unitService.getUnit(unitId));
+                        .body(unitService.getUnit(unitId, session.getAttribute("user").toString()));
             } else {
-                return null;
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(unitService.getUnitForStudent(unitId, session.getAttribute("student").toString()));
 
             }
         } catch (EmptyResultDataAccessException e) {
@@ -82,7 +84,7 @@ public class UnitController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            unitService.createUnit(unit);
+            unitService.createUnit(unit, session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(UserStatus.SUCCESSFULLY_CREATED);
         } catch (DuplicateKeyException e) {
@@ -102,7 +104,7 @@ public class UnitController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            unitService.changeUnit(unit);
+            unitService.changeUnit(unit, session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.OK)
                     .body(UserStatus.SUCCESSFULLY_CHANGED);
         } catch (DuplicateKeyException e) {
@@ -122,7 +124,7 @@ public class UnitController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            unitService.deleteUnit(id);
+            unitService.deleteUnit(id, session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.OK)
                     .body(UserStatus.SUCCESSFULLY_CHANGED);
         } catch (DuplicateKeyException e) {
