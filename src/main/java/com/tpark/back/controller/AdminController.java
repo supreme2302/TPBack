@@ -18,6 +18,7 @@ import javax.servlet.http.HttpSession;
 @RestController
 @RequestMapping("/admin")
 //@EnableJdbcHttpSession
+@CrossOrigin(origins = {"http://localhost:8080", "https://supreme-spa.firebaseapp.com"}, allowCredentials = "true")
 public class AdminController {
 
     private final AdminService adminService;
