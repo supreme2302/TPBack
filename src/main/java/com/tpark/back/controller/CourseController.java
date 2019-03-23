@@ -90,7 +90,7 @@ public class CourseController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            courseService.createCourse(course);
+            courseService.createCourse(course, session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(UserStatus.SUCCESSFULLY_CREATED);
         } catch (DuplicateKeyException e) {
@@ -110,7 +110,7 @@ public class CourseController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            courseService.changeCourse(course);
+            courseService.changeCourse(course, session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.OK)
                     .body(UserStatus.SUCCESSFULLY_CHANGED);
         } catch (DuplicateKeyException e) {
@@ -130,7 +130,7 @@ public class CourseController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            courseService.deleteCourse(id);
+            courseService.deleteCourse(id, session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.OK)
                     .body(UserStatus.SUCCESSFULLY_CHANGED);
         } catch (DuplicateKeyException e) {

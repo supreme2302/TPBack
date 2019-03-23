@@ -17,49 +17,79 @@ public class TaskDAOImpl implements TaskDAO {
     private final JdbcTemplate jdbc;
 
     private final static TaskMapper taskMapper = new TaskMapper();
+    private final SchoolIDDAO schoolIDDAO;
+
 
     @Autowired
-    public TaskDAOImpl(JdbcTemplate jdbc) {
+    public TaskDAOImpl(JdbcTemplate jdbc, SchoolIDDAO schoolIDDAO) {
         this.jdbc = jdbc;
+        this.schoolIDDAO = schoolIDDAO;
     }
 
 
 
     @Override
-    public void deleteTask(int id) {
-        final String sql ="DELETE FROM task WHERE id = ?;";
-        jdbc.update(sql,id);
+    public void deleteTask(String admin ,int id) {
+        Integer school_id = schoolIDDAO.GetSchoolId(admin);
+        final String sql ="DELETE FROM task WHERE id = ? AND school_id=?;";
+        jdbc.update(sql,id,school_id);
     }
 
     @Override
-    public void changeTask(Task task) {
-        final String sql = "UPDATE task SET description = ?, task_ref = ?, task_type=? WHERE id = ?;";
-        jdbc.update(sql,task.getDescription(), task.getTask_ref(), task.getTask_type(), task.getId());
+    public void changeTask(String admin ,Task task) {
+
+        Integer school_id = schoolIDDAO.GetSchoolId(admin);
+        final String sql = "UPDATE task SET description = ?, task_ref = ?, task_type=? WHERE id = ? AND school_id=?;";
+        jdbc.update(sql,task.getDescription(), task.getTask_ref(), task.getTask_type(), task.getId(),school_id);
 
     }
 
     @Override
-    public void createTask(Task task) {
-        final String sql = "INSERT INTO task (description, task_ref, task_type) VALUES (?, ?, ?);";
-        jdbc.update(sql, task.getDescription(), task.getTask_ref(), task.getTask_type());
+    public void createTask(String admin ,Task task) {
+        Integer school_id = schoolIDDAO.GetSchoolId(admin);
+        final String sql = "INSERT INTO task (description, task_ref, task_type,school_id) VALUES (?, ?, ?,?);";
+        jdbc.update(sql, task.getDescription(), task.getTask_ref(), task.getTask_type(),school_id);
     }
 
     @Override
-    public Task getTask(Integer taskId) {
-        final String sql = "SELECT * FROM task WHERE id = ? LIMIT 1;";
-        return jdbc.queryForObject(sql, taskMapper, taskId);
+    public Task getTask(String admin ,Integer taskId) {
+        Integer school_id = schoolIDDAO.GetSchoolId(admin);
+        final String sql = "SELECT * FROM task WHERE id = ?  and school_id = ? LIMIT 1;";
+        return jdbc.queryForObject(sql, taskMapper, taskId, school_id);
     }
 
     @Override
-    public List<Task> getTasksByUnit(Integer unitId) {
-        final String sql = "SELECT * FROM task WHERE unit_id = ?;";
-        return jdbc.query(sql, taskMapper, unitId);
+    public List<Task> getTasksByUnit(String admin ,Integer unitId) {
+        Integer school_id = schoolIDDAO.GetSchoolId(admin);
+        final String sql = "SELECT * FROM task WHERE unit_id = ? AND school_id=?;";
+        return jdbc.query(sql, taskMapper, unitId, school_id);
     }
 
     @Override
     public List<Task> getAllTasks(String admin) {
-        final String sql = "SELECT * FROM task;";
-        return jdbc.query(sql, taskMapper);
+        Integer school_id = schoolIDDAO.GetSchoolId(admin);
+        final String sql = "SELECT * FROM task WHERE school_id=?;";
+        return jdbc.query(sql, taskMapper, school_id);
+    }
+
+    public Object getTaskStudent(Integer taskId, String student) {
+        final String sql = "SELECT * FROM task JOIN (SELECT unit.id FROM unit JOIN" +
+                "((SELECT email, group_id FROM student JOIN student_group sg " +
+                "on student.id = sg.student_id AND student.email = ?)" +
+                " AS rg JOIN (SELECT id, course_id FROM group_course) AS gc ON gc.id = rg.group_id) " +
+                "AS g ON g.course_id = unit.course_id) AS units" +
+                " ON task.id = ? AND units.id = task.unit_id;";
+        return jdbc.queryForObject(sql, taskMapper, student, taskId);
+    }
+
+    public Object getTasksByUnitStudent(Integer unitId, String student) {
+        final String sql = "SELECT * FROM task JOIN (SELECT unit.id FROM unit JOIN" +
+                "((SELECT email, group_id FROM student JOIN student_group sg " +
+                "on student.id = sg.student_id AND student.email = ?)" +
+                " AS rg JOIN (SELECT id, course_id FROM group_course) AS gc ON gc.id = rg.group_id) " +
+                "AS g ON g.course_id = unit.course_id AND unit.id = ?) AS units" +
+                " ON units.id = task.unit_id;";
+        return jdbc.query(sql, taskMapper, student, unitId);
     }
 
     private static final class TaskMapper implements RowMapper<Task> {

@@ -20,28 +20,28 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public List<Group> getGroupsByCourse(int courseID){
-        return groupDAO.getGroupsByCourse(courseID);
+    public List<Group> getGroupsByCourse(int courseID, String email){
+        return groupDAO.getGroupsByCourse(courseID, email);
     };
 
     @Override
-    public Group getGroup(int groupID){
-        return groupDAO.getGroup(groupID);
+    public Group getGroup(int groupID, String email){
+        return groupDAO.getGroup(groupID, email);
     }
 
     @Override
-    public void createGroup(Group group){
-        groupDAO.createGroup(group);
+    public void createGroup(Group group, String email){
+        groupDAO.createGroup(group, email);
     }
 
     @Override
-    public void changeGroup(Group group){
-        groupDAO.changeGroup(group);
+    public void changeGroup(Group group, String email){
+        groupDAO.changeGroup(group, email);
     }
 
     @Override
-    public void deleteGroup(int id){
-        groupDAO.deleteGroup(id);
+    public void deleteGroup(int id, String email){
+        groupDAO.deleteGroup(id, email);
     }
 
     @Override

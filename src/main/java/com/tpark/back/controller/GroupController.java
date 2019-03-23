@@ -41,12 +41,19 @@ public class GroupController {
                         .body(UserStatus.ACCESS_ERROR);
             }
         }
-        if(session.getAttribute("user") != null) {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(groupService.getGroupsForAdmin(session.getAttribute("user").toString()));
-        } else {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(groupService.getGroupsForStudent(session.getAttribute("student").toString()));
+        try {
+
+
+            if (session.getAttribute("user") != null) {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(groupService.getGroupsForAdmin(session.getAttribute("user").toString()));
+            } else {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(groupService.getGroupsForStudent(session.getAttribute("student").toString()));
+            }
+        } catch (NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(UserStatus.NOT_FOUND);
         }
     }
 
@@ -59,12 +66,17 @@ public class GroupController {
                         .body(UserStatus.ACCESS_ERROR);
             }
         }
-        if(session.getAttribute("user") != null) {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(groupService.getGroupsByCourse(courseId));
-        } else {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(groupService.getGroupByCourseForStudent(courseId,session.getAttribute("student").toString()));
+        try {
+            if (session.getAttribute("user") != null) {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(groupService.getGroupsByCourse(courseId, session.getAttribute("user").toString()));
+            } else {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(groupService.getGroupByCourseForStudent(courseId, session.getAttribute("student").toString()));
+            }
+        } catch (NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(UserStatus.NOT_FOUND);
         }
     }
 
@@ -80,12 +92,12 @@ public class GroupController {
         try {
             if(session.getAttribute("user") != null) {
                 return ResponseEntity.status(HttpStatus.OK)
-                        .body(groupService.getGroup(groupId));
+                        .body(groupService.getGroup(groupId,session.getAttribute("user").toString()));
             } else {
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(groupService.getGroupForStudent(session.getAttribute("student").toString(),groupId));
             }
-        } catch (EmptyResultDataAccessException e) {
+        } catch (NullPointerException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(UserStatus.NOT_FOUND);
         }
@@ -102,7 +114,7 @@ public class GroupController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            groupService.createGroup(group);
+            groupService.createGroup(group, session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(UserStatus.SUCCESSFULLY_CREATED);
         } catch (DuplicateKeyException e) {
@@ -122,7 +134,7 @@ public class GroupController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            groupService.changeGroup(group);
+            groupService.changeGroup(group,session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.OK)
                     .body(UserStatus.SUCCESSFULLY_CHANGED);
         } catch (DuplicateKeyException e) {
@@ -142,7 +154,7 @@ public class GroupController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            groupService.deleteGroup(id);
+            groupService.deleteGroup(id ,session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.OK)
                     .body(UserStatus.SUCCESSFULLY_CHANGED);
         } catch (DuplicateKeyException e) {

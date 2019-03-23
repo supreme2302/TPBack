@@ -18,46 +18,76 @@ public class UnitDAOImpl implements UnitDAO {
 
     private final static UnitMapper unitMapper = new UnitMapper();
     private final static IntMapper intMapper = new IntMapper();
+    private final SchoolIDDAO schoolIDDAO;
 
     @Autowired
-    public UnitDAOImpl(JdbcTemplate jdbc) {
+    public UnitDAOImpl(JdbcTemplate jdbc, SchoolIDDAO schoolIDDAO) {
         this.jdbc = jdbc;
+        this.schoolIDDAO = schoolIDDAO;
     }
 
-
-    public List<Unit> getUnitsByCourse(Integer courseId) {
-        final String sql = "SELECT * FROM unit WHERE course_id = ?;";
-        return jdbc.query(sql, unitMapper, courseId);
+    @Override
+    public List<Unit> getUnitsByCourse(Integer courseId, String email) {
+        Integer schoolId = schoolIDDAO.GetSchoolId(email);
+        final String sql = "SELECT * FROM unit WHERE course_id = ? AND school_id = ?;";
+        return jdbc.query(sql, unitMapper, courseId, schoolId);
     }
 
-    public Unit getUnit(Integer unitId) {
-
-        final String sql = "SELECT * FROM unit WHERE id = ?;";
-        return jdbc.queryForObject(sql, unitMapper, unitId);
-
-    }
-
-    public void createUnit(Unit unit) {
-        final String sql = "INSERT INTO unit(unit_name, course_id, current_position) VALUES (?, ?, ?);";
-        jdbc.update(sql,unit.getUnit_name(), unit.getCourse_id(), unit.getPosition());
+    @Override
+    public Unit getUnit(Integer unitId, String email) {
+        Integer schoolId = schoolIDDAO.GetSchoolId(email);
+        final String sql = "SELECT * FROM unit WHERE id = ? AND school_id=?;";
+        return jdbc.queryForObject(sql, unitMapper, unitId, schoolId);
 
     }
 
-    public void changeUnit(Unit unit) {
-        final String sql = "UPDATE unit SET unit_name = ?, course_id = ?, current_position=? WHERE id = ?;";
-        jdbc.update(sql,unit.getUnit_name(), unit.getCourse_id(), unit.getPosition(), unit.getId());
+    @Override
+    public void createUnit(Unit unit, String email) {
+        Integer schoolId = schoolIDDAO.GetSchoolId(email);
+        final String sql = "INSERT INTO unit(unit_name, course_id, current_position,school_id) VALUES (?, ?, ?,?);";
+        jdbc.update(sql,unit.getUnit_name(), unit.getCourse_id(), unit.getPosition(),schoolId);
 
     }
 
-    public void deleteUnit(int id) {
+    @Override
+    public void changeUnit(Unit unit, String email) {
+        Integer schoolId = schoolIDDAO.GetSchoolId(email);
+        final String sql = "UPDATE unit SET unit_name = ?, course_id = ?, current_position=? WHERE id = ? AND school_id=?;";
+        jdbc.update(sql,unit.getUnit_name(), unit.getCourse_id(), unit.getPosition(), unit.getId(), schoolId);
+
+    }
+
+    @Override
+    public void deleteUnit(int id, String email) {
+        Integer schoolId = schoolIDDAO.GetSchoolId(email);
         Integer temp = 0;
-        String sql ="SELECT course_id FROM unit WHERE id = ?;";
-        temp = jdbc.queryForObject(sql,intMapper , id);
-        sql = "UPDATE group_course SET current_unit = NULL WHERE course_id=?";
-        jdbc.update(sql,temp);
-        sql ="DELETE FROM unit WHERE id = ?;";
-        jdbc.update(sql,id);
+        String sql ="SELECT course_id FROM unit WHERE id = ? AND school_id = ?;";
+        temp = jdbc.queryForObject(sql,intMapper , id, schoolId);
+        sql = "UPDATE group_course SET current_unit = NULL WHERE course_id=? AND school_id = ?";
+        jdbc.update(sql,temp, schoolId);
+        sql ="DELETE FROM unit WHERE id = ? AND school_id = ?;";
+        jdbc.update(sql,id, schoolId);
 
+    }
+
+    @Override
+    public Unit getUnitForStudent(Integer unitId, String student) {
+        final String sql = "SELECT * FROM unit JOIN" +
+                "((SELECT email, group_id FROM student JOIN student_group sg " +
+                "on student.id = sg.student_id AND student.email = ?)" +
+                " AS rg JOIN group_course ON group_course.id = rg.group_id) " +
+                "AS g ON g.course_id = unit.course_id AND unit.id = ?;";
+        return jdbc.queryForObject(sql, unitMapper, student, unitId);
+    }
+
+    @Override
+    public List<Unit> getUnitByCourseForStudent(Integer courseId, String student) {
+        final String sql = "SELECT * FROM unit JOIN" +
+                "((SELECT email, group_id FROM student JOIN student_group sg " +
+                "on student.id = sg.student_id AND student.email = ?)" +
+                " AS rg JOIN group_course ON group_course.id = rg.group_id) " +
+                "AS g ON g.course_id = unit.course_id AND unit.course_id = ?;";
+        return jdbc.query(sql, unitMapper, student, courseId);
     }
 
     private static final class IntMapper implements RowMapper<Integer> {

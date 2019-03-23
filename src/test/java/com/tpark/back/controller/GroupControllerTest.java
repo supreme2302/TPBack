@@ -54,7 +54,7 @@ public class GroupControllerTest {
     @Test
     public void getGroupTest() throws Exception {
         CookieAssistant assistant= new CookieAssistant(mockMvc);
-        Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
+        Cookie[] allCookies = assistant.getAdminCookie("existforkostyan@e.ru");
         this.mockMvc.perform(get("/group/find/1")
                 .contentType(contentType)
                 .cookie(allCookies))
@@ -87,7 +87,7 @@ public class GroupControllerTest {
     @Test
     public void getNoneGroupTest() throws Exception {
         CookieAssistant assistant= new CookieAssistant(mockMvc);
-        Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
+        Cookie[] allCookies = assistant.getAdminCookie("existforkostyan@e.ru");
         this.mockMvc.perform(get("/group/find/100")
                 .contentType(contentType)
                 .cookie(allCookies))
@@ -103,7 +103,7 @@ public class GroupControllerTest {
         group.setCurr_unit(1);
         String authJSON = gson.toJson(group);
         CookieAssistant assistant= new CookieAssistant(mockMvc);
-        Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
+        Cookie[] allCookies = assistant.getAdminCookie("existforkostyan@e.ru");
         this.mockMvc.perform(post("/group/create")
                 .contentType(contentType)
                 .content(authJSON)
@@ -115,7 +115,7 @@ public class GroupControllerTest {
     @Test
     public void deleteGroupTest() throws Exception {
         CookieAssistant assistant= new CookieAssistant(mockMvc);
-        Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
+        Cookie[] allCookies = assistant.getAdminCookie("existforkostyan@e.ru");
         this.mockMvc.perform(post("/group/delete/")
                 .contentType(contentType)
                 .content("1")
