@@ -1,13 +1,16 @@
 package com.tpark.back.dao.Impl;
 
 import com.tpark.back.dao.CourseDAO;
+import com.tpark.back.dao.SchoolIDDAO;
 import com.tpark.back.model.Course;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -15,14 +18,20 @@ import java.util.List;
 @Repository
 public class CourseDAOImpl implements CourseDAO {
 
-    private final JdbcTemplate jdbc;
+    private final DataSource dataSource;
+    private JdbcTemplate jdbc;
     private final static CourseMapper courseMapper = new CourseMapper();
     private final SchoolIDDAO schoolIDDAO;
 
     @Autowired
-    public CourseDAOImpl(JdbcTemplate jdbc, SchoolIDDAO schoolIDDAO) {
-        this.jdbc = jdbc;
+    public CourseDAOImpl(DataSource dataSource, SchoolIDDAO schoolIDDAO) {
+        this.dataSource = dataSource;
         this.schoolIDDAO = schoolIDDAO;
+    }
+
+    @PostConstruct
+    public void init() {
+        this.jdbc = new JdbcTemplate(this.dataSource);
     }
 
     @Override
@@ -34,14 +43,15 @@ public class CourseDAOImpl implements CourseDAO {
 
     @Override
     public void createCourse(Course course, String email) {
-        Integer school_id = schoolIDDAO.GetSchoolId(email);
+        Integer school_id = schoolIDDAO.getSchoolId(email);
         final String sql = "INSERT INTO course(course_name, school_id) VALUES (?, ?);";
         jdbc.update(sql,course.getName(),school_id);
     }
 
     @Override
+    @Transactional
     public void deleteCourse(int id, String email) {
-        Integer school_id = schoolIDDAO.GetSchoolId(email);
+        Integer school_id = schoolIDDAO.getSchoolId(email);
         String sql = "DELETE FROM group_course WHERE school_id = ? AND course_id = ?;";
         jdbc.update(sql,school_id, id);
         sql = "DELETE FROM course WHERE id = ? AND school_id = ?;\n";
@@ -57,7 +67,7 @@ public class CourseDAOImpl implements CourseDAO {
 
     @Override
     public void changeCourse(Course course, String admin){
-        Integer school_id = schoolIDDAO.GetSchoolId(admin);
+        Integer school_id = schoolIDDAO.getSchoolId(admin);
         final String sql = "UPDATE course SET course_name = ? WHERE id = ? AND school_id = ?;";
         jdbc.update(sql,course.getName(), course.getId(),school_id);
     }

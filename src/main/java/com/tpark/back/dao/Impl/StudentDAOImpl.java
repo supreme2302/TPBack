@@ -8,20 +8,28 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
+import javax.xml.crypto.Data;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Repository
 public class StudentDAOImpl implements StudentDAO {
 
-
-    private final JdbcTemplate jdbc;
+    private final DataSource dataSource;
+    private JdbcTemplate jdbc;
 
     private final static StudentMapper studentMapper = new StudentMapper();
 
     @Autowired
-    public StudentDAOImpl(JdbcTemplate jdbc) {
-        this.jdbc = jdbc;
+    public StudentDAOImpl(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    @PostConstruct
+    public void init() {
+        this.jdbc = new JdbcTemplate(this.dataSource);
     }
 
     @Override

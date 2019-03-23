@@ -7,19 +7,29 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
+import javax.xml.crypto.Data;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Repository
 public class AdminDAOImpl implements AdminDAO {
 
-    private final JdbcTemplate jdbc;
+    private final DataSource dataSource;
+
+    private JdbcTemplate jdbc;
 
     private final static AdminMapper adminMapper = new AdminMapper();
 
     @Autowired
-    public AdminDAOImpl(JdbcTemplate jdbc) {
-        this.jdbc = jdbc;
+    public AdminDAOImpl(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    @PostConstruct
+    public void init() {
+        this.jdbc = new JdbcTemplate(this.dataSource);
     }
 
     @Override

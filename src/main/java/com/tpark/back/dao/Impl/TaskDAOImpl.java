@@ -1,5 +1,6 @@
 package com.tpark.back.dao.Impl;
 
+import com.tpark.back.dao.SchoolIDDAO;
 import com.tpark.back.dao.TaskDAO;
 import com.tpark.back.model.Task;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -14,23 +17,27 @@ import java.util.List;
 @Repository
 public class TaskDAOImpl implements TaskDAO {
 
-    private final JdbcTemplate jdbc;
+    private final DataSource dataSource;
+    private JdbcTemplate jdbc;
 
     private final static TaskMapper taskMapper = new TaskMapper();
     private final SchoolIDDAO schoolIDDAO;
 
 
     @Autowired
-    public TaskDAOImpl(JdbcTemplate jdbc, SchoolIDDAO schoolIDDAO) {
-        this.jdbc = jdbc;
+    public TaskDAOImpl(DataSource dataSource, SchoolIDDAO schoolIDDAO) {
+        this.dataSource = dataSource;
         this.schoolIDDAO = schoolIDDAO;
     }
 
-
+    @PostConstruct
+    public void init() {
+        this.jdbc = new JdbcTemplate(this.dataSource);
+    }
 
     @Override
     public void deleteTask(String admin ,int id) {
-        Integer school_id = schoolIDDAO.GetSchoolId(admin);
+        Integer school_id = schoolIDDAO.getSchoolId(admin);
         final String sql ="DELETE FROM task WHERE id = ? AND school_id=?;";
         jdbc.update(sql,id,school_id);
     }
@@ -38,7 +45,7 @@ public class TaskDAOImpl implements TaskDAO {
     @Override
     public void changeTask(String admin ,Task task) {
 
-        Integer school_id = schoolIDDAO.GetSchoolId(admin);
+        Integer school_id = schoolIDDAO.getSchoolId(admin);
         final String sql = "UPDATE task SET description = ?, task_ref = ?, task_type=? WHERE id = ? AND school_id=?;";
         jdbc.update(sql,task.getDescription(), task.getTask_ref(), task.getTask_type(), task.getId(),school_id);
 
@@ -46,28 +53,28 @@ public class TaskDAOImpl implements TaskDAO {
 
     @Override
     public void createTask(String admin ,Task task) {
-        Integer school_id = schoolIDDAO.GetSchoolId(admin);
+        Integer school_id = schoolIDDAO.getSchoolId(admin);
         final String sql = "INSERT INTO task (description, task_ref, task_type,school_id) VALUES (?, ?, ?,?);";
         jdbc.update(sql, task.getDescription(), task.getTask_ref(), task.getTask_type(),school_id);
     }
 
     @Override
     public Task getTask(String admin ,Integer taskId) {
-        Integer school_id = schoolIDDAO.GetSchoolId(admin);
+        Integer school_id = schoolIDDAO.getSchoolId(admin);
         final String sql = "SELECT * FROM task WHERE id = ?  and school_id = ? LIMIT 1;";
         return jdbc.queryForObject(sql, taskMapper, taskId, school_id);
     }
 
     @Override
     public List<Task> getTasksByUnit(String admin ,Integer unitId) {
-        Integer school_id = schoolIDDAO.GetSchoolId(admin);
+        Integer school_id = schoolIDDAO.getSchoolId(admin);
         final String sql = "SELECT * FROM task WHERE unit_id = ? AND school_id=?;";
         return jdbc.query(sql, taskMapper, unitId, school_id);
     }
 
     @Override
     public List<Task> getAllTasks(String admin) {
-        Integer school_id = schoolIDDAO.GetSchoolId(admin);
+        Integer school_id = schoolIDDAO.getSchoolId(admin);
         final String sql = "SELECT * FROM task WHERE school_id=?;";
         return jdbc.query(sql, taskMapper, school_id);
     }

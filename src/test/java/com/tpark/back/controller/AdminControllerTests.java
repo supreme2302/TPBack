@@ -3,19 +3,23 @@ package com.tpark.back.controller;
 import com.google.gson.Gson;
 import com.tpark.back.model.ChangePassword;
 import com.tpark.back.model.Admin;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.http.Cookie;
+import javax.sql.DataSource;
 import java.nio.charset.Charset;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -23,18 +27,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@RunWith(SpringRunner.class)
-@AutoConfigureMockMvc
-@TestPropertySource("/application-test.properties")
-@SpringBootTest
-@Sql(value = {"/db/migration/test/test_session.sql",
-        "/db/migration/test/V1__test-set-before.sql"},
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration
+        (
+                {
+                        "classpath:test.xml"
+                }
+        )
+@WebAppConfiguration(value = "")
+@Sql(value = {"classpath:/db/migration/test/test_session.sql",
+        "classpath:/db/migration/test/V1__test-set-before.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class AdminControllerTests {
 
-    @Autowired
     private MockMvc mockMvc;
 
+
+    @Autowired
+    private WebApplicationContext wac;
 
     private Gson gson = new Gson();
 
@@ -42,6 +52,11 @@ public class AdminControllerTests {
             MediaType.APPLICATION_JSON.getSubtype(),
             Charset.forName("utf8"));
 
+
+    @Before
+    public void setup() throws Exception {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+    }
 
     @Test
     public void signUpTest() throws Exception {
