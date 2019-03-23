@@ -3,31 +3,31 @@ package com.tpark.back.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-@Component
-public class CORSFilter implements Filter {
+//@Component
+public class CORSFilter extends OncePerRequestFilter {
 
     private final Logger logger = LoggerFactory.getLogger(CORSFilter.class);
 
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+    @Override
+    public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         logger.info("------CORSFilter------------");
-        HttpServletResponse response = (HttpServletResponse) res;
         response.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
-        response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Credentials", "true");
-        response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
-        response.setHeader("Access-Control-Allow-Headers", "authorization, content-type, xsrf-token");
-        response.addHeader("Access-Control-Expose-Headers", "xsrf-token");
-        chain.doFilter(req, res);
+        response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+     
+        if ("OPTIONS".equals(request.getMethod())) {
+	    response.setStatus(HttpServletResponse.SC_OK);
+	} else {
+	    chain.doFilter(request, response);
+	}
     }
-
-    public void init(FilterConfig filterConfig) {}
-
-    public void destroy() {}
 
 }
