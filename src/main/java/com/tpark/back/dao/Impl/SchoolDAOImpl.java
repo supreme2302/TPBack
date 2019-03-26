@@ -22,8 +22,8 @@ public class SchoolDAOImpl implements SchoolDAO {
 
     @Override
     public void createSchool(School school) {
-        final String sql = "INSERT INTO school(school_name, device_id) VALUES (?, ?);";
-        jdbc.update(sql, school.getName(), school.getDev_id());
+        final String sql = "INSERT INTO school(school_name) VALUES (?);";
+        jdbc.update(sql, school.getName());
     }
 
     @Override
@@ -43,7 +43,6 @@ public class SchoolDAOImpl implements SchoolDAO {
         public School mapRow(ResultSet rs, int rowNum) throws SQLException {
             School school = new School();
             school.setName(rs.getString("school_name"));
-            school.setDev_id(rs.getString("device_id"));
             school.setId(rs.getInt("id"));
             return school;
         }

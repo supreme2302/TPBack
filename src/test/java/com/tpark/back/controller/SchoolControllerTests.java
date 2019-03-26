@@ -61,7 +61,6 @@ public class SchoolControllerTests {
         CookieAssistant assistant= new CookieAssistant(mockMvc);
         Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
         school.setName("ESS");
-        school.setDev_id("123");
         String authJSON = gson.toJson(school);
         this.mockMvc.perform(post("/school/create")
                 .contentType(contentType)
