@@ -12,3 +12,4 @@ public class Message {
         this.message = message.toString();
     }
 }
+//TODO: Сделать unit current position не unique

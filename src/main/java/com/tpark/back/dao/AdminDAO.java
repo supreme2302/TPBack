@@ -6,4 +6,6 @@ public interface AdminDAO {
     Admin getAdminByEmail(String email);
 
     void addAdmin(Admin user);
+
+    void addNewAdmin(String toString, Admin admin);
 }

@@ -3,6 +3,7 @@ package com.tpark.back.service.Impl;
 import com.tpark.back.dao.Impl.TaskDAOImpl;
 import com.tpark.back.dao.TaskDAO;
 import com.tpark.back.model.Task;
+import com.tpark.back.model.TaskUnit;
 import com.tpark.back.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -60,5 +61,10 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Object getTasksByUnitStudent(Integer unitId, String student) {
         return taskDAO.getTasksByUnitStudent(unitId, student);
+    }
+
+    @Override
+    public void addTaskToUnit(String user, TaskUnit task) {
+        taskDAO.addTaskToUnit( user, task);
     }
 }

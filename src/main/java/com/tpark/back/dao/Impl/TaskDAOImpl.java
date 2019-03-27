@@ -2,6 +2,7 @@ package com.tpark.back.dao.Impl;
 
 import com.tpark.back.dao.TaskDAO;
 import com.tpark.back.model.Task;
+import com.tpark.back.model.TaskUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -61,7 +62,7 @@ public class TaskDAOImpl implements TaskDAO {
     @Override
     public List<Task> getTasksByUnit(String admin ,Integer unitId) {
         Integer school_id = schoolIDDAO.GetSchoolId(admin);
-        final String sql = "SELECT * FROM task WHERE unit_id = ? AND school_id=?;";
+        final String sql = "SELECT * FROM task JOIN task_unit ON task_unit.unit_id = ? AND task.id = task_unit.task_id AND school_id=?;";
         return jdbc.query(sql, taskMapper, unitId, school_id);
     }
 
@@ -73,23 +74,37 @@ public class TaskDAOImpl implements TaskDAO {
     }
 
     public Object getTaskStudent(Integer taskId, String student) {
-        final String sql = "SELECT * FROM task JOIN (SELECT unit.id FROM unit JOIN" +
+        final String sql = "SELECT * FROM task JOIN ( task_unit JOIN" +
+                "(SELECT unit.id FROM unit JOIN" +
                 "((SELECT email, group_id FROM student JOIN student_group sg " +
                 "on student.id = sg.student_id AND student.email = ?)" +
                 " AS rg JOIN (SELECT id, course_id FROM group_course) AS gc ON gc.id = rg.group_id) " +
                 "AS g ON g.course_id = unit.course_id) AS units" +
-                " ON task.id = ? AND units.id = task.unit_id;";
+                " ON units.id = task_unit.unit_id)" +
+                " AS task_t ON task_t.task_id = task.id;";
         return jdbc.queryForObject(sql, taskMapper, student, taskId);
     }
 
     public Object getTasksByUnitStudent(Integer unitId, String student) {
-        final String sql = "SELECT * FROM task JOIN (SELECT unit.id FROM unit JOIN" +
+        final String sql = "SELECT * FROM task JOIN ( task_unit JOIN " +
+                "(SELECT unit.id FROM unit JOIN" +
                 "((SELECT email, group_id FROM student JOIN student_group sg " +
                 "on student.id = sg.student_id AND student.email = ?)" +
                 " AS rg JOIN (SELECT id, course_id FROM group_course) AS gc ON gc.id = rg.group_id) " +
                 "AS g ON g.course_id = unit.course_id AND unit.id = ?) AS units" +
-                " ON units.id = task.unit_id;";
+                " ON units.id = task_unit.unit_id) AS task_t ON task_t.task_id = task.id;";
         return jdbc.query(sql, taskMapper, student, unitId);
+    }
+
+    @Override
+    public void addTaskToUnit(String user, TaskUnit task) {
+        Integer school_id = schoolIDDAO.GetSchoolId(user);
+        String sql  = "SELECT * FROM task WHERE task.id = ? AND task.school_id = ?;";
+        if(jdbc.query(sql, taskMapper, task.getTaskID(), school_id)!= null) {
+            sql = "INSERT INTO task_unit (unit_id, task_id) VALUES (?, ?);";
+            jdbc.update(sql, task.getUnitID(), task.getTaskID());
+        }
+
     }
 
     private static final class TaskMapper implements RowMapper<Task> {

@@ -2,6 +2,7 @@ package com.tpark.back.dao.Impl;
 
 import com.tpark.back.dao.SchoolDAO;
 import com.tpark.back.model.School;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -14,6 +15,7 @@ import java.sql.SQLException;
 public class SchoolDAOImpl implements SchoolDAO {
     private final JdbcTemplate jdbc;
     private final static SchoolMapper schoolMapper = new SchoolMapper();
+    private final static AdminIDMapper adminMapper = new AdminIDMapper();
 
     @Autowired
     public SchoolDAOImpl(JdbcTemplate jdbc) {
@@ -21,9 +23,12 @@ public class SchoolDAOImpl implements SchoolDAO {
     }
 
     @Override
-    public void createSchool(School school) {
-        final String sql = "INSERT INTO school(school_name, device_id) VALUES (?, ?);";
-        jdbc.update(sql, school.getName(), school.getDev_id());
+    public void createSchool(School school , String email) {
+        String sql = "SELECT id FROM admin WHERE email = ? LIMIT 1;";
+        Integer id = jdbc.queryForObject(sql,adminMapper, email);
+        school.setDev_id(Double.toString((Math.random()*100)));
+        sql = "INSERT INTO school(school_name, device_id,ownerid ) VALUES (?, ?, ?);";
+        jdbc.update(sql, school.getName(), school.getDev_id(), id);
     }
 
     @Override
@@ -38,6 +43,13 @@ public class SchoolDAOImpl implements SchoolDAO {
         return jdbc.queryForObject(sql, schoolMapper, student);
     }
 
+    private final static class AdminIDMapper implements RowMapper<Integer> {
+        @Override
+        public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return rs.getInt("id");
+        }
+    }
+
     private final static class SchoolMapper implements RowMapper<School> {
         @Override
         public School mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -45,6 +57,7 @@ public class SchoolDAOImpl implements SchoolDAO {
             school.setName(rs.getString("school_name"));
             school.setDev_id(rs.getString("device_id"));
             school.setId(rs.getInt("id"));
+            school.setAdmin(rs.getInt("ownerid"));
             return school;
         }
     }

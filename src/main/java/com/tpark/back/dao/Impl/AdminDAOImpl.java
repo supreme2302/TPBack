@@ -16,10 +16,12 @@ public class AdminDAOImpl implements AdminDAO {
     private final JdbcTemplate jdbc;
 
     private final static AdminMapper adminMapper = new AdminMapper();
+    private final SchoolIDDAO schoolIDDAO;
 
     @Autowired
-    public AdminDAOImpl(JdbcTemplate jdbc) {
+    public AdminDAOImpl(JdbcTemplate jdbc, SchoolIDDAO schoolIDDAO) {
         this.jdbc = jdbc;
+        this.schoolIDDAO = schoolIDDAO;
     }
 
     @Override
@@ -37,6 +39,14 @@ public class AdminDAOImpl implements AdminDAO {
     public void addAdmin(Admin admin) {
         final String sql = "INSERT INTO admin(email, password) VALUES (?, ?)";
         jdbc.update(sql, admin.getEmail(), admin.getPassword());
+    }
+
+    @Override
+    public void addNewAdmin(String toString, Admin admin) {
+        Integer school_id = schoolIDDAO.GetSchoolId(toString);
+        final String sql = "INSERT INTO admin(email, password, school_id) VALUES (?, ?, ?)";
+        jdbc.update(sql, admin.getEmail(), admin.getPassword(), school_id) ;
+
     }
 
     public static class AdminMapper implements RowMapper<Admin> {

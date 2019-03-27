@@ -51,3 +51,7 @@ public class CourseServiceImpl implements CourseService {
 
     ;
 }
+
+
+//TODO: Написать рабочее создание school
+//TODO: В школе должен быть ID владельца

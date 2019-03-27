@@ -1,6 +1,7 @@
 package com.tpark.back.service;
 
 import com.tpark.back.model.Task;
+import com.tpark.back.model.TaskUnit;
 
 import java.util.List;
 
@@ -20,4 +21,6 @@ public interface TaskService {
     Object getTaskStudent(Integer taskId, String student);
 
     Object getTasksByUnitStudent(Integer unitId, String student);
+
+    void addTaskToUnit(String user, TaskUnit task);
 }

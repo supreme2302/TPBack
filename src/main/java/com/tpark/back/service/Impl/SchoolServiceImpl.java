@@ -18,8 +18,8 @@ public class SchoolServiceImpl implements SchoolService {
     }
 
     @Override
-    public void createSchool(School school) {
-        schoolDAO.createSchool(school);
+    public void createSchool(School school, String email) {
+        schoolDAO.createSchool(school, email);
     }
 
     @Override

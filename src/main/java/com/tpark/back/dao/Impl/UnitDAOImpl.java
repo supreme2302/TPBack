@@ -107,6 +107,7 @@ public class UnitDAOImpl implements UnitDAO {
             unit.setCourse_id(resultSet.getInt("course_id"));
             unit.setUnit_name(resultSet.getString("unit_name"));
             unit.setPosition(resultSet.getInt("current_position"));
+            unit.setDescription(resultSet.getString("description"));
             return unit;
         }
     }

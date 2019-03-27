@@ -9,6 +9,7 @@ public class Group {
     String name;
     int course_id;
     String start_date;
+    String description;
     int curr_unit;
 
 }

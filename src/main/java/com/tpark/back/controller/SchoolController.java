@@ -67,7 +67,7 @@ public class SchoolController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            schoolService.createSchool(school);
+            schoolService.createSchool(school, session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(UserStatus.SUCCESSFULLY_CREATED);
         } catch (DuplicateKeyException e) {
@@ -76,7 +76,7 @@ public class SchoolController {
         }
     }
 
-    //TODO: Ограничить права студентов, а то они сейчас могут достучаться до любого урла(уже не до любого, но все равно все гавно)!!!
+    //TODO: Done вроде, Ограничить права студентов, а то они сейчас могут достучаться до любого урла(уже не до любого, но все равно все гавно)!!!
     //Это надо прям сейчас
 
 }

@@ -132,6 +132,23 @@ public class AdminController {
                 .body(UserStatus.WRONG_CREDENTIALS);
     }
 
+
+    @PostMapping(path = "/add")
+    public ResponseEntity add(HttpSession httpSession,
+                                 @RequestBody Admin admin) {
+
+        Object userSession = httpSession.getAttribute("user");
+        if (userSession == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(UserStatus.ACCESS_ERROR);
+        }
+
+        adminService.addNewAdmin(userSession.toString(),
+               admin);
+        return ResponseEntity.ok(UserStatus.SUCCESSFULLY_CHANGED);
+
+    }
+
     @PostMapping(path = "/logout")
     public ResponseEntity logout(HttpSession httpSession) {
         if (httpSession.getAttribute("user") == null) {

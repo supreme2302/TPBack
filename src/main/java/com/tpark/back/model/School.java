@@ -12,4 +12,5 @@ public class School {
     private int id;
     private String name;
     private String dev_id;
+    private Integer admin;
 }
