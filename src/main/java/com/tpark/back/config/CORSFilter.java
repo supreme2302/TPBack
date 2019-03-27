@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-//@Component
+@Component
 public class CORSFilter extends OncePerRequestFilter {
 
     private final Logger logger = LoggerFactory.getLogger(CORSFilter.class);
