@@ -5,4 +5,5 @@ import lombok.Data;
 public class School {
     private int id;
     private String name;
+    private Integer admin;
 }

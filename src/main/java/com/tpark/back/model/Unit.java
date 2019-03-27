@@ -8,4 +8,5 @@ public class Unit {
     Integer position;
     Integer course_id;
     String unit_name;
+    String description;
 }

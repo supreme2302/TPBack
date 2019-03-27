@@ -11,4 +11,6 @@ public interface AdminService {
     boolean checkAdminPassword(String rawPassword, String passwordFromDb);
 
     void changeAdminPassword(String email, String password);
+
+    void addNewAdmin(String toString, Admin admin);
 }

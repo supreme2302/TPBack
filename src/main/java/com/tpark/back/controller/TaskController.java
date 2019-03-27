@@ -2,6 +2,7 @@ package com.tpark.back.controller;
 
 
 import com.tpark.back.model.Task;
+import com.tpark.back.model.TaskUnit;
 import com.tpark.back.model.UserStatus;
 import com.tpark.back.service.AdminService;
 import com.tpark.back.service.StudentService;
@@ -105,6 +106,26 @@ public class TaskController {
         }
         try {
             taskService.createTask(session.getAttribute("user").toString(), task);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(UserStatus.SUCCESSFULLY_CREATED);
+        } catch (DuplicateKeyException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(UserStatus.ALREADY_EXISTS);
+        }
+    }
+
+    @PostMapping(path = "/add")
+    public ResponseEntity add(HttpSession session, @RequestBody TaskUnit task) {
+        if (session.getAttribute("user") == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(UserStatus.ACCESS_ERROR);
+        }
+        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(UserStatus.ACCESS_ERROR);
+        }
+        try {
+            taskService.addTaskToUnit(session.getAttribute("user").toString(), task);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(UserStatus.SUCCESSFULLY_CREATED);
         } catch (DuplicateKeyException e) {

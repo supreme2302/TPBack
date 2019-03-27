@@ -40,4 +40,9 @@ public class AdminServiceImpl implements AdminService {
     public void changeAdminPassword(String email, String password) {
         adminDAO.changePassword(email, passwordEncoder.encode(password));
     }
+
+    @Override
+    public void addNewAdmin(String toString, Admin admin) {
+        adminDAO.addNewAdmin(toString, admin);
+    }
 }

@@ -90,6 +90,7 @@ public class CourseDAOImpl implements CourseDAO {
             course.setName(resultSet.getString("course_name"));
             course.setSchoolId(resultSet.getInt("school_id"));
             course.setId(resultSet.getInt("id"));
+            course.setDescription(resultSet.getString("description"));
             return course;
         }
     }

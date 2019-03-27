@@ -106,6 +106,7 @@ public class GroupDAOImpl implements GroupDAO {
             group.setName(resultSet.getString("group_name"));
             group.setCourse_id(resultSet.getInt("course_id"));
             group.setCurr_unit(resultSet.getInt("current_unit"));
+            group.setDescription(resultSet.getString("description"));
             //TODO: Нужно добавить Timestamp
 
 
