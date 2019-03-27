@@ -66,7 +66,7 @@ public class CourseController {
             }
         }
         try {
-            if(session.getAttribute("user") != null){
+            if(session.getAttribute("user") != null) {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(courseService.getCoursesByAdmin(session.getAttribute("user").toString()));
             }  else {
@@ -120,7 +120,7 @@ public class CourseController {
     }
 
     @PostMapping(path = "/delete")
-    public ResponseEntity create(HttpSession session, @RequestBody Integer id) {
+    public ResponseEntity delete(HttpSession session, @RequestBody Integer id) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
