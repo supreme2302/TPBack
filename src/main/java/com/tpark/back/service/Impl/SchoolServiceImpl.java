@@ -10,10 +10,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class SchoolServiceImpl implements SchoolService {
 
-    private final SchoolDAOImpl schoolDAO;
+    private final SchoolDAO schoolDAO;
 
     @Autowired
-    SchoolServiceImpl(SchoolDAOImpl schoolDAO){
+    SchoolServiceImpl(SchoolDAO schoolDAO){
         this.schoolDAO = schoolDAO;
     }
 

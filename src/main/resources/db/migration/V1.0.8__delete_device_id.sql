@@ -1,0 +1,1 @@
+ALTER TABLE school DROP COLUMN device_id;

@@ -99,7 +99,7 @@ public class UnitControllerTests {
     public void deleteUnitTest() throws Exception {
         CookieAssistant assistant= new CookieAssistant(mockMvc);
         Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
-        this.mockMvc.perform(post("/unit/delete/")
+         this.mockMvc.perform(post("/unit/delete/")
                 .contentType(contentType)
                 .content("1")
                 .cookie(allCookies))

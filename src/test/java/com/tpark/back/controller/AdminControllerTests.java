@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ContextConfiguration;
@@ -37,6 +38,7 @@ public class AdminControllerTests {
     private MockMvc mockMvc;
 
 
+
     private Gson gson = new Gson();
 
     private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
@@ -50,7 +52,7 @@ public class AdminControllerTests {
         admin.setEmail("test@s.ru");
         admin.setPassword("123");
         String authJSON = gson.toJson(admin);
-        this.mockMvc.perform(post("http://localhost:8090/admin/register")
+        this.mockMvc.perform(post("/admin/register")
                 .contentType(contentType)
                 .content(authJSON))
                 .andDo(print())
