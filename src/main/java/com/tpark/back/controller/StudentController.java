@@ -13,6 +13,7 @@ import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHtt
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/student")
@@ -80,6 +81,22 @@ public class StudentController {
         sessionAuth(session, student.getEmail());
         studentFromDb.setPassword("fuck you");
         return ResponseEntity.ok(studentFromDb);
+    }
+
+    @GetMapping(path = "/group/{id}")
+    public ResponseEntity getStudentsFromGroup(@PathVariable(name = "id") int id,
+                                               HttpSession httpSession) {
+//        Object session = httpSession.getAttribute("student");
+//        if (session == null) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UserStatus.ACCESS_ERROR);
+//        }
+//        Student student = studentService.getStudentByEmailWithoutGroupId(session.toString());
+//        if (student == null) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(UserStatus.NOT_FOUND);
+//        }
+
+        List<Student> students = studentService.getStudentsFromGroupById(id);
+        return ResponseEntity.ok(students);
     }
 
     private void sessionAuth(HttpSession session, String email) {

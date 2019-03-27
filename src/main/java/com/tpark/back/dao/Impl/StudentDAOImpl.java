@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 @Repository
 public class StudentDAOImpl implements StudentDAO {
@@ -50,6 +51,14 @@ public class StudentDAOImpl implements StudentDAO {
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
+    }
+
+    @Override
+    public List<Student> getStudentsFromGroupById(int id) {
+        final String sql = "SELECT * FROM student "
+                + "JOIN student_group g on student.id = g.student_id "
+                + "JOIN group_course gc on g.group_id = gc.id WHERE gc.id = ?";
+        return jdbc.query(sql, studentMapper, id);
     }
 
     @Override
