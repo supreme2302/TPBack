@@ -1,5 +1,6 @@
 package com.tpark.back.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tpark.back.model.Admin;
 import com.tpark.back.model.Student;
 import com.tpark.back.model.StudentAuth;
@@ -82,6 +83,16 @@ public class StudentController {
         sessionAuth(session, student.getEmail());
         studentFromDb.setPassword("fuck you");
         return ResponseEntity.ok(studentFromDb);
+    }
+
+    @PostMapping(path = "/logout")
+    public ResponseEntity logout(HttpSession httpSession) {
+        Object object = httpSession.getAttribute("student");
+        if (object == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UserStatus.ACCESS_ERROR);
+        }
+        httpSession.invalidate();
+        return ResponseEntity.ok(UserStatus.SUCCESSFULLY_LOGGED_OUT);
     }
 
     @GetMapping(path = "/group/{id}")
