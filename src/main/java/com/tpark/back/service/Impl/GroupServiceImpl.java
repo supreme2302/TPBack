@@ -1,8 +1,7 @@
 package com.tpark.back.service.Impl;
 
-import com.tpark.back.dao.Impl.CourseDAOImpl;
 import com.tpark.back.dao.Impl.GroupDAOImpl;
-import com.tpark.back.model.Group;
+import com.tpark.back.model.dto.GroupDTO;
 import com.tpark.back.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,23 +19,23 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public List<Group> getGroupsByCourse(int courseID, String email){
+    public List<GroupDTO> getGroupsByCourse(int courseID, String email){
         return groupDAO.getGroupsByCourse(courseID, email);
     };
 
     @Override
-    public Group getGroup(int groupID, String email){
+    public GroupDTO getGroup(int groupID, String email){
         return groupDAO.getGroup(groupID, email);
     }
 
     @Override
-    public void createGroup(Group group, String email){
-        groupDAO.createGroup(group, email);
+    public void createGroup(GroupDTO groupDTO, String email){
+        groupDAO.createGroup(groupDTO, email);
     }
 
     @Override
-    public void changeGroup(Group group, String email){
-        groupDAO.changeGroup(group, email);
+    public void changeGroup(GroupDTO groupDTO, String email){
+        groupDAO.changeGroup(groupDTO, email);
     }
 
     @Override
@@ -45,7 +44,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public Group getGroupByCourseForStudent(Integer courseId, String student) {
+    public GroupDTO getGroupByCourseForStudent(Integer courseId, String student) {
         return groupDAO.getGroupByStudent(courseId, student);
     }
 

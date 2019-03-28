@@ -3,19 +3,16 @@ package com.tpark.back.controller;
 
 import com.google.gson.Gson;
 import com.tpark.back.config.EmbeddedPostgresConfiguration;
-import com.tpark.back.model.Group;
+import com.tpark.back.model.dto.GroupDTO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -102,14 +99,14 @@ public class GroupControllerTest {
 
     @Test
     public void createGroupTest() throws Exception {
-        Group group = new Group();
-        group.setName("Fuckji");
-        group.setCourse_id(1);
-        group.setCurr_unit(1);
-        String authJSON = gson.toJson(group);
+        GroupDTO groupDTO = new GroupDTO();
+        groupDTO.setName("Fuckji");
+        groupDTO.setCourse_id(1);
+        groupDTO.setCurr_unit(1);
+        String authJSON = gson.toJson(groupDTO);
         CookieAssistant assistant= new CookieAssistant(mockMvc);
         Cookie[] allCookies = assistant.getAdminCookie("existforkostyan@e.ru");
-        this.mockMvc.perform(post("/group/create")
+        this.mockMvc.perform(post("/groupDTO/create")
                 .contentType(contentType)
                 .content(authJSON)
                 .cookie(allCookies))

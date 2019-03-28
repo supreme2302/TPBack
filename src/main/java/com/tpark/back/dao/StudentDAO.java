@@ -1,18 +1,18 @@
 package com.tpark.back.dao;
 
-import com.tpark.back.model.Student;
+import com.tpark.back.model.dto.StudentDTO;
 
 import java.util.List;
 
 public interface StudentDAO {
 
-    void addStudent(Student student);
+    void addStudent(StudentDTO studentDTO);
 
-    Student getStudentByEmailWithGroupId(String email);
+    StudentDTO getStudentByEmailWithGroupId(String email);
 
-    Student getStudentByEmailWithoutGroupId(String email);
+    StudentDTO getStudentByEmailWithoutGroupId(String email);
 
-    List<Student> getStudentsFromGroupById(int id);
+    List<StudentDTO> getStudentsFromGroupById(int id);
 
-    List<Student> getAllStudents(String admin);
+    List<StudentDTO> getAllStudents(String admin);
 }

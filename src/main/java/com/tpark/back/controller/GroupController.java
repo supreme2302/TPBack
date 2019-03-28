@@ -1,14 +1,13 @@
 package com.tpark.back.controller;
 
 
-import com.tpark.back.model.Group;
+import com.tpark.back.model.dto.GroupDTO;
 import com.tpark.back.model.UserStatus;
 import com.tpark.back.service.AdminService;
 import com.tpark.back.service.GroupService;
 import com.tpark.back.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession;
@@ -104,7 +103,7 @@ public class GroupController {
     }
 
     @PostMapping(path = "/create")
-    public ResponseEntity create(HttpSession session, @RequestBody Group group) {
+    public ResponseEntity create(HttpSession session, @RequestBody GroupDTO groupDTO) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -114,7 +113,7 @@ public class GroupController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            groupService.createGroup(group, session.getAttribute("user").toString());
+            groupService.createGroup(groupDTO, session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(UserStatus.SUCCESSFULLY_CREATED);
         } catch (DuplicateKeyException e) {
@@ -124,7 +123,7 @@ public class GroupController {
     }
 
     @PostMapping(path = "/change")
-    public ResponseEntity change(HttpSession session, @RequestBody Group group) {
+    public ResponseEntity change(HttpSession session, @RequestBody GroupDTO groupDTO) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -134,7 +133,7 @@ public class GroupController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            groupService.changeGroup(group,session.getAttribute("user").toString());
+            groupService.changeGroup(groupDTO,session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.OK)
                     .body(UserStatus.SUCCESSFULLY_CHANGED);
         } catch (DuplicateKeyException e) {

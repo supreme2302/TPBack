@@ -1,7 +1,7 @@
 package com.tpark.back.dao.Impl;
 
 import com.tpark.back.dao.StudentDAO;
-import com.tpark.back.model.Student;
+import com.tpark.back.model.dto.StudentDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -28,27 +28,27 @@ public class StudentDAOImpl implements StudentDAO {
     }
 
     @Override
-    public void addStudent(Student student) {
+    public void addStudent(StudentDTO studentDTO) {
         final String sql = "INSERT INTO student(email, first_name, last_name, password, school_id) "
                 + "VALUES (?, ?, ?, ?, ?)";
-        jdbc.update(sql, student.getEmail(), student.getName(), student.getSurname(),
-                student.getPassword(), student.getSchool_id());
+        jdbc.update(sql, studentDTO.getEmail(), studentDTO.getName(), studentDTO.getSurname(),
+                studentDTO.getPassword(), studentDTO.getSchool_id());
     }
 
     @Override
-    public Student getStudentByEmailWithoutGroupId(String email) {
+    public StudentDTO getStudentByEmailWithoutGroupId(String email) {
         final String sql = "SELECT id, email, first_name, last_name, password, school_id " +
                 "FROM student WHERE lower(email) = lower(?)";
         try {
             return jdbc.queryForObject(sql, ((resultSet, i) -> {
-                Student student = new Student();
-                student.setId(resultSet.getInt("id"));
-                student.setEmail(resultSet.getString("email"));
-                student.setName(resultSet.getString("first_name"));
-                student.setSurname(resultSet.getString("last_name"));
-                student.setPassword(resultSet.getString("password"));
-                student.setSchool_id(resultSet.getInt("school_id"));
-                return student;
+                StudentDTO studentDTO = new StudentDTO();
+                studentDTO.setId(resultSet.getInt("id"));
+                studentDTO.setEmail(resultSet.getString("email"));
+                studentDTO.setName(resultSet.getString("first_name"));
+                studentDTO.setSurname(resultSet.getString("last_name"));
+                studentDTO.setPassword(resultSet.getString("password"));
+                studentDTO.setSchool_id(resultSet.getInt("school_id"));
+                return studentDTO;
             }), email);
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -56,7 +56,7 @@ public class StudentDAOImpl implements StudentDAO {
     }
 
     @Override
-    public List<Student> getStudentsFromGroupById(int id) {
+    public List<StudentDTO> getStudentsFromGroupById(int id) {
         final String sql = "SELECT * FROM student "
                 + "JOIN student_group g on student.id = g.student_id "
                 + "JOIN group_course gc on g.group_id = gc.id WHERE gc.id = ?";
@@ -65,19 +65,19 @@ public class StudentDAOImpl implements StudentDAO {
 
     @Override
     @Transactional
-    public List<Student> getAllStudents(String admin) {
+    public List<StudentDTO> getAllStudents(String admin) {
         String sql = "SELECT student.id, student.email, first_name, last_name, student.password, student.school_id " +
                 "FROM student JOIN admin ON admin.email = ? AND admin.school_id = student.school_id";
         try {
-            List<Student> students =  jdbc.query(sql, studentMapper, admin);
+            List<StudentDTO> studentDTOS =  jdbc.query(sql, studentMapper, admin);
             sql = "SELECT group_id FROM student_group WHERE student_id = ?;";
             int i = 0;
-            while (i<students.size()){
-                List<Integer> groups = jdbc.query(sql,groupMapper,students.get(i).getId());
-                students.get(i).setGroup_id(groups);
+            while (i< studentDTOS.size()){
+                List<Integer> groups = jdbc.query(sql,groupMapper, studentDTOS.get(i).getId());
+                studentDTOS.get(i).setGroup_id(groups);
                 i++;
             }
-            return students;
+            return studentDTOS;
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -85,16 +85,16 @@ public class StudentDAOImpl implements StudentDAO {
 
     @Override
     @Transactional
-    public Student getStudentByEmailWithGroupId(String email) {
+    public StudentDTO getStudentByEmailWithGroupId(String email) {
 
         String sql = "SELECT student.id, email, first_name, last_name, password, school_id " +
                 "FROM student WHERE lower(email) = lower(?)";
         try {
-            Student student =  jdbc.queryForObject(sql, studentMapper, email);
+            StudentDTO studentDTO =  jdbc.queryForObject(sql, studentMapper, email);
             sql = "SELECT group_id FROM student_group WHERE student_id = ?;";
-            List<Integer> groups = jdbc.query(sql,groupMapper,student.getId());
-            student.setGroup_id(groups);
-            return student;
+            List<Integer> groups = jdbc.query(sql,groupMapper, studentDTO.getId());
+            studentDTO.setGroup_id(groups);
+            return studentDTO;
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -107,17 +107,17 @@ public class StudentDAOImpl implements StudentDAO {
         }
     }
 
-    private static final class StudentMapper implements RowMapper<Student> {
+    private static final class StudentMapper implements RowMapper<StudentDTO> {
         @Override
-        public Student mapRow(ResultSet resultSet, int i) throws SQLException {
-            Student student = new Student();
-            student.setId(resultSet.getInt("id"));
-            student.setEmail(resultSet.getString("email"));
-            student.setName(resultSet.getString("first_name"));
-            student.setSurname(resultSet.getString("last_name"));
-            student.setPassword(resultSet.getString("password"));
-            student.setSchool_id(resultSet.getInt("school_id"));
-            return student;
+        public StudentDTO mapRow(ResultSet resultSet, int i) throws SQLException {
+            StudentDTO studentDTO = new StudentDTO();
+            studentDTO.setId(resultSet.getInt("id"));
+            studentDTO.setEmail(resultSet.getString("email"));
+            studentDTO.setName(resultSet.getString("first_name"));
+            studentDTO.setSurname(resultSet.getString("last_name"));
+            studentDTO.setPassword(resultSet.getString("password"));
+            studentDTO.setSchool_id(resultSet.getInt("school_id"));
+            return studentDTO;
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.tpark.back.service.Impl;
 
 import com.tpark.back.dao.CourseDAO;
-import com.tpark.back.model.Course;
+import com.tpark.back.model.dto.CourseDTO;
 import com.tpark.back.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,13 +19,13 @@ public class CourseServiceImpl implements CourseService {
 
 
     @Override
-    public List<Course> getCoursesByAdmin(String email) {
+    public List<CourseDTO> getCoursesByAdmin(String email) {
         return courseDAO.getCoursesByAdmin(email);
     }
 
     @Override
-    public void createCourse(Course course, String email) {
-        courseDAO.createCourse(course, email);
+    public void createCourse(CourseDTO courseDTO, String email) {
+        courseDAO.createCourse(courseDTO, email);
     }
 
     @Override
@@ -34,18 +34,18 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Course getCourse(int courseID, String email){ return courseDAO.getCourse(courseID, email); };
+    public CourseDTO getCourse(int courseID, String email){ return courseDAO.getCourse(courseID, email); };
 
     @Override
-    public void changeCourse(Course course, String admin){ courseDAO.changeCourse(course, admin); }
+    public void changeCourse(CourseDTO courseDTO, String admin){ courseDAO.changeCourse(courseDTO, admin); }
 
     @Override
-    public Course getStudentCourse(Integer id, String student) {
+    public CourseDTO getStudentCourse(Integer id, String student) {
         return courseDAO.getStudentCourse(id, student);
     }
 
     @Override
-    public List<Course> getCoursesByStudent(String student) {
+    public List<CourseDTO> getCoursesByStudent(String student) {
         return courseDAO.getCoursesByStudent(student);
     }
 

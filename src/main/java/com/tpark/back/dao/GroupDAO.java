@@ -1,21 +1,21 @@
 package com.tpark.back.dao;
 
-import com.tpark.back.model.Group;
+import com.tpark.back.model.dto.GroupDTO;
 
 import java.util.List;
 
 public interface GroupDAO {
     void deleteGroup(int id, String email);
 
-    void changeGroup(Group group, String email);
+    void changeGroup(GroupDTO groupDTO, String email);
 
-    void createGroup(Group group, String email);
+    void createGroup(GroupDTO groupDTO, String email);
 
-    Group getGroup(int groupID, String email);
+    GroupDTO getGroup(int groupID, String email);
 
-    List<Group> getGroupsByCourse(int courseID , String email);
+    List<GroupDTO> getGroupsByCourse(int courseID , String email);
 
-    List<Group> getGroupsForAdmin(String user);
+    List<GroupDTO> getGroupsForAdmin(String user);
 
-    List<Group> getGroupsForStudent(String student);
+    List<GroupDTO> getGroupsForStudent(String student);
 }

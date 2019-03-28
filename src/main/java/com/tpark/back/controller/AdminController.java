@@ -1,7 +1,7 @@
 package com.tpark.back.controller;
 
-import com.tpark.back.model.ChangePassword;
-import com.tpark.back.model.Admin;
+import com.tpark.back.model.dto.ChangePasswordDTO;
+import com.tpark.back.model.dto.AdminDTO;
 import com.tpark.back.model.UserStatus;
 import com.tpark.back.service.AdminService;
 import org.slf4j.Logger;
@@ -41,7 +41,7 @@ public class AdminController {
 
         String email = sessionAttribute.toString();
 
-        Admin user = adminService.getAdminByEmail(email);
+        AdminDTO user = adminService.getAdminByEmail(email);
 
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -52,7 +52,7 @@ public class AdminController {
     }
 
     @PostMapping(path = "/register")
-    public ResponseEntity register(HttpSession session, @RequestBody Admin user) {
+    public ResponseEntity register(HttpSession session, @RequestBody AdminDTO user) {
 
         logger.info("register session - ", session.getId());
 
@@ -66,12 +66,8 @@ public class AdminController {
                     .body(UserStatus.EMPTY_FIELDS_IN_REQUEST);
         }
 
-        logger.info("register - valid");
-
         try {
-            logger.info("register - try");
-            adminService.addAdmin(user);
-            logger.info("register - added");
+            adminService.addAdminAndCreateSchool(user);
             sessionAuth(session, user.getEmail());
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(UserStatus.SUCCESSFULLY_CREATED);
@@ -82,21 +78,21 @@ public class AdminController {
     }
 
     @PostMapping(path = "/auth")
-    public ResponseEntity auth(HttpSession httpSession, @RequestBody Admin admin) {
+    public ResponseEntity auth(HttpSession httpSession, @RequestBody AdminDTO adminDTO) {
 
         if (httpSession.getAttribute("user") != null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(UserStatus.ALREADY_AUTHENTICATED);
         }
 
-        Admin userFromDb = adminService.getAdminByEmail(admin.getEmail());
+        AdminDTO userFromDb = adminService.getAdminByEmail(adminDTO.getEmail());
         if (userFromDb == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(UserStatus.NOT_FOUND);
         }
 
         boolean userIsValid = adminService.checkAdminPassword(
-                admin.getPassword(),
+                adminDTO.getPassword(),
                 userFromDb.getPassword());
 
         if (!userIsValid) {
@@ -104,13 +100,13 @@ public class AdminController {
                     .body(UserStatus.WRONG_CREDENTIALS);
         }
 
-        sessionAuth(httpSession, admin.getEmail());
+        sessionAuth(httpSession, adminDTO.getEmail());
         return ResponseEntity.ok(UserStatus.SUCCESSFULLY_AUTHED);
     }
 
     @PostMapping(path = "/change")
     public ResponseEntity change(HttpSession httpSession,
-                                 @RequestBody ChangePassword changePassword) {
+                                 @RequestBody ChangePasswordDTO changePassword) {
 
         Object userSession = httpSession.getAttribute("user");
         if (userSession == null) {
@@ -118,7 +114,7 @@ public class AdminController {
                     .body(UserStatus.ACCESS_ERROR);
         }
 
-        Admin userFromDb = adminService.getAdminByEmail(userSession.toString());
+        AdminDTO userFromDb = adminService.getAdminByEmail(userSession.toString());
         boolean passwordIsValid = adminService.checkAdminPassword(
                 changePassword.getOldPassword(),
                 userFromDb.getPassword());
@@ -135,7 +131,7 @@ public class AdminController {
 
     @PostMapping(path = "/add")
     public ResponseEntity add(HttpSession httpSession,
-                                 @RequestBody Admin admin) {
+                                 @RequestBody AdminDTO adminDTO) {
 
         Object userSession = httpSession.getAttribute("user");
         if (userSession == null) {
@@ -144,7 +140,7 @@ public class AdminController {
         }
 
         adminService.addNewAdmin(userSession.toString(),
-               admin);
+                adminDTO);
         return ResponseEntity.ok(UserStatus.SUCCESSFULLY_CHANGED);
 
     }

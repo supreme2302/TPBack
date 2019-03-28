@@ -2,13 +2,12 @@ package com.tpark.back.controller;
 
 import com.google.gson.Gson;
 import com.tpark.back.config.EmbeddedPostgresConfiguration;
-import com.tpark.back.model.ChangePassword;
-import com.tpark.back.model.Admin;
+import com.tpark.back.model.dto.AdminDTO;
+import com.tpark.back.model.dto.ChangePasswordDTO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ContextConfiguration;
@@ -48,11 +47,11 @@ public class AdminControllerTests {
 
     @Test
     public void signUpTest() throws Exception {
-        Admin admin = new Admin();
-        admin.setEmail("test@s.ru");
-        admin.setPassword("123");
-        String authJSON = gson.toJson(admin);
-        this.mockMvc.perform(post("/admin/register")
+        AdminDTO adminDTO = new AdminDTO();
+        adminDTO.setEmail("test@s.ru");
+        adminDTO.setPassword("123");
+        String authJSON = gson.toJson(adminDTO);
+        this.mockMvc.perform(post("/adminDTO/register")
                 .contentType(contentType)
                 .content(authJSON))
                 .andDo(print())
@@ -61,7 +60,7 @@ public class AdminControllerTests {
 
     @Test
     public void signInOkTest() throws Exception {
-        Admin user = new Admin();
+        AdminDTO user = new AdminDTO();
         user.setEmail("exist@e.ru");
         user.setPassword("123");
         this.mockMvc.perform(post("/admin/auth")
@@ -93,11 +92,11 @@ public class AdminControllerTests {
 
     @Test
     public void changePasswordOkTest() throws Exception {
-        Admin user = new Admin();
+        AdminDTO user = new AdminDTO();
         user.setEmail("exist@e.ru");
         MockHttpSession session = new MockHttpSession();
         session.setAttribute("user", user.getEmail());
-        ChangePassword changePassword = new ChangePassword();
+        ChangePasswordDTO changePassword = new ChangePasswordDTO();
         changePassword.setOldPassword("123");
         changePassword.setNewPassword("321");
         CookieAssistant assistant= new CookieAssistant(mockMvc);

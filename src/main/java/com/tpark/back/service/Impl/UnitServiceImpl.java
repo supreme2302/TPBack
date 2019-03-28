@@ -1,7 +1,7 @@
 package com.tpark.back.service.Impl;
 
 import com.tpark.back.dao.Impl.UnitDAOImpl;
-import com.tpark.back.model.Unit;
+import com.tpark.back.model.dto.UnitDTO;
 import com.tpark.back.service.UnitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,13 +28,13 @@ public class UnitServiceImpl implements UnitService {
     }
 
     @Override
-    public void createUnit(Unit unit, String email) {
-        unitDAO.createUnit(unit, email);
+    public void createUnit(UnitDTO unitDTO, String email) {
+        unitDAO.createUnit(unitDTO, email);
     }
 
     @Override
-    public void changeUnit(Unit unit, String email) {
-        unitDAO.changeUnit(unit, email);
+    public void changeUnit(UnitDTO unitDTO, String email) {
+        unitDAO.changeUnit(unitDTO, email);
     }
 
     @Override

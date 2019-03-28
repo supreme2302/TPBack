@@ -1,26 +1,26 @@
 package com.tpark.back.service;
 
-import com.tpark.back.model.Task;
-import com.tpark.back.model.TaskUnit;
+import com.tpark.back.model.dto.TaskDTO;
+import com.tpark.back.model.dto.TaskUnitDTO;
 
 import java.util.List;
 
 public interface TaskService {
     void deleteTask(String admin ,int id);
 
-    void changeTask(String admin ,Task task);
+    void changeTask(String admin , TaskDTO taskDTO);
 
-    void createTask(String admin ,Task task);
+    void createTask(String admin , TaskDTO taskDTO);
 
-    Task getTask(String admin ,Integer taskId);
+    TaskDTO getTask(String admin , Integer taskId);
 
-    List<Task> getTasksByUnit(String admin ,Integer unitId);
+    List<TaskDTO> getTasksByUnit(String admin , Integer unitId);
 
-    List<Task> getTasks(String admin);
+    List<TaskDTO> getTasks(String admin);
 
     Object getTaskStudent(Integer taskId, String student);
 
     Object getTasksByUnitStudent(Integer unitId, String student);
 
-    void addTaskToUnit(String user, TaskUnit task);
+    void addTaskToUnit(String user, TaskUnitDTO task);
 }

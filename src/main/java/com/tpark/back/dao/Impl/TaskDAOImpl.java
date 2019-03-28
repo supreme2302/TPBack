@@ -1,8 +1,8 @@
 package com.tpark.back.dao.Impl;
 
 import com.tpark.back.dao.TaskDAO;
-import com.tpark.back.model.Task;
-import com.tpark.back.model.TaskUnit;
+import com.tpark.back.model.dto.TaskDTO;
+import com.tpark.back.model.dto.TaskUnitDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -37,37 +37,37 @@ public class TaskDAOImpl implements TaskDAO {
     }
 
     @Override
-    public void changeTask(String admin ,Task task) {
+    public void changeTask(String admin , TaskDTO taskDTO) {
 
         Integer school_id = schoolIDDAO.GetSchoolId(admin);
         final String sql = "UPDATE task SET description = ?, task_ref = ?, task_type=? WHERE id = ? AND school_id=?;";
-        jdbc.update(sql,task.getDescription(), task.getTask_ref(), task.getTask_type(), task.getId(),school_id);
+        jdbc.update(sql, taskDTO.getDescription(), taskDTO.getTask_ref(), taskDTO.getTask_type(), taskDTO.getId(),school_id);
 
     }
 
     @Override
-    public void createTask(String admin ,Task task) {
+    public void createTask(String admin , TaskDTO taskDTO) {
         Integer school_id = schoolIDDAO.GetSchoolId(admin);
         final String sql = "INSERT INTO task (description, task_ref, task_type,school_id) VALUES (?, ?, ?,?);";
-        jdbc.update(sql, task.getDescription(), task.getTask_ref(), task.getTask_type(),school_id);
+        jdbc.update(sql, taskDTO.getDescription(), taskDTO.getTask_ref(), taskDTO.getTask_type(),school_id);
     }
 
     @Override
-    public Task getTask(String admin ,Integer taskId) {
+    public TaskDTO getTask(String admin , Integer taskId) {
         Integer school_id = schoolIDDAO.GetSchoolId(admin);
         final String sql = "SELECT * FROM task WHERE id = ?  and school_id = ? LIMIT 1;";
         return jdbc.queryForObject(sql, taskMapper, taskId, school_id);
     }
 
     @Override
-    public List<Task> getTasksByUnit(String admin ,Integer unitId) {
+    public List<TaskDTO> getTasksByUnit(String admin , Integer unitId) {
         Integer school_id = schoolIDDAO.GetSchoolId(admin);
         final String sql = "SELECT * FROM task JOIN task_unit ON task_unit.unit_id = ? AND task.id = task_unit.task_id AND school_id=?;";
         return jdbc.query(sql, taskMapper, unitId, school_id);
     }
 
     @Override
-    public List<Task> getAllTasks(String admin) {
+    public List<TaskDTO> getAllTasks(String admin) {
         Integer school_id = schoolIDDAO.GetSchoolId(admin);
         final String sql = "SELECT * FROM task WHERE school_id=?;";
         return jdbc.query(sql, taskMapper, school_id);
@@ -97,7 +97,7 @@ public class TaskDAOImpl implements TaskDAO {
     }
 
     @Override
-    public void addTaskToUnit(String user, TaskUnit task) {
+    public void addTaskToUnit(String user, TaskUnitDTO task) {
         Integer school_id = schoolIDDAO.GetSchoolId(user);
         String sql  = "SELECT * FROM task WHERE task.id = ? AND task.school_id = ?;";
         if(jdbc.query(sql, taskMapper, task.getTaskID(), school_id)!= null) {
@@ -107,15 +107,15 @@ public class TaskDAOImpl implements TaskDAO {
 
     }
 
-    private static final class TaskMapper implements RowMapper<Task> {
+    private static final class TaskMapper implements RowMapper<TaskDTO> {
         @Override
-        public Task mapRow(ResultSet resultSet, int i) throws SQLException {
-            Task task = new Task();
-            task.setId(resultSet.getInt("id"));
-            task.setTask_type(resultSet.getInt("unit_id"));
-            task.setTask_ref(resultSet.getString("task_ref"));
-            task.setDescription(resultSet.getString("description"));
-            return task;
+        public TaskDTO mapRow(ResultSet resultSet, int i) throws SQLException {
+            TaskDTO taskDTO = new TaskDTO();
+            taskDTO.setId(resultSet.getInt("id"));
+            taskDTO.setTask_type(resultSet.getInt("unit_id"));
+            taskDTO.setTask_ref(resultSet.getString("task_ref"));
+            taskDTO.setDescription(resultSet.getString("description"));
+            return taskDTO;
         }
     }
 }

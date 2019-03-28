@@ -1,7 +1,7 @@
 package com.tpark.back.dao.Impl;
 
 import com.tpark.back.dao.UnitDAO;
-import com.tpark.back.model.Unit;
+import com.tpark.back.model.dto.UnitDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -27,14 +27,14 @@ public class UnitDAOImpl implements UnitDAO {
     }
 
     @Override
-    public List<Unit> getUnitsByCourse(Integer courseId, String email) {
+    public List<UnitDTO> getUnitsByCourse(Integer courseId, String email) {
         Integer schoolId = schoolIDDAO.GetSchoolId(email);
         final String sql = "SELECT * FROM unit WHERE course_id = ? AND school_id = ?;";
         return jdbc.query(sql, unitMapper, courseId, schoolId);
     }
 
     @Override
-    public Unit getUnit(Integer unitId, String email) {
+    public UnitDTO getUnit(Integer unitId, String email) {
         Integer schoolId = schoolIDDAO.GetSchoolId(email);
         final String sql = "SELECT * FROM unit WHERE id = ? AND school_id=?;";
         return jdbc.queryForObject(sql, unitMapper, unitId, schoolId);
@@ -42,18 +42,18 @@ public class UnitDAOImpl implements UnitDAO {
     }
 
     @Override
-    public void createUnit(Unit unit, String email) {
+    public void createUnit(UnitDTO unitDTO, String email) {
         Integer schoolId = schoolIDDAO.GetSchoolId(email);
         final String sql = "INSERT INTO unit(unit_name, course_id, current_position,school_id) VALUES (?, ?, ?,?);";
-        jdbc.update(sql,unit.getUnit_name(), unit.getCourse_id(), unit.getPosition(),schoolId);
+        jdbc.update(sql, unitDTO.getUnit_name(), unitDTO.getCourse_id(), unitDTO.getPosition(),schoolId);
 
     }
 
     @Override
-    public void changeUnit(Unit unit, String email) {
+    public void changeUnit(UnitDTO unitDTO, String email) {
         Integer schoolId = schoolIDDAO.GetSchoolId(email);
         final String sql = "UPDATE unit SET unit_name = ?, course_id = ?, current_position=? WHERE id = ? AND school_id=?;";
-        jdbc.update(sql,unit.getUnit_name(), unit.getCourse_id(), unit.getPosition(), unit.getId(), schoolId);
+        jdbc.update(sql, unitDTO.getUnit_name(), unitDTO.getCourse_id(), unitDTO.getPosition(), unitDTO.getId(), schoolId);
 
     }
 
@@ -71,7 +71,7 @@ public class UnitDAOImpl implements UnitDAO {
     }
 
     @Override
-    public Unit getUnitForStudent(Integer unitId, String student) {
+    public UnitDTO getUnitForStudent(Integer unitId, String student) {
         final String sql = "SELECT * FROM unit JOIN" +
                 "((SELECT email, group_id FROM student JOIN student_group sg " +
                 "on student.id = sg.student_id AND student.email = ?)" +
@@ -81,7 +81,7 @@ public class UnitDAOImpl implements UnitDAO {
     }
 
     @Override
-    public List<Unit> getUnitByCourseForStudent(Integer courseId, String student) {
+    public List<UnitDTO> getUnitByCourseForStudent(Integer courseId, String student) {
         final String sql = "SELECT * FROM unit JOIN" +
                 "((SELECT email, group_id FROM student JOIN student_group sg " +
                 "on student.id = sg.student_id AND student.email = ?)" +
@@ -99,16 +99,16 @@ public class UnitDAOImpl implements UnitDAO {
         }
     }
 
-    private static final class UnitMapper implements RowMapper<Unit> {
+    private static final class UnitMapper implements RowMapper<UnitDTO> {
         @Override
-        public Unit mapRow(ResultSet resultSet, int i) throws SQLException {
-            Unit unit = new Unit();
-            unit.setId(resultSet.getInt("id"));
-            unit.setCourse_id(resultSet.getInt("course_id"));
-            unit.setUnit_name(resultSet.getString("unit_name"));
-            unit.setPosition(resultSet.getInt("current_position"));
-            unit.setDescription(resultSet.getString("description"));
-            return unit;
+        public UnitDTO mapRow(ResultSet resultSet, int i) throws SQLException {
+            UnitDTO unitDTO = new UnitDTO();
+            unitDTO.setId(resultSet.getInt("id"));
+            unitDTO.setCourse_id(resultSet.getInt("course_id"));
+            unitDTO.setUnit_name(resultSet.getString("unit_name"));
+            unitDTO.setPosition(resultSet.getInt("current_position"));
+            unitDTO.setDescription(resultSet.getString("description"));
+            return unitDTO;
         }
     }
 }

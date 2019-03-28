@@ -1,19 +1,19 @@
 package com.tpark.back.service;
 
-import com.tpark.back.model.Student;
+import com.tpark.back.model.dto.StudentDTO;
 
 import java.util.List;
 
 public interface StudentService {
 
-    void addStudent(Student student);
+    void addStudent(StudentDTO studentDTO);
 
     boolean checkStudent(String rawPassword, String passwordFromDb);
 
-    Student getStudentByEmailWithGroupId(String email);
-    Student getStudentByEmailWithoutGroupId(String email);
+    StudentDTO getStudentByEmailWithGroupId(String email);
+    StudentDTO getStudentByEmailWithoutGroupId(String email);
 
-    List<Student> getStudentsFromGroupById(int id);
+    List<StudentDTO> getStudentsFromGroupById(int id);
 
-    List<Student> getAllStudents(String admin);
+    List<StudentDTO> getAllStudents(String admin);
 }
