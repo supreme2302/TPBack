@@ -26,8 +26,10 @@ public class SchoolDAOImpl implements SchoolDAO {
     public void createSchool(School school, String email) {
         String sql = "SELECT id FROM admin WHERE email = ? LIMIT 1;";
         Integer id = jdbc.queryForObject(sql,adminMapper, email);
-        sql = "INSERT INTO school(school_name, ownerid) VALUES (?,?);";
-        jdbc.update(sql, school.getName(), id);
+        sql = "INSERT INTO school(school_name, ownerid)  VALUES (?,?) RETURNING id;";
+        Integer SchoolId = jdbc.queryForObject(sql, adminMapper, school.getName(), id);
+        sql = "UPDATE admin SET school_id = ? WHERE id = ?";
+        jdbc.update(sql,id,SchoolId);
     }
 
     @Override
