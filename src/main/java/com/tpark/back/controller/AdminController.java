@@ -77,7 +77,7 @@ public class AdminController {
                     .body(UserStatus.SUCCESSFULLY_CREATED);
         } catch (DuplicateKeyException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(UserStatus.NOT_UNIQUE_EMAIL);
+                    .body(UserStatus.NOT_UNIQUE_FIELDS_IN_REQUEST);
         }
     }
 
@@ -163,11 +163,5 @@ public class AdminController {
     private void sessionAuth(HttpSession session, String email){
         session.setAttribute("user", email);
         session.setMaxInactiveInterval(7*24*60*60);
-    }
-
-    @GetMapping(path = "/test")
-    public ResponseEntity testGetMethod() {
-        logger.info("TEEEEEEESTTT");
-        return ResponseEntity.ok("OOOOOOOOOOOOOOOOOKKKKKK");
     }
 }

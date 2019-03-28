@@ -1,6 +1,5 @@
 package com.tpark.back.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tpark.back.model.Admin;
 import com.tpark.back.model.Student;
 import com.tpark.back.model.StudentAuth;
@@ -9,6 +8,7 @@ import com.tpark.back.service.AdminService;
 import com.tpark.back.service.StudentService;
 import com.tpark.back.util.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession;
@@ -46,7 +46,13 @@ public class StudentController {
 
         String password = RandomString.getShortTokenString();
         student.setPassword(password);
-        studentService.addStudent(student);
+        try {
+            studentService.addStudent(student);
+        } catch (DuplicateKeyException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(UserStatus.NOT_UNIQUE_FIELDS_IN_REQUEST);
+        }
+
         student.setPassword(password);
         return ResponseEntity.status(HttpStatus.CREATED).body(student);
     }
