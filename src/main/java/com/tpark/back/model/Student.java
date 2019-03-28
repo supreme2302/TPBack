@@ -1,6 +1,8 @@
 package com.tpark.back.model;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class Student {
     private int id;
@@ -8,7 +10,7 @@ public class Student {
     private String name;
     private String surname;
     private String password;
-    private String group_id;
+    private List<Integer> group_id;
     private String phone;
     private int school_id;
 }

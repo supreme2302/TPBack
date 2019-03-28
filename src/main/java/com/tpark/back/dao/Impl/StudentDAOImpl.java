@@ -19,6 +19,7 @@ public class StudentDAOImpl implements StudentDAO {
     private final JdbcTemplate jdbc;
 
     private final static StudentMapper studentMapper = new StudentMapper();
+    private final static GroupMapper groupMapper = new GroupMapper();
 
     @Autowired
     public StudentDAOImpl(JdbcTemplate jdbc) {
@@ -63,13 +64,24 @@ public class StudentDAOImpl implements StudentDAO {
 
     @Override
     public Student getStudentByEmailWithGroupId(String email) {
-        final String sql = "SELECT id, email, first_name, last_name, password, group_id, school_id " +
-                "FROM student JOIN student_group g on student.id = g.student_id " +
-                "WHERE lower(email) = lower(?)";
+
+        String sql = "SELECT student.id, email, first_name, last_name, password, school_id " +
+                "FROM student WHERE lower(email) = lower(?)";
         try {
-            return jdbc.queryForObject(sql, studentMapper, email);
+            Student student =  jdbc.queryForObject(sql, studentMapper, email);
+            sql = "SELECT group_id FROM student_group WHERE student_id = ?;";
+            List<Integer> groups = jdbc.query(sql,groupMapper,student.getId());
+            student.setGroup_id(groups);
+            return student;
         } catch (EmptyResultDataAccessException e) {
             return null;
+        }
+    }
+
+    private static final class GroupMapper implements RowMapper<Integer> {
+        @Override
+        public Integer mapRow(ResultSet resultSet, int i) throws SQLException {
+            return resultSet.getInt("group_id");
         }
     }
 
@@ -81,7 +93,6 @@ public class StudentDAOImpl implements StudentDAO {
             student.setEmail(resultSet.getString("email"));
             student.setName(resultSet.getString("first_name"));
             student.setSurname(resultSet.getString("last_name"));
-            student.setGroup_id(resultSet.getString("group_id"));
             student.setPassword(resultSet.getString("password"));
             student.setSchool_id(resultSet.getInt("school_id"));
             return student;

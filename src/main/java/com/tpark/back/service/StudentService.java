@@ -10,6 +10,7 @@ public interface StudentService {
 
     boolean checkStudent(String rawPassword, String passwordFromDb);
 
+    Student getStudentByEmailWithGroupId(String email);
     Student getStudentByEmailWithoutGroupId(String email);
 
     List<Student> getStudentsFromGroupById(int id);

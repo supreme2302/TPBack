@@ -38,6 +38,11 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    public Student getStudentByEmailWithGroupId(String email) {
+        return studentDAO.getStudentByEmailWithGroupId(email);
+    }
+
+    @Override
     public List<Student> getStudentsFromGroupById(int id) {
         return studentDAO.getStudentsFromGroupById(id);
     }

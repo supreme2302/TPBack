@@ -61,7 +61,7 @@ public class StudentController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(UserStatus.ALREADY_AUTHENTICATED);
         }
 
-        Student studentFromDb = studentService.getStudentByEmailWithoutGroupId(student.getEmail());
+        Student studentFromDb = studentService.getStudentByEmailWithGroupId(student.getEmail());
 
         if (studentFromDb == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

@@ -37,7 +37,7 @@ public class CourseController {
     @GetMapping(path = "/{courseId}")
     public ResponseEntity getCourse(HttpSession session,@PathVariable int courseID) {
         if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {
-            if(session.getAttribute("student") == null || studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null) {
+            if(session.getAttribute("student") == null || studentService.getStudentByEmailWithGroupId(session.getAttribute("student").toString()) == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(UserStatus.ACCESS_ERROR);
             }
@@ -60,7 +60,7 @@ public class CourseController {
     @GetMapping(path = "/")
     public ResponseEntity getSchoolCourses(HttpSession session) {
         if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {
-            if(session.getAttribute("student") == null || studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null) {
+            if(session.getAttribute("student") == null || studentService.getStudentByEmailWithGroupId(session.getAttribute("student").toString()) == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(UserStatus.ACCESS_ERROR);
             }
