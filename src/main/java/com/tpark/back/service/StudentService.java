@@ -14,4 +14,6 @@ public interface StudentService {
     Student getStudentByEmailWithoutGroupId(String email);
 
     List<Student> getStudentsFromGroupById(int id);
+
+    List<Student> getAllStudents(String admin);
 }

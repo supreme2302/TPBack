@@ -99,6 +99,23 @@ public class StudentController {
         return ResponseEntity.ok(students);
     }
 
+
+    @GetMapping(path = "/")
+    public ResponseEntity getAllStudents(HttpSession session) {
+        Object adminSession = session.getAttribute("user");
+        if (adminSession == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UserStatus.ACCESS_ERROR);
+        }
+
+        Admin existingAdmin = adminService.getAdminByEmail(adminSession.toString());
+
+        if (existingAdmin == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(UserStatus.ACCESS_ERROR);
+        }
+        List<Student> students = studentService.getAllStudents(session.getAttribute("user").toString());
+        return ResponseEntity.ok(students);
+    }
+
     private void sessionAuth(HttpSession session, String email) {
         session.setAttribute("student", email);
         session.setMaxInactiveInterval(60*60*24);

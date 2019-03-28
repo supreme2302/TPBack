@@ -7,6 +7,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -63,6 +64,27 @@ public class StudentDAOImpl implements StudentDAO {
     }
 
     @Override
+    @Transactional
+    public List<Student> getAllStudents(String admin) {
+        String sql = "SELECT student.id, student.email, first_name, last_name, student.password, student.school_id " +
+                "FROM student JOIN admin ON admin.email = ? AND admin.school_id = student.school_id";
+        try {
+            List<Student> students =  jdbc.query(sql, studentMapper, admin);
+            sql = "SELECT group_id FROM student_group WHERE student_id = ?;";
+            int i = 0;
+            while (i<students.size()){
+                List<Integer> groups = jdbc.query(sql,groupMapper,students.get(i).getId());
+                students.get(i).setGroup_id(groups);
+                i++;
+            }
+            return students;
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
+    @Transactional
     public Student getStudentByEmailWithGroupId(String email) {
 
         String sql = "SELECT student.id, email, first_name, last_name, password, school_id " +

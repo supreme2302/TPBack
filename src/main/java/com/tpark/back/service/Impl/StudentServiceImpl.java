@@ -46,4 +46,10 @@ public class StudentServiceImpl implements StudentService {
     public List<Student> getStudentsFromGroupById(int id) {
         return studentDAO.getStudentsFromGroupById(id);
     }
+
+    @Override
+    public List<Student> getAllStudents(String admin){
+        return studentDAO.getAllStudents(admin);
+
+    }
 }
