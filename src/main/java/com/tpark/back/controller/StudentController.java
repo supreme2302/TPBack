@@ -2,6 +2,7 @@ package com.tpark.back.controller;
 
 import com.tpark.back.model.Admin;
 import com.tpark.back.model.Student;
+import com.tpark.back.model.StudentAuth;
 import com.tpark.back.model.UserStatus;
 import com.tpark.back.service.AdminService;
 import com.tpark.back.service.StudentService;
@@ -50,7 +51,7 @@ public class StudentController {
     }
 
     @PostMapping(path = "/auth")
-    public ResponseEntity authStudent(HttpSession session, @RequestBody Student student) {
+    public ResponseEntity authStudent(HttpSession session, @RequestBody StudentAuth student) {
         Object studentSession = session.getAttribute("student");
         if (studentSession != null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
