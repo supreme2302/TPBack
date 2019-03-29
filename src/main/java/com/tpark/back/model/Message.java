@@ -11,5 +11,9 @@ public class Message {
     public Message(Enum message) {
         this.message = message.toString();
     }
+
+    public Message(String message) {
+        this.message = message;
+    }
 }
 //TODO: Сделать unit current position не unique

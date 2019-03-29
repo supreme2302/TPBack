@@ -1,12 +1,14 @@
 package com.tpark.back.controller;
 
-import com.tpark.back.model.Admin;
-import com.tpark.back.model.Student;
+import com.tpark.back.model.dto.AdminDTO;
+import com.tpark.back.model.dto.StudentDTO;
+import com.tpark.back.model.dto.StudentAuthDTO;
 import com.tpark.back.model.UserStatus;
 import com.tpark.back.service.AdminService;
 import com.tpark.back.service.StudentService;
 import com.tpark.back.util.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession;
@@ -30,27 +32,33 @@ public class StudentController {
     }
 
     @PostMapping(path = "/create")
-    public ResponseEntity createStudent(HttpSession session, @RequestBody Student student) {
+    public ResponseEntity createStudent(HttpSession session, @RequestBody StudentDTO studentDTO) {
         Object adminSession = session.getAttribute("user");
         if (adminSession == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UserStatus.ACCESS_ERROR);
         }
 
-        Admin existingAdmin = adminService.getAdminByEmail(adminSession.toString());
+        AdminDTO existingAdmin = adminService.getAdminByEmail(adminSession.toString());
 
         if (existingAdmin == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(UserStatus.ACCESS_ERROR);
         }
 
         String password = RandomString.getShortTokenString();
-        student.setPassword(password);
-        studentService.addStudent(student);
-        student.setPassword(password);
-        return ResponseEntity.status(HttpStatus.CREATED).body(student);
+        studentDTO.setPassword(password);
+        try {
+            studentService.addStudent(studentDTO);
+        } catch (DuplicateKeyException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(UserStatus.NOT_UNIQUE_FIELDS_IN_REQUEST);
+        }
+
+        studentDTO.setPassword(password);
+        return ResponseEntity.status(HttpStatus.CREATED).body(studentDTO);
     }
 
     @PostMapping(path = "/auth")
-    public ResponseEntity authStudent(HttpSession session, @RequestBody Student student) {
+    public ResponseEntity authStudent(HttpSession session, @RequestBody StudentAuthDTO student) {
         Object studentSession = session.getAttribute("student");
         if (studentSession != null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -61,16 +69,16 @@ public class StudentController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(UserStatus.ALREADY_AUTHENTICATED);
         }
 
-        Student studentFromDb = studentService.getStudentByEmailWithGroupId(student.getEmail());
+        StudentDTO studentDTOFromDb = studentService.getStudentByEmailWithGroupId(student.getEmail());
 
-        if (studentFromDb == null) {
+        if (studentDTOFromDb == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(UserStatus.NOT_FOUND);
         }
 
         boolean valid = studentService.checkStudent(
                 student.getPassword(),
-                studentFromDb.getPassword()
+                studentDTOFromDb.getPassword()
         );
 
         if (!valid) {
@@ -79,8 +87,18 @@ public class StudentController {
         }
 
         sessionAuth(session, student.getEmail());
-        studentFromDb.setPassword("fuck you");
-        return ResponseEntity.ok(studentFromDb);
+        studentDTOFromDb.setPassword("fuck you");
+        return ResponseEntity.ok(studentDTOFromDb);
+    }
+
+    @PostMapping(path = "/logout")
+    public ResponseEntity logout(HttpSession httpSession) {
+        Object object = httpSession.getAttribute("student");
+        if (object == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UserStatus.ACCESS_ERROR);
+        }
+        httpSession.invalidate();
+        return ResponseEntity.ok(UserStatus.SUCCESSFULLY_LOGGED_OUT);
     }
 
     @GetMapping(path = "/group/{id}")
@@ -90,13 +108,13 @@ public class StudentController {
 //        if (session == null) {
 //            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UserStatus.ACCESS_ERROR);
 //        }
-//        Student student = studentService.getStudentByEmailWithoutGroupId(session.toString());
+//        StudentDTO student = studentService.getStudentByEmailWithoutGroupId(session.toString());
 //        if (student == null) {
 //            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(UserStatus.NOT_FOUND);
 //        }
 
-        List<Student> students = studentService.getStudentsFromGroupById(id);
-        return ResponseEntity.ok(students);
+        List<StudentDTO> studentDTOS = studentService.getStudentsFromGroupById(id);
+        return ResponseEntity.ok(studentDTOS);
     }
 
 
@@ -107,13 +125,13 @@ public class StudentController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UserStatus.ACCESS_ERROR);
         }
 
-        Admin existingAdmin = adminService.getAdminByEmail(adminSession.toString());
+        AdminDTO existingAdmin = adminService.getAdminByEmail(adminSession.toString());
 
         if (existingAdmin == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(UserStatus.ACCESS_ERROR);
         }
-        List<Student> students = studentService.getAllStudents(session.getAttribute("user").toString());
-        return ResponseEntity.ok(students);
+        List<StudentDTO> studentDTOS = studentService.getAllStudents(session.getAttribute("user").toString());
+        return ResponseEntity.ok(studentDTOS);
     }
 
     private void sessionAuth(HttpSession session, String email) {

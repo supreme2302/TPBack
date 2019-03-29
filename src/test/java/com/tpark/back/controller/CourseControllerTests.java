@@ -3,19 +3,16 @@ package com.tpark.back.controller;
 
 import com.google.gson.Gson;
 import com.tpark.back.config.EmbeddedPostgresConfiguration;
-import com.tpark.back.model.Course;
+import com.tpark.back.model.dto.CourseDTO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -68,13 +65,13 @@ public class CourseControllerTests {
 
     @Test
     public void createCourseTest() throws Exception {
-        Course course = new Course();
-        course.setName("BES");
-        course.setSchoolId(1);
-        String authJSON = gson.toJson(course);
+        CourseDTO courseDTO = new CourseDTO();
+        courseDTO.setName("BES");
+        courseDTO.setSchoolId(1);
+        String authJSON = gson.toJson(courseDTO);
         CookieAssistant assistant= new CookieAssistant(mockMvc);
         Cookie[] allCookies = assistant.getAdminCookie("existforkostyan@e.ru");
-        this.mockMvc.perform(post("/course/create")
+        this.mockMvc.perform(post("/courseDTO/create")
                 .contentType(contentType)
                 .content(authJSON)
                 .cookie(allCookies))

@@ -3,20 +3,17 @@ package com.tpark.back.controller;
 
 import com.google.gson.Gson;
 import com.tpark.back.config.EmbeddedPostgresConfiguration;
-import com.tpark.back.model.Admin;
-import com.tpark.back.model.Student;
+import com.tpark.back.model.dto.AdminDTO;
+import com.tpark.back.model.dto.StudentDTO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -48,14 +45,14 @@ public class StudentControllerTests {
     public void createStudentTestOk() throws Exception {
         CookieAssistant assistant= new CookieAssistant(mockMvc);
         Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
-        Student student = new Student();
-        student.setName("test_name");
-        student.setSurname("test_surname");
-        student.setEmail("test_student@e.ru");
-        student.setSchool_id(1);
-        this.mockMvc.perform(post("/student/create")
+        StudentDTO studentDTO = new StudentDTO();
+        studentDTO.setName("test_name");
+        studentDTO.setSurname("test_surname");
+        studentDTO.setEmail("test_student@e.ru");
+        studentDTO.setSchool_id(1);
+        this.mockMvc.perform(post("/studentDTO/create")
                 .contentType(contentType)
-                .content(gson.toJson(student))
+                .content(gson.toJson(studentDTO))
                 .cookie(allCookies))
                 .andDo(print())
                 .andExpect(status().isCreated());
@@ -65,22 +62,22 @@ public class StudentControllerTests {
     public void authStudentTestOk() throws Exception {
         CookieAssistant assistant= new CookieAssistant(mockMvc);
         Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
-        Student student = new Student();
-        student.setName("test_name");
-        student.setSurname("test_surname");
-        student.setEmail("test_student@e.ru");
-        student.setSchool_id(1);
-        String response = this.mockMvc.perform(post("/student/create")
+        StudentDTO studentDTO = new StudentDTO();
+        studentDTO.setName("test_name");
+        studentDTO.setSurname("test_surname");
+        studentDTO.setEmail("test_student@e.ru");
+        studentDTO.setSchool_id(1);
+        String response = this.mockMvc.perform(post("/studentDTO/create")
                 .contentType(contentType)
-                .content(gson.toJson(student))
+                .content(gson.toJson(studentDTO))
                 .cookie(allCookies))
                 .andDo(print())
                 .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
-        Student element = gson.fromJson (response, Student.class);
-        Student authStudent = new Student();
+        StudentDTO element = gson.fromJson (response, StudentDTO.class);
+        StudentDTO authStudent = new StudentDTO();
         authStudent.setEmail(element.getEmail());
         authStudent.setPassword(element.getPassword());
-        this.mockMvc.perform(post("/student/auth")
+        this.mockMvc.perform(post("/studentDTO/auth")
                 .contentType(contentType)
                 .content(gson.toJson(authStudent)))
                 .andDo(print()).andExpect(status().isOk());
@@ -90,46 +87,46 @@ public class StudentControllerTests {
     public void authStudentTestForbidden() throws Exception {
         CookieAssistant assistant= new CookieAssistant(mockMvc);
         Cookie[] allCookies = assistant.getStudentCookie("a@a.ru");
-        Student student = new Student();
-        this.mockMvc.perform(post("/student/auth")
+        StudentDTO studentDTO = new StudentDTO();
+        this.mockMvc.perform(post("/studentDTO/auth")
                 .contentType(contentType)
                 .cookie(allCookies)
-                .content(gson.toJson(student)))
+                .content(gson.toJson(studentDTO)))
                 .andDo(print()).andExpect(status().isNotFound());
     }
 
     @Test
     public void authStudentTestNotFound() throws Exception {
-        Student student = new Student();
-        student.setEmail("notexitstemail@e.ru");
-        this.mockMvc.perform(post("/student/auth")
+        StudentDTO studentDTO = new StudentDTO();
+        studentDTO.setEmail("notexitstemail@e.ru");
+        this.mockMvc.perform(post("/studentDTO/auth")
                 .contentType(contentType)
-                .content(gson.toJson(student)))
+                .content(gson.toJson(studentDTO)))
                 .andDo(print()).andExpect(status().isNotFound());
     }
 
     @Test
     public void authStudentTestWrongCredentials() throws Exception {
-        Admin admin = new Admin();
-        admin.setEmail("exist@e.ru");
+        AdminDTO adminDTO = new AdminDTO();
+        adminDTO.setEmail("exist@e.ru");
         CookieAssistant assistant= new CookieAssistant(mockMvc);
         Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
-        Student student = new Student();
-        student.setName("test_name");
-        student.setSurname("test_surname");
-        student.setEmail("test_student@e.ru");
-        student.setSchool_id(1);
-        this.mockMvc.perform(post("/student/create")
+        StudentDTO studentDTO = new StudentDTO();
+        studentDTO.setName("test_name");
+        studentDTO.setSurname("test_surname");
+        studentDTO.setEmail("test_student@e.ru");
+        studentDTO.setSchool_id(1);
+        this.mockMvc.perform(post("/studentDTO/create")
                 .contentType(contentType)
-                .content(gson.toJson(student))
+                .content(gson.toJson(studentDTO))
                 .cookie(allCookies))
                 .andDo(print())
                 .andExpect(status().isCreated());
 
-        Student authStudent = new Student();
+        StudentDTO authStudent = new StudentDTO();
         authStudent.setEmail("test_student@e.ru");
         authStudent.setPassword("000wrongpassword");
-        this.mockMvc.perform(post("/student/auth")
+        this.mockMvc.perform(post("/studentDTO/auth")
                 .contentType(contentType)
                 .content(gson.toJson(authStudent)))
                 .andDo(print()).andExpect(status().isBadRequest());

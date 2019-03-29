@@ -1,9 +1,8 @@
 package com.tpark.back.service.Impl;
 
 import com.tpark.back.dao.Impl.TaskDAOImpl;
-import com.tpark.back.dao.TaskDAO;
-import com.tpark.back.model.Task;
-import com.tpark.back.model.TaskUnit;
+import com.tpark.back.model.dto.TaskDTO;
+import com.tpark.back.model.dto.TaskUnitDTO;
 import com.tpark.back.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,27 +28,27 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void changeTask(String admin ,Task task) {
-        taskDAO.changeTask(admin ,task);
+    public void changeTask(String admin , TaskDTO taskDTO) {
+        taskDAO.changeTask(admin , taskDTO);
     }
 
     @Override
-    public void createTask(String admin ,Task task) {
-        taskDAO.createTask(admin ,task);
+    public void createTask(String admin , TaskDTO taskDTO) {
+        taskDAO.createTask(admin , taskDTO);
     }
 
     @Override
-    public Task getTask(String admin ,Integer taskId) {
+    public TaskDTO getTask(String admin , Integer taskId) {
         return taskDAO.getTask(admin ,taskId);
     }
 
     @Override
-    public List<Task> getTasksByUnit(String admin ,Integer unitId) {
+    public List<TaskDTO> getTasksByUnit(String admin , Integer unitId) {
         return taskDAO.getTasksByUnit(admin, unitId);
     }
 
     @Override
-    public List<Task> getTasks(String admin) {
+    public List<TaskDTO> getTasks(String admin) {
         return taskDAO.getAllTasks(admin);
     }
 
@@ -64,7 +63,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void addTaskToUnit(String user, TaskUnit task) {
+    public void addTaskToUnit(String user, TaskUnitDTO task) {
         taskDAO.addTaskToUnit( user, task);
     }
 }

@@ -1,6 +1,6 @@
 package com.tpark.back.controller;
 
-import com.tpark.back.model.Unit;
+import com.tpark.back.model.dto.UnitDTO;
 import com.tpark.back.model.UserStatus;
 import com.tpark.back.service.AdminService;
 import com.tpark.back.service.Impl.UnitServiceImpl;
@@ -74,7 +74,7 @@ public class UnitController {
     }
 
     @PostMapping(path = "/create")
-    public ResponseEntity create(HttpSession session, @RequestBody Unit unit) {
+    public ResponseEntity create(HttpSession session, @RequestBody UnitDTO unitDTO) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -84,7 +84,7 @@ public class UnitController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            unitService.createUnit(unit, session.getAttribute("user").toString());
+            unitService.createUnit(unitDTO, session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(UserStatus.SUCCESSFULLY_CREATED);
         } catch (DuplicateKeyException e) {
@@ -94,7 +94,7 @@ public class UnitController {
     }
 
     @PostMapping(path = "/change")
-    public ResponseEntity change(HttpSession session, @RequestBody Unit unit) {
+    public ResponseEntity change(HttpSession session, @RequestBody UnitDTO unitDTO) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -104,7 +104,7 @@ public class UnitController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            unitService.changeUnit(unit, session.getAttribute("user").toString());
+            unitService.changeUnit(unitDTO, session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.OK)
                     .body(UserStatus.SUCCESSFULLY_CHANGED);
         } catch (DuplicateKeyException e) {

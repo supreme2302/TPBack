@@ -1,27 +1,28 @@
-package com.tpark.back.model;
-
+package com.tpark.back.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Min;
 import java.beans.Transient;
 
-@NoArgsConstructor
-public class Admin {
+public class AdminDTO {
     private int id;
     private String email;
     private String password;
+    private String schoolName;
+
+    public AdminDTO() {}
 
     @JsonCreator
-    public Admin(
-            @JsonProperty(value = "email") String email,
-            @JsonProperty(value = "password") String password
-    ) {
+    public AdminDTO(
+            @JsonProperty("id") int id,
+            @JsonProperty("email") String email,
+            @JsonProperty("password") String password,
+            @JsonProperty("schoolName") String schoolName) {
+        this.id = id;
         this.email = email;
         this.password = password;
+        this.schoolName = schoolName;
     }
 
     public int getId() {
@@ -47,5 +48,13 @@ public class Admin {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getSchoolName() {
+        return schoolName;
+    }
+
+    public void setSchoolName(String schoolName) {
+        this.schoolName = schoolName;
     }
 }

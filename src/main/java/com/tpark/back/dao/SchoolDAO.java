@@ -1,10 +1,11 @@
 package com.tpark.back.dao;
 
-import com.tpark.back.model.School;
+import com.tpark.back.model.dto.SchoolDTO;
 
 public interface SchoolDAO {
-    void createSchool(School school, String email);
-    School getSchoolByAdmin(String admin);
+    void createSchool(String schoolName, int id);
 
-    School getSchoolByStudent(String student);
+    SchoolDTO getSchoolByAdmin(String admin);
+
+    SchoolDTO getSchoolByStudent(String student);
 }

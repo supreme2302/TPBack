@@ -1,10 +1,10 @@
-package com.tpark.back.model;
+package com.tpark.back.model.dto;
 
 
 import lombok.Data;
 
 @Data
-public class Group {
+public class GroupDTO {
     int id;
     String name;
     int course_id;

@@ -1,11 +1,15 @@
 package com.tpark.back.dao;
 
-import com.tpark.back.model.Admin;
+import com.tpark.back.model.dto.AdminDTO;
 
 public interface AdminDAO {
-    Admin getAdminByEmail(String email);
+    AdminDTO getAdminByEmail(String email);
 
-    void addAdmin(Admin user);
+    void addAdmin(AdminDTO user);
 
-    void addNewAdmin(String toString, Admin admin);
+    void addNewAdmin(String toString, AdminDTO adminDTO);
+
+    void changePassword(String email, String encode);
+
+    Integer getAdminIdByEmail(String email);
 }

@@ -3,19 +3,16 @@ package com.tpark.back.controller;
 
 import com.google.gson.Gson;
 import com.tpark.back.config.EmbeddedPostgresConfiguration;
-import com.tpark.back.model.Unit;
+import com.tpark.back.model.dto.UnitDTO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -80,11 +77,11 @@ public class UnitControllerTests {
 
     @Test
     public void createUnitTest() throws Exception {
-        Unit unit = new Unit();
-        unit.setUnit_name("Fuckji");
-        unit.setCourse_id(1);
-        unit.setPosition(2);
-        String authJSON = gson.toJson(unit);
+        UnitDTO unitDTO = new UnitDTO();
+        unitDTO.setUnit_name("Fuckji");
+        unitDTO.setCourse_id(1);
+        unitDTO.setPosition(2);
+        String authJSON = gson.toJson(unitDTO);
         CookieAssistant assistant= new CookieAssistant(mockMvc);
         Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
         this.mockMvc.perform(post("/unit/create")

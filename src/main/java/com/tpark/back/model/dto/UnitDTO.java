@@ -1,9 +1,9 @@
-package com.tpark.back.model;
+package com.tpark.back.model.dto;
 
 import lombok.Data;
 
 @Data
-public class Unit {
+public class UnitDTO {
     Integer id;
     Integer position;
     Integer course_id;

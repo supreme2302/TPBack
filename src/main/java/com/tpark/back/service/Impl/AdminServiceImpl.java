@@ -1,34 +1,41 @@
 package com.tpark.back.service.Impl;
 
-import com.tpark.back.dao.Impl.AdminDAOImpl;
-import com.tpark.back.model.Admin;
+import com.tpark.back.dao.AdminDAO;
+import com.tpark.back.model.dto.AdminDTO;
 import com.tpark.back.service.AdminService;
+import com.tpark.back.service.SchoolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AdminServiceImpl implements AdminService {
 
-    private final AdminDAOImpl adminDAO;
+    private final AdminDAO adminDAO;
     private final PasswordEncoder passwordEncoder;
+    private final SchoolService schoolService;
 
     @Autowired
-    public AdminServiceImpl(AdminDAOImpl adminDAO, PasswordEncoder passwordEncoder) {
+    public AdminServiceImpl(AdminDAO adminDAO, PasswordEncoder passwordEncoder,
+                            SchoolService schoolService) {
         this.adminDAO = adminDAO;
         this.passwordEncoder = passwordEncoder;
+        this.schoolService = schoolService;
     }
 
     @Override
-    public Admin getAdminByEmail(String email) {
+    public AdminDTO getAdminByEmail(String email) {
         return adminDAO.getAdminByEmail(email);
     }
 
 
+    @Transactional
     @Override
-    public void addAdmin(Admin user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        adminDAO.addAdmin(user);
+    public void addAdminAndCreateSchool(AdminDTO adminDTO) {
+        adminDTO.setPassword(passwordEncoder.encode(adminDTO.getPassword()));
+        adminDAO.addAdmin(adminDTO);
+        schoolService.createSchool(adminDTO.getSchoolName(), adminDTO.getEmail());
     }
 
     @Override
@@ -42,7 +49,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void addNewAdmin(String toString, Admin admin) {
-        adminDAO.addNewAdmin(toString, admin);
+    public void addNewAdmin(String toString, AdminDTO adminDTO) {
+        adminDAO.addNewAdmin(toString, adminDTO);
     }
 }

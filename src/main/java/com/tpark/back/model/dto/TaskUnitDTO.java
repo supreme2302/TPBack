@@ -1,10 +1,10 @@
-package com.tpark.back.model;
+package com.tpark.back.model.dto;
 
 
 import lombok.Data;
 
 @Data
-public class TaskUnit {
+public class TaskUnitDTO {
     Integer TaskID;
     Integer UnitID;
 }

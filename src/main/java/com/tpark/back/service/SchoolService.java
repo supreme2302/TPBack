@@ -1,10 +1,11 @@
 package com.tpark.back.service;
 
-import com.tpark.back.model.School;
+import com.tpark.back.model.dto.SchoolDTO;
 
 public interface SchoolService {
-    void createSchool(School school, String email);
-    School getSchoolByAdmin(String email);
+    void createSchool(String schoolName, String email);
 
-    School getSchoolByStudent(String student);
+    SchoolDTO getSchoolByAdmin(String email);
+
+    SchoolDTO getSchoolByStudent(String student);
 }

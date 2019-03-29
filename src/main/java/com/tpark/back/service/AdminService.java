@@ -1,16 +1,16 @@
 package com.tpark.back.service;
 
-import com.tpark.back.model.Admin;
+import com.tpark.back.model.dto.AdminDTO;
 
 public interface AdminService {
 
-    Admin getAdminByEmail(String email);
+    AdminDTO getAdminByEmail(String email);
 
-    void addAdmin(Admin admin);
+    void addAdminAndCreateSchool(AdminDTO adminDTO);
 
     boolean checkAdminPassword(String rawPassword, String passwordFromDb);
 
     void changeAdminPassword(String email, String password);
 
-    void addNewAdmin(String toString, Admin admin);
+    void addNewAdmin(String toString, AdminDTO adminDTO);
 }

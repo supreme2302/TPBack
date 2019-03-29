@@ -2,7 +2,7 @@ package com.tpark.back.controller;
 
 
 
-import com.tpark.back.model.Course;
+import com.tpark.back.model.dto.CourseDTO;
 import com.tpark.back.model.UserStatus;
 import com.tpark.back.service.AdminService;
 import com.tpark.back.service.CourseService;
@@ -80,7 +80,7 @@ public class CourseController {
     }
 
     @PostMapping(path = "/create")
-    public ResponseEntity create(HttpSession session, @RequestBody Course course) {
+    public ResponseEntity create(HttpSession session, @RequestBody CourseDTO courseDTO) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -90,7 +90,7 @@ public class CourseController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            courseService.createCourse(course, session.getAttribute("user").toString());
+            courseService.createCourse(courseDTO, session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(UserStatus.SUCCESSFULLY_CREATED);
         } catch (DuplicateKeyException e) {
@@ -100,7 +100,7 @@ public class CourseController {
     }
 
     @PostMapping(path = "/change")
-    public ResponseEntity change(HttpSession session, @RequestBody Course course) {
+    public ResponseEntity change(HttpSession session, @RequestBody CourseDTO courseDTO) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -110,7 +110,7 @@ public class CourseController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            courseService.changeCourse(course, session.getAttribute("user").toString());
+            courseService.changeCourse(courseDTO, session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.OK)
                     .body(UserStatus.SUCCESSFULLY_CHANGED);
         } catch (DuplicateKeyException e) {

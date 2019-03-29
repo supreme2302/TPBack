@@ -2,19 +2,16 @@ package com.tpark.back.controller;
 
 import com.google.gson.Gson;
 import com.tpark.back.config.EmbeddedPostgresConfiguration;
-import com.tpark.back.model.School;
+import com.tpark.back.model.dto.SchoolDTO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -57,12 +54,12 @@ public class SchoolControllerTests {
 
     @Test
     public void CreateSchoolTest() throws Exception {
-        School school = new School();
+        SchoolDTO schoolDTO = new SchoolDTO();
         CookieAssistant assistant= new CookieAssistant(mockMvc);
         Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
-        school.setName("ESS");
-        String authJSON = gson.toJson(school);
-        this.mockMvc.perform(post("/school/create")
+        schoolDTO.setName("ESS");
+        String authJSON = gson.toJson(schoolDTO);
+        this.mockMvc.perform(post("/schoolDTO/create")
                 .contentType(contentType)
                 .cookie(allCookies)
                 .content(authJSON))

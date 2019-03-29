@@ -1,10 +1,10 @@
-package com.tpark.back.model;
+package com.tpark.back.model.dto;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class Student {
+public class StudentDTO {
     private int id;
     private String email;
     private String name;

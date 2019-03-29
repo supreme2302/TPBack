@@ -1,8 +1,7 @@
 package com.tpark.back.dao.Impl;
 
 import com.tpark.back.dao.CourseDAO;
-import com.tpark.back.model.Course;
-import org.springframework.dao.EmptyResultDataAccessException;
+import com.tpark.back.model.dto.CourseDTO;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,17 +25,17 @@ public class CourseDAOImpl implements CourseDAO {
     }
 
     @Override
-    public List<Course> getCoursesByAdmin(String email) {
+    public List<CourseDTO> getCoursesByAdmin(String email) {
 
         final String sql = "SELECT * FROM course JOIN admin ON admin.school_id = course.school_id AND lower(admin.email) = lower(?);";
         return jdbc.query(sql, courseMapper, email);
     }
 
     @Override
-    public void createCourse(Course course, String email) {
+    public void createCourse(CourseDTO courseDTO, String email) {
         Integer school_id = schoolIDDAO.GetSchoolId(email);
         final String sql = "INSERT INTO course(course_name, school_id) VALUES (?, ?);";
-        jdbc.update(sql,course.getName(),school_id);
+        jdbc.update(sql, courseDTO.getName(),school_id);
     }
 
     @Override
@@ -49,21 +48,21 @@ public class CourseDAOImpl implements CourseDAO {
     }
 
     @Override
-    public Course getCourse(int id, String admin){
+    public CourseDTO getCourse(int id, String admin){
         final String sql = "SELECT * FROM course JOIN admin ON course.id=? AND " +
                 "lower(admin.email) = lower(?) AND admin.school_id = course.school_id LIMIT 1;";
         return jdbc.queryForObject(sql, courseMapper, id, admin);
     }
 
     @Override
-    public void changeCourse(Course course, String admin){
+    public void changeCourse(CourseDTO courseDTO, String admin){
         Integer school_id = schoolIDDAO.GetSchoolId(admin);
         final String sql = "UPDATE course SET course_name = ? WHERE id = ? AND school_id = ?;";
-        jdbc.update(sql,course.getName(), course.getId(),school_id);
+        jdbc.update(sql, courseDTO.getName(), courseDTO.getId(),school_id);
     }
 
     @Override
-    public Course getStudentCourse(Integer courseID, String student) {
+    public CourseDTO getStudentCourse(Integer courseID, String student) {
         final String sql = "SELECT * FROM course JOIN ((student JOIN student_group ON " +
                 "student.id = student_group.student_id AND lower(student.email) = lower(?))" +
                 " AS connecti JOIN group_course ON group_course.id = connecti.group_id) AS res" +
@@ -72,7 +71,7 @@ public class CourseDAOImpl implements CourseDAO {
     }
 
     @Override
-    public List<Course> getCoursesByStudent(String student) {
+    public List<CourseDTO> getCoursesByStudent(String student) {
         final String sql = "SELECT * FROM course JOIN ((SELECT group_id FROM student JOIN student_group ON\n" +
                 "                student.id = student_group.student_id AND lower(student.email) = lower(?))\n" +
                 "                AS connecti JOIN group_course ON group_course.id = connecti.group_id) AS res\n" +
@@ -83,15 +82,15 @@ public class CourseDAOImpl implements CourseDAO {
 
     ;
 
-    public static class CourseMapper implements RowMapper<Course> {
+    public static class CourseMapper implements RowMapper<CourseDTO> {
         @Override
-        public Course mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-            Course course = new Course();
-            course.setName(resultSet.getString("course_name"));
-            course.setSchoolId(resultSet.getInt("school_id"));
-            course.setId(resultSet.getInt("id"));
-            course.setDescription(resultSet.getString("description"));
-            return course;
+        public CourseDTO mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+            CourseDTO courseDTO = new CourseDTO();
+            courseDTO.setName(resultSet.getString("course_name"));
+            courseDTO.setSchoolId(resultSet.getInt("school_id"));
+            courseDTO.setId(resultSet.getInt("id"));
+            courseDTO.setDescription(resultSet.getString("description"));
+            return courseDTO;
         }
     }
 }

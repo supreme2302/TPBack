@@ -1,8 +1,8 @@
 package com.tpark.back.controller;
 
 
-import com.tpark.back.model.Task;
-import com.tpark.back.model.TaskUnit;
+import com.tpark.back.model.dto.TaskDTO;
+import com.tpark.back.model.dto.TaskUnitDTO;
 import com.tpark.back.model.UserStatus;
 import com.tpark.back.service.AdminService;
 import com.tpark.back.service.StudentService;
@@ -95,7 +95,7 @@ public class TaskController {
     }
 
     @PostMapping(path = "/create")
-    public ResponseEntity create(HttpSession session, @RequestBody Task task) {
+    public ResponseEntity create(HttpSession session, @RequestBody TaskDTO taskDTO) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -105,7 +105,7 @@ public class TaskController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            taskService.createTask(session.getAttribute("user").toString(), task);
+            taskService.createTask(session.getAttribute("user").toString(), taskDTO);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(UserStatus.SUCCESSFULLY_CREATED);
         } catch (DuplicateKeyException e) {
@@ -115,7 +115,7 @@ public class TaskController {
     }
 
     @PostMapping(path = "/add")
-    public ResponseEntity add(HttpSession session, @RequestBody TaskUnit task) {
+    public ResponseEntity add(HttpSession session, @RequestBody TaskUnitDTO task) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -135,7 +135,7 @@ public class TaskController {
     }
 
     @PostMapping(path = "/change")
-    public ResponseEntity change(HttpSession session, @RequestBody Task task) {
+    public ResponseEntity change(HttpSession session, @RequestBody TaskDTO taskDTO) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -145,7 +145,7 @@ public class TaskController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            taskService.changeTask(session.getAttribute("user").toString(), task);
+            taskService.changeTask(session.getAttribute("user").toString(), taskDTO);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(UserStatus.SUCCESSFULLY_CHANGED);
         } catch (DuplicateKeyException e) {

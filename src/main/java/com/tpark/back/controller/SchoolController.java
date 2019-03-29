@@ -1,7 +1,7 @@
 package com.tpark.back.controller;
 
 
-import com.tpark.back.model.School;
+import com.tpark.back.model.dto.SchoolDTO;
 import com.tpark.back.model.UserStatus;
 import com.tpark.back.service.AdminService;
 import com.tpark.back.service.SchoolService;
@@ -57,7 +57,7 @@ public class SchoolController {
     }
 
     @PostMapping(path = "/create")
-    public ResponseEntity create(HttpSession session, @RequestBody School school) {
+    public ResponseEntity create(HttpSession session, @RequestBody SchoolDTO schoolDTO) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -67,7 +67,7 @@ public class SchoolController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            schoolService.createSchool(school, session.getAttribute("user").toString());
+            schoolService.createSchool(schoolDTO.getName(), session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(UserStatus.SUCCESSFULLY_CREATED);
         } catch (DuplicateKeyException e) {

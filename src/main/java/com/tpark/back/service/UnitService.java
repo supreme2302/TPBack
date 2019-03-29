@@ -1,15 +1,15 @@
 package com.tpark.back.service;
 
-import com.tpark.back.model.Unit;
+import com.tpark.back.model.dto.UnitDTO;
 
 public interface UnitService {
     Object getUnitsByCourse(Integer courseId, String email) ;
 
     Object getUnit(Integer groupId, String email) ;
 
-    void createUnit(Unit unit, String email) ;
+    void createUnit(UnitDTO unitDTO, String email) ;
 
-    void changeUnit(Unit unit, String email) ;
+    void changeUnit(UnitDTO unitDTO, String email) ;
 
     void deleteUnit(int id, String email) ;
 
