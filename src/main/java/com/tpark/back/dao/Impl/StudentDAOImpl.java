@@ -66,7 +66,7 @@ public class StudentDAOImpl implements StudentDAO {
     @Override
     @Transactional
     public List<Student> getAllStudents(String admin) {
-        String sql = "SELECT student.id, student.email, first_name, last_name, student.password, student.school_id " +
+        String sql = "SELECT student.id, student.email, first_name, last_name, student.school_id " +
                 "FROM student JOIN admin ON admin.email = ? AND admin.school_id = student.school_id";
         try {
             List<Student> students =  jdbc.query(sql, studentMapper, admin);
@@ -115,7 +115,7 @@ public class StudentDAOImpl implements StudentDAO {
             student.setEmail(resultSet.getString("email"));
             student.setName(resultSet.getString("first_name"));
             student.setSurname(resultSet.getString("last_name"));
-            student.setPassword(resultSet.getString("password"));
+//            student.setPassword(resultSet.getString("password"));
             student.setSchool_id(resultSet.getInt("school_id"));
             return student;
         }

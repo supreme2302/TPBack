@@ -44,6 +44,9 @@ public class GroupDAOImpl implements GroupDAO {
 
     @Override
     public void createGroup(Group group, String email) {
+        if(group.getCurr_unit() == 0){
+            group.setCurr_unit(1);
+        }
         Integer school_id = schoolIDDAO.GetSchoolId(email);
         final String sql = "INSERT INTO group_course(group_name, course_id, current_unit,school_id) VALUES (?, ?, ?,?);";
         jdbc.update(sql, group.getName(), group.getCourse_id(), group.getCurr_unit(), school_id);
