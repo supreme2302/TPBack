@@ -31,16 +31,20 @@ public class StudentDAOImpl implements StudentDAO {
     }
 
     @Override
+    @Transactional
     public void addStudent(StudentDTO studentDTO, String admin) {
         Integer school_id = schoolIDDAO.GetSchoolId(admin);
         String sql = "INSERT INTO student(email, first_name, last_name, password, school_id) "
-                + "VALUES (?, ?, ?, ?, ?) RETURNING (id, email,first_name,last_name,password,school_id)";
-        StudentDTO res = jdbc.queryForObject(sql,studentMapper, studentDTO.getEmail(), studentDTO.getName(), studentDTO.getSurname(),
+                + "VALUES (?, ?, ?, ?, ?);";
+        jdbc.update(sql, studentDTO.getEmail(), studentDTO.getName(), studentDTO.getSurname(),
                 studentDTO.getPassword(), school_id);
+        sql = "SELECT * FROM student WHERE email=?;";
+        StudentDTO res =jdbc.queryForObject(sql,studentMapper,studentDTO.getEmail());
         Integer i = 0;
         sql = "INSERT INTO student_group(group_id, student_id) VALUES (?,?);";
         while ( i < studentDTO.getGroup_id().size()){
             jdbc.update(sql, studentDTO.getGroup_id().get(i), res.getId());
+            i++;
         }
         //TODO: поправить сей метод
     }

@@ -47,8 +47,9 @@ public class GroupDAOImpl implements GroupDAO {
     @Override
     public void changeGroup(GroupDTO groupDTO, String email) {
         Integer school_id = schoolIDDAO.GetSchoolId(email);
-        final String sql = "UPDATE group_course SET group_name = ?, description = ?, course_id = ?, current_unit=? WHERE id = ? AND  school_id =?;";
-        jdbc.update(sql, groupDTO.getName(), groupDTO.getDescription(), groupDTO.getCourse_id(), groupDTO.getCurr_unit(), groupDTO.getId(), school_id);
+//        TODO: добавить юниты
+        final String sql = "UPDATE group_course SET group_name = ?, description = ?, course_id = ? WHERE id = ? AND  school_id =?;";
+        jdbc.update(sql, groupDTO.getName(), groupDTO.getDescription(), groupDTO.getCourse_id(), groupDTO.getId(), school_id);
     }
 
     @Override
