@@ -3,6 +3,8 @@ package com.tpark.back.dao.Impl;
 import com.tpark.back.dao.SchoolDAO;
 import com.tpark.back.model.dto.SchoolDTO;
 import com.tpark.back.model.exception.ConflictException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,6 +20,8 @@ public class SchoolDAOImpl implements SchoolDAO {
     private final JdbcTemplate jdbc;
     private final static SchoolMapper schoolMapper = new SchoolMapper();
 
+    private final Logger logger = LoggerFactory.getLogger(SchoolDAOImpl.class);
+
     @Autowired
     public SchoolDAOImpl(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
@@ -26,15 +30,17 @@ public class SchoolDAOImpl implements SchoolDAO {
     @Transactional
     @Override
     public void createSchool(String schoolName, int id) {
+        logger.info("createSchool -  in");
         final String sqlForInsert = "INSERT INTO school(school_name, ownerid)  VALUES (?,?) RETURNING id";
         Integer schoolId;
         try {
             schoolId = jdbc.queryForObject(sqlForInsert, Integer.class, schoolName, id);
+            logger.info("createSchool -  created");
         } catch (DuplicateKeyException e) {
             throw new ConflictException();
         }
         final String sqlForUpdate = "UPDATE admin SET school_id = ? WHERE id = ?";
-        jdbc.update(sqlForUpdate, id, schoolId);
+        jdbc.update(sqlForUpdate, schoolId, id);
     }
 
     @Override

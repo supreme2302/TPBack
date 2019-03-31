@@ -27,10 +27,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = {EmbeddedPostgresConfiguration.class, MockMvcAutoConfiguration.class})
-@TestPropertySource("/application-test.properties")
-@Sql(value = {"/db/migration/test/test_session.sql",
-        "/db/migration/test/test-set-before.sql"},
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+//@TestPropertySource("/application-test.properties")
+//@Sql(value = {"/db/migration/test/test_session.sql",
+//        "/db/migration/test/test-set-before.sql"},
+//        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class AdminControllerTests {
 
     @Autowired

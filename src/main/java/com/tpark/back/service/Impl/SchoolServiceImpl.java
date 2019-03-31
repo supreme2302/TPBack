@@ -5,6 +5,7 @@ import com.tpark.back.dao.SchoolDAO;
 import com.tpark.back.model.dto.SchoolDTO;
 import com.tpark.back.model.exception.NotFoundException;
 import com.tpark.back.service.SchoolService;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,11 +22,7 @@ public class SchoolServiceImpl implements SchoolService {
     }
 
     @Override
-    public void createSchool(String schoolName, String email) {
-        Integer id = adminDAO.getAdminIdByEmail(email);
-        if (id == null) {
-            throw new NotFoundException();
-        }
+    public void createSchool(String schoolName, Integer id) {
         schoolDAO.createSchool(schoolName, id);
     }
 

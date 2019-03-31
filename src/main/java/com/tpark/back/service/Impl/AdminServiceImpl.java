@@ -34,8 +34,8 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void addAdminAndCreateSchool(AdminDTO adminDTO) {
         adminDTO.setPassword(passwordEncoder.encode(adminDTO.getPassword()));
-        adminDAO.addAdmin(adminDTO);
-        schoolService.createSchool(adminDTO.getSchoolName(), adminDTO.getEmail());
+        Integer adminId = adminDAO.addAdmin(adminDTO);
+        schoolService.createSchool(adminDTO.getSchoolName(), adminId);
     }
 
     @Override

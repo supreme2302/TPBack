@@ -35,9 +35,9 @@ public class AdminDAOImpl implements AdminDAO {
     }
 
     @Override
-    public void addAdmin(AdminDTO adminDTO) {
-        final String sql = "INSERT INTO admin(email, password) VALUES (?, ?)";
-        jdbc.update(sql, adminDTO.getEmail(), adminDTO.getPassword());
+    public Integer addAdmin(AdminDTO adminDTO) {
+        final String sql = "INSERT INTO admin(email, password) VALUES (?, ?) RETURNING id";
+        return jdbc.queryForObject(sql, Integer.class, adminDTO.getEmail(), adminDTO.getPassword());
     }
 
     @Override

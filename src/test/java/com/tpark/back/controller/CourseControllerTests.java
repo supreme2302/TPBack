@@ -28,8 +28,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 @ContextConfiguration(classes = {EmbeddedPostgresConfiguration.class, MockMvcAutoConfiguration.class})
 @TestPropertySource("/application-test.properties")
-@Sql(value = {"/db/migration/test/test_session.sql",
-        "/db/migration/test/test-set-before.sql"},
+@Sql(value = {"/test_session.sql",
+        "/test-set-before.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class CourseControllerTests {
     @Autowired
