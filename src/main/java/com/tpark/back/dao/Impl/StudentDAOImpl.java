@@ -106,6 +106,22 @@ public class StudentDAOImpl implements StudentDAO {
     }
 
     @Override
+    public void changeStudent(StudentDTO studentDTO, String admin) {
+        Integer school_id = schoolIDDAO.GetSchoolId(admin);
+        String sql = "UPDATE student SET email=?, first_name=?, last_name=?, password=? WHERE id = ? AND school_id = ?;";
+        jdbc.update(sql, studentDTO.getEmail(), studentDTO.getName(), studentDTO.getSurname(),
+                studentDTO.getPassword(),studentDTO.getId(), school_id);
+        sql = "DELETE FROM student_group WHERE student_id = ?;";
+        jdbc.update(sql,studentDTO.getId());
+        Integer i = 0;
+        sql = "INSERT INTO student_group(group_id, student_id) VALUES (?,?);";
+        while ( i < studentDTO.getGroup_id().size()){
+            jdbc.update(sql, studentDTO.getGroup_id().get(i), studentDTO.getId());
+            i++;
+        }
+    }
+
+    @Override
     @Transactional
     public StudentDTO getStudentByEmailWithGroupId(String email) {
 

@@ -18,4 +18,6 @@ public interface StudentService {
     List<StudentDTO> getAllStudents(String admin);
 
     void deleteStudent(Integer id, String toString);
+
+    void changeStudent(StudentDTO studentDTO, String toString);
 }

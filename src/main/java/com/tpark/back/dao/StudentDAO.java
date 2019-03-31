@@ -17,4 +17,6 @@ public interface StudentDAO {
     List<StudentDTO> getAllStudents(String admin);
 
     void deleteStudent(Integer id, String admin);
+
+    void changeStudent(StudentDTO studentDTO, String toString);
 }

@@ -57,4 +57,9 @@ public class StudentServiceImpl implements StudentService {
     public void deleteStudent(Integer id, String admin) {
         studentDAO.deleteStudent(id,admin);
     }
+
+    @Override
+    public void changeStudent(StudentDTO studentDTO, String toString) {
+        studentDAO.changeStudent(studentDTO, toString);
+    }
 }

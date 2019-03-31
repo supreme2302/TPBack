@@ -3,9 +3,11 @@ package com.tpark.back.dao.Impl;
 import com.tpark.back.dao.UnitDAO;
 import com.tpark.back.model.dto.UnitDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -42,19 +44,53 @@ public class UnitDAOImpl implements UnitDAO {
     }
 
     @Override
+    @Transactional
     public void createUnit(UnitDTO unitDTO, String email) {
+        // TODO change this shit
         Integer schoolId = schoolIDDAO.GetSchoolId(email);
-        final String sql = "INSERT INTO unit(unit_name, course_id, current_position,school_id) VALUES (?, ?, ?,?);";
-        jdbc.update(sql, unitDTO.getUnit_name(), unitDTO.getCourse_id(), unitDTO.getPosition(),schoolId);
+        String sql = "SELECT * FROM unit WHERE course_id = ? AND  school_id =? AND next_unit IS null;";
+        try {
+            UnitDTO obj = jdbc.queryForObject(sql,unitMapper,unitDTO.getCourse_id(),schoolId);
+            sql = "INSERT INTO unit(unit_name, course_id, description,school_id,prev_unit) VALUES (?, ?, ?,?,?);";
+            jdbc.update(sql, unitDTO.getUnit_name(), unitDTO.getCourse_id(),unitDTO.getDescription(), schoolId, obj.getId());
+            sql = "SELECT * FROM unit WHERE unit_name = ? AND course_id=?";
+            UnitDTO res = jdbc.queryForObject(sql, unitMapper, unitDTO.getUnit_name(), unitDTO.getCourse_id());
+            //TODO unique constraint на имя и курс+ поменять группу, сделать nullable
+            sql = "UPDATE unit SET next_unit=? WHERE id = ?";
+            jdbc.update(sql,res.getId(),obj.getId());
 
+        }   catch (EmptyResultDataAccessException exept){
+
+            sql = "INSERT INTO unit(unit_name, course_id, description,school_id) VALUES (?, ?, ?,?);";
+            jdbc.update(sql, unitDTO.getUnit_name(), unitDTO.getCourse_id(),unitDTO.getDescription(), schoolId);
+        }
     }
 
     @Override
+    @Transactional
     public void changeUnit(UnitDTO unitDTO, String email) {
+        //TODO and this shit too
         Integer schoolId = schoolIDDAO.GetSchoolId(email);
-        final String sql = "UPDATE unit SET unit_name = ?, course_id = ?, current_position=? WHERE id = ? AND school_id=?;";
-        jdbc.update(sql, unitDTO.getUnit_name(), unitDTO.getCourse_id(), unitDTO.getPosition(), unitDTO.getId(), schoolId);
+        String sql ="SELECT * FROM unit WHERE id = ? AND school_id=?;";
+        UnitDTO old = jdbc.queryForObject(sql,unitMapper,unitDTO.getId(),schoolId);
+        if((old.getNext_pos() == unitDTO.getNext_pos() && old.getPrev_pos() == unitDTO.getPrev_pos()) ||(unitDTO.getNext_pos() == null && unitDTO.getPrev_pos() == null)) {
+            sql = "UPDATE unit SET unit_name = ?, course_id = ?, description=? WHERE id = ? AND school_id=?;";
+            jdbc.update(sql, unitDTO.getUnit_name(), unitDTO.getCourse_id(), unitDTO.getDescription(), unitDTO.getId(), schoolId);
+        } else {
+            // TODO возможность бага, когда будет два prev
+            sql = "UPDATE unit SET next_unit = ? WHERE id = ?";
+            jdbc.update(sql,old.getNext_pos(),old.getPrev_pos());
+            sql = "UPDATE unit SET prev_unit = ? WHERE id = ?";
+            jdbc.update(sql,old.getPrev_pos(),old.getNext_pos());
 
+            sql = "UPDATE unit SET next_unit = ? WHERE id = ?";
+            jdbc.update(sql,unitDTO.getId(),unitDTO.getPrev_pos());
+            sql = "UPDATE unit SET prev_unit = ? WHERE id = ?";
+            jdbc.update(sql,unitDTO.getId(),unitDTO.getNext_pos());
+            sql = "UPDATE unit SET unit_name = ?, course_id = ?, prev_unit=?, next_unit = ?, description=? WHERE id = ? AND school_id=?;";
+            jdbc.update(sql, unitDTO.getUnit_name(), unitDTO.getCourse_id(), unitDTO.getPrev_pos(), unitDTO.getNext_pos(), unitDTO.getDescription(), unitDTO.getId(), schoolId);
+
+        }
     }
 
     @Override
@@ -106,7 +142,8 @@ public class UnitDAOImpl implements UnitDAO {
             unitDTO.setId(resultSet.getInt("id"));
             unitDTO.setCourse_id(resultSet.getInt("course_id"));
             unitDTO.setUnit_name(resultSet.getString("unit_name"));
-            unitDTO.setPosition(resultSet.getInt("current_position"));
+            unitDTO.setPrev_pos(resultSet.getInt("prev_unit"));
+            unitDTO.setNext_pos(resultSet.getInt("next_unit"));
             unitDTO.setDescription(resultSet.getString("description"));
             return unitDTO;
         }

@@ -80,7 +80,7 @@ public class UnitControllerTests {
         UnitDTO unitDTO = new UnitDTO();
         unitDTO.setUnit_name("Fuckji");
         unitDTO.setCourse_id(1);
-        unitDTO.setPosition(2);
+//        unitDTO.setPosition(2);
         String authJSON = gson.toJson(unitDTO);
         CookieAssistant assistant= new CookieAssistant(mockMvc);
         Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
