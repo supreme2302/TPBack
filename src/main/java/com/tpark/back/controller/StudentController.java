@@ -47,7 +47,7 @@ public class StudentController {
         String password = RandomString.getShortTokenString();
         studentDTO.setPassword(password);
         try {
-            studentService.addStudent(studentDTO);
+            studentService.addStudent(studentDTO,adminSession.toString());
         } catch (DuplicateKeyException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(UserStatus.NOT_UNIQUE_FIELDS_IN_REQUEST);
@@ -55,6 +55,28 @@ public class StudentController {
 
         studentDTO.setPassword(password);
         return ResponseEntity.status(HttpStatus.CREATED).body(studentDTO);
+    }
+
+    @PostMapping(path = "/delete")
+    public ResponseEntity deleteStudent(HttpSession session, @RequestBody Integer id) {
+        Object adminSession = session.getAttribute("user");
+        if (adminSession == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UserStatus.ACCESS_ERROR);
+        }
+
+        AdminDTO existingAdmin = adminService.getAdminByEmail(adminSession.toString());
+
+        if (existingAdmin == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(UserStatus.ACCESS_ERROR);
+        }
+
+        try {
+            studentService.deleteStudent(id, adminSession.toString());
+        } catch (DuplicateKeyException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(UserStatus.NOT_UNIQUE_FIELDS_IN_REQUEST);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(UserStatus.SUCCESSFULLY_CHANGED);
     }
 
     @PostMapping(path = "/auth")
@@ -120,6 +142,7 @@ public class StudentController {
 
     @GetMapping(path = "/")
     public ResponseEntity getAllStudents(HttpSession session) {
+        System.out.println("students");
         Object adminSession = session.getAttribute("user");
         if (adminSession == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UserStatus.ACCESS_ERROR);

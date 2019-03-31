@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface StudentService {
 
-    void addStudent(StudentDTO studentDTO);
+    void addStudent(StudentDTO studentDTO, String admin);
 
     boolean checkStudent(String rawPassword, String passwordFromDb);
 
@@ -16,4 +16,6 @@ public interface StudentService {
     List<StudentDTO> getStudentsFromGroupById(int id);
 
     List<StudentDTO> getAllStudents(String admin);
+
+    void deleteStudent(Integer id, String toString);
 }

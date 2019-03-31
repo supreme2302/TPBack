@@ -22,9 +22,9 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public void addStudent(StudentDTO studentDTO) {
+    public void addStudent(StudentDTO studentDTO, String admin) {
         studentDTO.setPassword(passwordEncoder.encode(studentDTO.getPassword()));
-        studentDAO.addStudent(studentDTO);
+        studentDAO.addStudent(studentDTO,admin);
     }
 
     @Override
@@ -51,5 +51,10 @@ public class StudentServiceImpl implements StudentService {
     public List<StudentDTO> getAllStudents(String admin){
         return studentDAO.getAllStudents(admin);
 
+    }
+
+    @Override
+    public void deleteStudent(Integer id, String admin) {
+        studentDAO.deleteStudent(id,admin);
     }
 }

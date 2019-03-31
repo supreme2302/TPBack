@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface StudentDAO {
 
-    void addStudent(StudentDTO studentDTO);
+    void addStudent(StudentDTO studentDTO,String admin);
 
     StudentDTO getStudentByEmailWithGroupId(String email);
 
@@ -15,4 +15,6 @@ public interface StudentDAO {
     List<StudentDTO> getStudentsFromGroupById(int id);
 
     List<StudentDTO> getAllStudents(String admin);
+
+    void deleteStudent(Integer id, String admin);
 }

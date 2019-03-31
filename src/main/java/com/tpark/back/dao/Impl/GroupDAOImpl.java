@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,7 +19,7 @@ public class GroupDAOImpl implements GroupDAO {
     private final JdbcTemplate jdbc;
     private final static GroupMapper groupMapper = new GroupMapper();
     private final SchoolIDDAO schoolIDDAO;
-
+    private final SchoolMapper schoolMapper = new SchoolMapper();
 
 
     @Autowired
@@ -29,17 +30,25 @@ public class GroupDAOImpl implements GroupDAO {
 
 
     @Override
+    @Transactional
     public void deleteGroup(int id, String email) {
+
         Integer school_id = schoolIDDAO.GetSchoolId(email);
-        final String sql ="DELETE FROM group_course WHERE id = ? and school_id=?;";
-        jdbc.update(sql,id, school_id);
+        String sql ="SELECT school_id FROM group_course WHERE id = ?;";
+        Integer Sid = jdbc.queryForObject(sql, schoolMapper ,id);
+        if(Sid.equals(school_id)) {
+            sql = "DELETE  FROM  student_group  WHERE group_id = ?;";
+            jdbc.update(sql, id);
+            sql = "DELETE FROM group_course WHERE id = ?;";
+            jdbc.update(sql, id);
+        }
     }
 
     @Override
     public void changeGroup(GroupDTO groupDTO, String email) {
         Integer school_id = schoolIDDAO.GetSchoolId(email);
-        final String sql = "UPDATE group_course SET group_name = ?, course_id = ?, current_unit=? WHERE id = ? AND  school_id =?;";
-        jdbc.update(sql, groupDTO.getName(), groupDTO.getCourse_id(), groupDTO.getCurr_unit(), groupDTO.getId(), school_id);
+        final String sql = "UPDATE group_course SET group_name = ?, description = ?, course_id = ?, current_unit=? WHERE id = ? AND  school_id =?;";
+        jdbc.update(sql, groupDTO.getName(), groupDTO.getDescription(), groupDTO.getCourse_id(), groupDTO.getCurr_unit(), groupDTO.getId(), school_id);
     }
 
     @Override
@@ -49,8 +58,8 @@ public class GroupDAOImpl implements GroupDAO {
             //TODO FIX unit problems
         }
         Integer school_id = schoolIDDAO.GetSchoolId(email);
-        final String sql = "INSERT INTO group_course(group_name, course_id, current_unit,school_id) VALUES (?, ?, ?,?);";
-        jdbc.update(sql, groupDTO.getName(), groupDTO.getCourse_id(), groupDTO.getCurr_unit(), school_id);
+        final String sql = "INSERT INTO group_course(group_name, course_id, current_unit,school_id, description) VALUES (?, ?, ?,?,?);";
+        jdbc.update(sql, groupDTO.getName(), groupDTO.getCourse_id(), groupDTO.getCurr_unit(), school_id, groupDTO.getDescription());
     }
 
     @Override
@@ -116,5 +125,14 @@ public class GroupDAOImpl implements GroupDAO {
 
             return groupDTO;
         }
+    }
+
+    public final class SchoolMapper implements RowMapper<Integer> {
+        @Override
+        public Integer mapRow(ResultSet resultSet, int i) throws SQLException {
+            return resultSet.getInt("school_id");
+        }
+
+
     }
 }

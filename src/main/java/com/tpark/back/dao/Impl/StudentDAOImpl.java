@@ -2,6 +2,7 @@ package com.tpark.back.dao.Impl;
 
 import com.tpark.back.dao.StudentDAO;
 import com.tpark.back.model.dto.StudentDTO;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,18 +22,27 @@ public class StudentDAOImpl implements StudentDAO {
 
     private final static StudentMapper studentMapper = new StudentMapper();
     private final static GroupMapper groupMapper = new GroupMapper();
+    private final SchoolIDDAO schoolIDDAO;
 
     @Autowired
-    public StudentDAOImpl(JdbcTemplate jdbc) {
+    public StudentDAOImpl(JdbcTemplate jdbc, SchoolIDDAO schoolIDDAO) {
         this.jdbc = jdbc;
+        this.schoolIDDAO = schoolIDDAO;
     }
 
     @Override
-    public void addStudent(StudentDTO studentDTO) {
-        final String sql = "INSERT INTO student(email, first_name, last_name, password, school_id) "
-                + "VALUES (?, ?, ?, ?, ?)";
-        jdbc.update(sql, studentDTO.getEmail(), studentDTO.getName(), studentDTO.getSurname(),
-                studentDTO.getPassword(), studentDTO.getSchool_id());
+    public void addStudent(StudentDTO studentDTO, String admin) {
+        Integer school_id = schoolIDDAO.GetSchoolId(admin);
+        String sql = "INSERT INTO student(email, first_name, last_name, password, school_id) "
+                + "VALUES (?, ?, ?, ?, ?) RETURNING (id, email,first_name,last_name,password,school_id)";
+        StudentDTO res = jdbc.queryForObject(sql,studentMapper, studentDTO.getEmail(), studentDTO.getName(), studentDTO.getSurname(),
+                studentDTO.getPassword(), school_id);
+        Integer i = 0;
+        sql = "INSERT INTO student_group(group_id, student_id) VALUES (?,?);";
+        while ( i < studentDTO.getGroup_id().size()){
+            jdbc.update(sql, studentDTO.getGroup_id().get(i), res.getId());
+        }
+        //TODO: поправить сей метод
     }
 
     @Override
@@ -81,6 +91,14 @@ public class StudentDAOImpl implements StudentDAO {
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
+    }
+
+    @Override
+    public void deleteStudent(Integer id, String admin) {
+        Integer school_id = schoolIDDAO.GetSchoolId(admin);
+        String sql = "DELETE FROM student WHERE id = ? AND school_id = ?";
+        jdbc.update(sql,  id, school_id);
+
     }
 
     @Override

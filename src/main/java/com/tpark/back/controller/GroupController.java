@@ -122,8 +122,9 @@ public class GroupController {
         }
     }
 
-    @PostMapping(path = "/change")
-    public ResponseEntity change(HttpSession session, @RequestBody GroupDTO groupDTO) {
+    @PostMapping(path = "/edit")
+    public ResponseEntity changeGroup(HttpSession session, @RequestBody GroupDTO groupDTO) {
+        System.out.println("editing");
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
