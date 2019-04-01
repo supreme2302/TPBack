@@ -46,7 +46,6 @@ public class StudentDAOImpl implements StudentDAO {
             jdbc.update(sql, studentDTO.getGroup_id().get(i), res.getId());
             i++;
         }
-        //TODO: поправить сей метод
     }
 
     @Override

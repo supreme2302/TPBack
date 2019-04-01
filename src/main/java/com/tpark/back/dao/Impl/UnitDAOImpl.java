@@ -46,7 +46,6 @@ public class UnitDAOImpl implements UnitDAO {
     @Override
     @Transactional
     public void createUnit(UnitDTO unitDTO, String email) {
-        // TODO change this shit
         Integer schoolId = schoolIDDAO.GetSchoolId(email);
         String sql = "SELECT * FROM unit WHERE course_id = ? AND  school_id =? AND next_unit IS null;";
         try {
@@ -55,7 +54,7 @@ public class UnitDAOImpl implements UnitDAO {
             jdbc.update(sql, unitDTO.getUnit_name(), unitDTO.getCourse_id(),unitDTO.getDescription(), schoolId, obj.getId());
             sql = "SELECT * FROM unit WHERE unit_name = ? AND course_id=?";
             UnitDTO res = jdbc.queryForObject(sql, unitMapper, unitDTO.getUnit_name(), unitDTO.getCourse_id());
-            //TODO unique constraint на имя и курс+ поменять группу, сделать nullable
+            //TODO unique constraint на имя и курс
             sql = "UPDATE unit SET next_unit=? WHERE id = ?";
             jdbc.update(sql,res.getId(),obj.getId());
 
@@ -69,7 +68,6 @@ public class UnitDAOImpl implements UnitDAO {
     @Override
     @Transactional
     public void changeUnit(UnitDTO unitDTO, String email) {
-        //TODO and this shit too
         Integer schoolId = schoolIDDAO.GetSchoolId(email);
         String sql ="SELECT * FROM unit WHERE id = ? AND school_id=?;";
         UnitDTO old = jdbc.queryForObject(sql,unitMapper,unitDTO.getId(),schoolId);

@@ -16,4 +16,3 @@ public class Message {
         this.message = message;
     }
 }
-//TODO: Сделать unit current position не unique
