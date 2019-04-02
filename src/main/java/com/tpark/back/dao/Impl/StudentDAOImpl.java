@@ -130,7 +130,8 @@ public class StudentDAOImpl implements StudentDAO {
                 "FROM student WHERE lower(email) = lower(?)";
         try {
             StudentWithGroupsDTO studentDTO =  jdbc.queryForObject(sql, studentGMapper, email);
-            sql = "SELECT * FROM student_group WHERE student_id = ?;";
+            sql = "SELECT group_course.id, group_name, course_id, school_id, description, current_unit FROM group_course " +
+                    "JOIN student_group ON student_id = ? AND student_group.group_id = group_course.id;";
             List<GroupDTO> groups = jdbc.query(sql,rGroupMapper, studentDTO.getId());
             studentDTO.setGroup_id(groups);
             return studentDTO;
