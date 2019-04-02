@@ -16,6 +16,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.Cookie;
 import java.nio.charset.Charset;
@@ -27,16 +28,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = {EmbeddedPostgresConfiguration.class, MockMvcAutoConfiguration.class})
-//@TestPropertySource("/application-test.properties")
-//@Sql(value = {"/db/migration/test/test_session.sql",
-//        "/db/migration/test/test-set-before.sql"},
-//        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@TestPropertySource("/application-test.properties")
+@Transactional
 public class AdminControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
-
-
 
     private Gson gson = new Gson();
 
@@ -50,8 +47,9 @@ public class AdminControllerTests {
         AdminDTO adminDTO = new AdminDTO();
         adminDTO.setEmail("test@s.ru");
         adminDTO.setPassword("123");
+        adminDTO.setSchoolName("test_school_name");
         String authJSON = gson.toJson(adminDTO);
-        this.mockMvc.perform(post("/adminDTO/register")
+        this.mockMvc.perform(post("/admin/register")
                 .contentType(contentType)
                 .content(authJSON))
                 .andDo(print())
@@ -79,7 +77,6 @@ public class AdminControllerTests {
 
     @Test
     public void logoutOkTest() throws Exception {
-
         CookieAssistant assistant= new CookieAssistant(mockMvc);
         Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
         this.mockMvc.perform(post("/admin/logout")

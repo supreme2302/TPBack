@@ -86,7 +86,7 @@ public class UnitController {
         try {
             unitService.createUnit(unitDTO, session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(UserStatus.SUCCESSFULLY_CREATED);
+                    .body(unitDTO);
         } catch (DuplicateKeyException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(UserStatus.ALREADY_EXISTS);

@@ -1,6 +1,6 @@
-ALTER TABLE course ADD COLUMN IF NOT EXISTS description citext;
-ALTER TABLE group_course ADD COLUMN IF NOT EXISTS description citext;
-ALTER TABLE unit ADD COLUMN IF NOT EXISTS description citext;
+ALTER TABLE course ADD COLUMN  description citext;
+ALTER TABLE group_course ADD COLUMN  description citext;
+ALTER TABLE unit ADD COLUMN  description citext;
 
 CREATE TABLE IF NOT EXISTS task_unit (
                                            id SERIAL NOT NULL PRIMARY KEY ,

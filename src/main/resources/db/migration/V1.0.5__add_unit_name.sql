@@ -1,1 +1,1 @@
-ALTER TABLE unit ADD COLUMN IF NOT EXISTS unit_name citext;
+ALTER TABLE unit ADD COLUMN unit_name citext;

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -54,8 +55,14 @@ public class EmbeddedPostgresConfiguration {
     public Flyway flyway(@Qualifier("embeddedDataSource") DataSource dataSource) {
         Flyway flyway = new Flyway();
         flyway.setDataSource(dataSource);
-        logger.info("flyway working---------------------------------------------------");
+        logger.info("flyway is working---------------------------------------------------");
         flyway.migrate();
         return flyway;
+    }
+
+    @Bean
+    @DependsOn("flyway")
+    public ExecuteTestScript testData(@Qualifier("embeddedDataSource") DataSource dataSource) {
+        return new ExecuteTestScript(dataSource, new ClassPathResource("sql/insert-test-data.sql"));
     }
 }
