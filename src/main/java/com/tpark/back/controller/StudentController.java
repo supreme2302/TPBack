@@ -4,6 +4,7 @@ import com.tpark.back.model.dto.AdminDTO;
 import com.tpark.back.model.dto.StudentDTO;
 import com.tpark.back.model.dto.StudentAuthDTO;
 import com.tpark.back.model.UserStatus;
+import com.tpark.back.model.dto.StudentWithGroupsDTO;
 import com.tpark.back.service.AdminService;
 import com.tpark.back.service.StudentService;
 import com.tpark.back.util.RandomString;
@@ -118,7 +119,7 @@ public class StudentController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(UserStatus.ALREADY_AUTHENTICATED);
         }
 
-        StudentDTO studentDTOFromDb = studentService.getStudentByEmailWithGroupId(student.getEmail());
+        StudentWithGroupsDTO studentDTOFromDb = studentService.getStudentByEmailWithGroups(student.getEmail());
 
         if (studentDTOFromDb == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

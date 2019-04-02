@@ -1,7 +1,9 @@
 package com.tpark.back.dao.Impl;
 
 import com.tpark.back.dao.StudentDAO;
+import com.tpark.back.model.dto.GroupDTO;
 import com.tpark.back.model.dto.StudentDTO;
+import com.tpark.back.model.dto.StudentWithGroupsDTO;
 import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -21,7 +23,9 @@ public class StudentDAOImpl implements StudentDAO {
     private final JdbcTemplate jdbc;
 
     private final static StudentMapper studentMapper = new StudentMapper();
+    private final static StudentGMapper studentGMapper = new StudentGMapper();
     private final static GroupMapper groupMapper = new GroupMapper();
+    private final static RGroupMapper rGroupMapper = new RGroupMapper();
     private final SchoolIDDAO schoolIDDAO;
 
     @Autowired
@@ -121,6 +125,21 @@ public class StudentDAOImpl implements StudentDAO {
     }
 
     @Override
+    public StudentWithGroupsDTO getStudentByEmailWithGroups(String email) {
+        String sql = "SELECT student.id, email, first_name, last_name, password, school_id " +
+                "FROM student WHERE lower(email) = lower(?)";
+        try {
+            StudentWithGroupsDTO studentDTO =  jdbc.queryForObject(sql, studentGMapper, email);
+            sql = "SELECT * FROM student_group WHERE student_id = ?;";
+            List<GroupDTO> groups = jdbc.query(sql,rGroupMapper, studentDTO.getId());
+            studentDTO.setGroup_id(groups);
+            return studentDTO;
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
     @Transactional
     public StudentDTO getStudentByEmailWithGroupId(String email) {
 
@@ -144,10 +163,40 @@ public class StudentDAOImpl implements StudentDAO {
         }
     }
 
+    public static class RGroupMapper implements RowMapper<GroupDTO> {
+        @Override
+        public GroupDTO mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+            GroupDTO groupDTO = new GroupDTO();
+            groupDTO.setId(resultSet.getInt("id"));
+            groupDTO.setName(resultSet.getString("group_name"));
+            groupDTO.setCourse_id(resultSet.getInt("course_id"));
+            groupDTO.setCurr_unit(resultSet.getInt("current_unit"));
+            groupDTO.setDescription(resultSet.getString("description"));
+            //TODO: Нужно добавить Timestamp
+
+
+            return groupDTO;
+        }
+    }
+
     private static final class StudentMapper implements RowMapper<StudentDTO> {
         @Override
         public StudentDTO mapRow(ResultSet resultSet, int i) throws SQLException {
             StudentDTO studentDTO = new StudentDTO();
+            studentDTO.setId(resultSet.getInt("id"));
+            studentDTO.setEmail(resultSet.getString("email"));
+            studentDTO.setName(resultSet.getString("first_name"));
+            studentDTO.setSurname(resultSet.getString("last_name"));
+            studentDTO.setPassword(resultSet.getString("password"));
+            studentDTO.setSchool_id(resultSet.getInt("school_id"));
+            return studentDTO;
+        }
+    }
+
+    private static final class StudentGMapper implements RowMapper<StudentWithGroupsDTO> {
+        @Override
+        public StudentWithGroupsDTO mapRow(ResultSet resultSet, int i) throws SQLException {
+            StudentWithGroupsDTO studentDTO = new StudentWithGroupsDTO();
             studentDTO.setId(resultSet.getInt("id"));
             studentDTO.setEmail(resultSet.getString("email"));
             studentDTO.setName(resultSet.getString("first_name"));

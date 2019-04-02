@@ -2,6 +2,7 @@ package com.tpark.back.service.Impl;
 
 import com.tpark.back.dao.StudentDAO;
 import com.tpark.back.model.dto.StudentDTO;
+import com.tpark.back.model.dto.StudentWithGroupsDTO;
 import com.tpark.back.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -61,5 +62,10 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public void changeStudent(StudentDTO studentDTO, String toString) {
         studentDAO.changeStudent(studentDTO, toString);
+    }
+
+    @Override
+    public StudentWithGroupsDTO getStudentByEmailWithGroups(String email) {
+        return studentDAO.getStudentByEmailWithGroups(email);
     }
 }

@@ -1,6 +1,7 @@
 package com.tpark.back.dao;
 
 import com.tpark.back.model.dto.StudentDTO;
+import com.tpark.back.model.dto.StudentWithGroupsDTO;
 
 import java.util.List;
 
@@ -19,4 +20,6 @@ public interface StudentDAO {
     void deleteStudent(Integer id, String admin);
 
     void changeStudent(StudentDTO studentDTO, String toString);
+
+    StudentWithGroupsDTO getStudentByEmailWithGroups(String email);
 }
