@@ -35,7 +35,7 @@ public class GroupDAOImpl implements GroupDAO {
     @Transactional
     public void deleteGroup(int id, String email) {
 
-        Integer school_id = schoolIDDAO.GetSchoolId(email);
+        Integer school_id = schoolIDDAO.getSchoolId(email);
         String sql ="SELECT school_id FROM group_course WHERE id = ?;";
         Integer Sid = jdbc.queryForObject(sql, schoolMapper ,id);
         if(Sid.equals(school_id)) {
@@ -49,7 +49,7 @@ public class GroupDAOImpl implements GroupDAO {
     @Override
     @Transactional
     public void changeGroup(GroupDTO groupDTO, String email) {
-        Integer school_id = schoolIDDAO.GetSchoolId(email);
+        Integer school_id = schoolIDDAO.getSchoolId(email);
         String sql = "UPDATE group_course SET group_name = ?, description = ?, course_id = ?  WHERE id = ? AND  school_id =?;";
         jdbc.update(sql, groupDTO.getName(), groupDTO.getDescription(), groupDTO.getCourse_id(), groupDTO.getId(), school_id);
         if(groupDTO.getCurr_unit() != 0) {
@@ -70,7 +70,7 @@ public class GroupDAOImpl implements GroupDAO {
 
     @Override
     public void createGroup(GroupDTO groupDTO, String email) {
-        Integer school_id = schoolIDDAO.GetSchoolId(email);
+        Integer school_id = schoolIDDAO.getSchoolId(email);
         final String sql = "INSERT INTO group_course(group_name, course_id, current_unit,school_id, description) VALUES (?, ?, ?,?,?);";
         if(groupDTO.getCurr_unit() == 0){
             jdbc.update(sql, groupDTO.getName(), groupDTO.getCourse_id(), null, school_id, groupDTO.getDescription());
@@ -82,7 +82,7 @@ public class GroupDAOImpl implements GroupDAO {
 
     @Override
     public GroupDTO getGroup(int groupID, String email) {
-        Integer school_id = schoolIDDAO.GetSchoolId(email);
+        Integer school_id = schoolIDDAO.getSchoolId(email);
         final String sql = "SELECT * FROM group_course WHERE id = ? AND  school_id = ? LIMIT 1;";
         return jdbc.queryForObject(sql, groupMapper, groupID, school_id);
 
@@ -90,7 +90,7 @@ public class GroupDAOImpl implements GroupDAO {
 
     @Override
     public List<GroupDTO> getGroupsByCourse(int courseID, String email) {
-        Integer school_id = schoolIDDAO.GetSchoolId(email);
+        Integer school_id = schoolIDDAO.getSchoolId(email);
         final String sql = "SELECT * FROM group_course WHERE course_id = ? AND school_id = ?;";
         return jdbc.query(sql, groupMapper, courseID, school_id);
 

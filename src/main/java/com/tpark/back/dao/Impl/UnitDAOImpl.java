@@ -30,14 +30,14 @@ public class UnitDAOImpl implements UnitDAO {
 
     @Override
     public List<UnitDTO> getUnitsByCourse(Integer courseId, String email) {
-        Integer schoolId = schoolIDDAO.GetSchoolId(email);
+        Integer schoolId = schoolIDDAO.getSchoolId(email);
         final String sql = "SELECT * FROM unit WHERE course_id = ? AND school_id = ?;";
         return jdbc.query(sql, unitMapper, courseId, schoolId);
     }
 
     @Override
     public UnitDTO getUnit(Integer unitId, String email) {
-        Integer schoolId = schoolIDDAO.GetSchoolId(email);
+        Integer schoolId = schoolIDDAO.getSchoolId(email);
         final String sql = "SELECT * FROM unit WHERE id = ? AND school_id=?;";
         return jdbc.queryForObject(sql, unitMapper, unitId, schoolId);
 
@@ -46,7 +46,7 @@ public class UnitDAOImpl implements UnitDAO {
     @Override
     @Transactional
     public void createUnit(UnitDTO unitDTO, String email) {
-        Integer schoolId = schoolIDDAO.GetSchoolId(email);
+        Integer schoolId = schoolIDDAO.getSchoolId(email);
         String sql = "SELECT * FROM unit WHERE course_id = ? AND  school_id =? AND next_unit IS null;";
         try {
             UnitDTO obj = jdbc.queryForObject(sql,unitMapper,unitDTO.getCourse_id(),schoolId);
@@ -57,18 +57,22 @@ public class UnitDAOImpl implements UnitDAO {
             //TODO unique constraint на имя и курс
             sql = "UPDATE unit SET next_unit=? WHERE id = ?";
             jdbc.update(sql,res.getId(),obj.getId());
-
-        }   catch (EmptyResultDataAccessException exept){
-
-            sql = "INSERT INTO unit(unit_name, course_id, description,school_id) VALUES (?, ?, ?,?);";
-            jdbc.update(sql, unitDTO.getUnit_name(), unitDTO.getCourse_id(),unitDTO.getDescription(), schoolId);
+            unitDTO.setId(res.getId());
+            unitDTO.setCourse_id(res.getCourse_id());
+            unitDTO.setNext_pos(res.getNext_pos());
+            unitDTO.setPrev_pos(res.getPrev_pos());
+        } catch (EmptyResultDataAccessException exept) {
+            sql = "INSERT INTO unit(unit_name, course_id, description,school_id) VALUES (?, ?, ?,?) RETURNING id";
+            Integer id = jdbc.queryForObject(sql, Integer.class,
+                    unitDTO.getUnit_name(), unitDTO.getCourse_id(),unitDTO.getDescription(), schoolId);
+            unitDTO.setId(id);
         }
     }
 
     @Override
     @Transactional
     public void changeUnit(UnitDTO unitDTO, String email) {
-        Integer schoolId = schoolIDDAO.GetSchoolId(email);
+        Integer schoolId = schoolIDDAO.getSchoolId(email);
         String sql ="SELECT * FROM unit WHERE id = ? AND school_id=?;";
         UnitDTO old = jdbc.queryForObject(sql,unitMapper,unitDTO.getId(),schoolId);
         if((old.getNext_pos() == unitDTO.getNext_pos() && old.getPrev_pos() == unitDTO.getPrev_pos()) ||(unitDTO.getNext_pos() == null && unitDTO.getPrev_pos() == null)) {
@@ -93,7 +97,7 @@ public class UnitDAOImpl implements UnitDAO {
 
     @Override
     public void deleteUnit(int id, String email) {
-        Integer schoolId = schoolIDDAO.GetSchoolId(email);
+        Integer schoolId = schoolIDDAO.getSchoolId(email);
         Integer temp = 0;
         String sql ="SELECT course_id FROM unit WHERE id = ? AND school_id = ?;";
         temp = jdbc.queryForObject(sql,intMapper , id, schoolId);

@@ -19,9 +19,9 @@ public class SchoolIDDAO {
         this.jdbc = jdbc;
     }
 
-    Integer GetSchoolId(String admin) {
+    public Integer getSchoolId(String admin) {
         String sql = "SELECT school_id FROM admin WHERE lower(email) = lower(?);";
-        return jdbc.queryForObject(sql, schoolMapper, admin);
+        return jdbc.queryForObject(sql, Integer.class, admin);
     }
 
     public final class SchoolMapper implements RowMapper<Integer> {

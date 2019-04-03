@@ -75,14 +75,44 @@ public class UnitControllerTests {
     }
 
     @Test
-    public void createUnitTest() throws Exception {
+    @SuppressWarnings("Duplicates")
+    public void createFirstUnitTest() throws Exception {
         UnitDTO unitDTO = new UnitDTO();
-        unitDTO.setUnit_name("Fuckji");
+        unitDTO.setUnit_name("testUnit");
         unitDTO.setCourse_id(1);
-//        unitDTO.setPosition(2);
+        unitDTO.setDescription("testDescription");
         String authJSON = gson.toJson(unitDTO);
         CookieAssistant assistant= new CookieAssistant(mockMvc);
         Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
+        this.mockMvc.perform(post("/unit/create")
+                .contentType(contentType)
+                .content(authJSON)
+                .cookie(allCookies))
+                .andDo(print())
+                .andExpect(status().isCreated());
+    }
+
+
+    @Test
+    @SuppressWarnings("Duplicates")
+    public void createNextUnitTest() throws Exception {
+        UnitDTO unitDTO = new UnitDTO();
+        unitDTO.setUnit_name("testUnit");
+        unitDTO.setCourse_id(1);
+        unitDTO.setDescription("testDescription");
+        unitDTO.setPrev_pos(0);
+        String authJSON = gson.toJson(unitDTO);
+        CookieAssistant assistant= new CookieAssistant(mockMvc);
+        Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
+        this.mockMvc.perform(post("/unit/create")
+                .contentType(contentType)
+                .content(authJSON)
+                .cookie(allCookies))
+                .andExpect(status().isCreated());
+        unitDTO.setUnit_name("secondUnit");
+        unitDTO.setCourse_id(1);
+        unitDTO.setDescription("descr");
+        authJSON = gson.toJson(unitDTO);
         this.mockMvc.perform(post("/unit/create")
                 .contentType(contentType)
                 .content(authJSON)
