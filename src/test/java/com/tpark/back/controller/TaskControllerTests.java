@@ -46,8 +46,8 @@ public class TaskControllerTests {
         CookieAssistant assistant= new CookieAssistant(mockMvc);
         Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");
         TaskDTO taskDTO = new TaskDTO();
-        taskDTO.setDescription("test_name");
-        taskDTO.setTask_ref("test_surname");
+        taskDTO.setName("test_name");
+//        taskDTO.setTask("test_surname");
         taskDTO.setTask_type(1);
         this.mockMvc.perform(post("/taskDTO/create")
                 .contentType(contentType)

@@ -1,0 +1,1 @@
+ALTER TABLE task ALTER COLUMN task_val TYPE JSON USING task_val::JSON;

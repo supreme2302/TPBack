@@ -1,0 +1,2 @@
+-- CREATE EXTENSION json;
+CREATE EXTENSION hstore;

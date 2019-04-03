@@ -7,7 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.ServletContext;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -19,7 +23,7 @@ public class TaskDAOImpl implements TaskDAO {
 
     private final static TaskMapper taskMapper = new TaskMapper();
     private final SchoolIDDAO schoolIDDAO;
-
+    private final String FILE_PATH = "~/FinalFight/TPBack/src/main/resources/taskVault/";
 
     @Autowired
     public TaskDAOImpl(JdbcTemplate jdbc, SchoolIDDAO schoolIDDAO) {
@@ -35,21 +39,38 @@ public class TaskDAOImpl implements TaskDAO {
         final String sql ="DELETE FROM task WHERE id = ? AND school_id=?;";
         jdbc.update(sql,id,school_id);
     }
+    //TODO: дописать таску(работа с unit_id и Jsonищем)
 
     @Override
     public void changeTask(String admin , TaskDTO taskDTO) {
 
         Integer school_id = schoolIDDAO.GetSchoolId(admin);
-        final String sql = "UPDATE task SET description = ?, task_ref = ?, task_type=? WHERE id = ? AND school_id=?;";
-        jdbc.update(sql, taskDTO.getDescription(), taskDTO.getTask_ref(), taskDTO.getTask_type(), taskDTO.getId(),school_id);
-
+        String sql = "UPDATE task SET name = ?, task_val = ?, task_type=? WHERE id = ? AND school_id=?;";
+        jdbc.update(sql, taskDTO.getName(), taskDTO.getTask(), taskDTO.getTask_type(), taskDTO.getId(),school_id);
+        sql = "DELETE FROM task_unit WHERE task_id = ?";
+        jdbc.update(sql,taskDTO.getId());
+        Integer i = 0;
+        while (i<taskDTO.getUnit_id().size()){
+            sql = "INSERT INTO task_unit (task_id, unit_id) VALUES (?,?);";
+            jdbc.update(sql,taskDTO.getId(),taskDTO.getUnit_id().get(i));
+            i++;
+        }
     }
 
     @Override
+    @Transactional
     public void createTask(String admin , TaskDTO taskDTO) {
         Integer school_id = schoolIDDAO.GetSchoolId(admin);
-        final String sql = "INSERT INTO task (description, task_ref, task_type,school_id) VALUES (?, ?, ?,?);";
-        jdbc.update(sql, taskDTO.getDescription(), taskDTO.getTask_ref(), taskDTO.getTask_type(),school_id);
+        String sql = "INSERT INTO task (name, task_val, task_type,school_id) VALUES (?, ?, ?,?);";
+        jdbc.update(sql, taskDTO.getName(), taskDTO.getTask(), taskDTO.getTask_type(),school_id);
+        sql = "SELECT * FROM task WHERE name = ? AND school_id=?";
+        TaskDTO created = jdbc.queryForObject(sql, taskMapper, taskDTO.getName(),school_id);
+        Integer i = 0;
+        while (i<taskDTO.getUnit_id().size()){
+            sql = "INSERT INTO task_unit (task_id, unit_id) VALUES (?,?);";
+            jdbc.update(sql,created.getId(),taskDTO.getUnit_id().get(i));
+            i++;
+        }
     }
 
     @Override
@@ -112,9 +133,9 @@ public class TaskDAOImpl implements TaskDAO {
         public TaskDTO mapRow(ResultSet resultSet, int i) throws SQLException {
             TaskDTO taskDTO = new TaskDTO();
             taskDTO.setId(resultSet.getInt("id"));
-            taskDTO.setTask_type(resultSet.getInt("unit_id"));
-            taskDTO.setTask_ref(resultSet.getString("task_ref"));
-            taskDTO.setDescription(resultSet.getString("description"));
+            taskDTO.setTask_type(resultSet.getInt("task_type"));
+            taskDTO.setName(resultSet.getString("name"));
+            taskDTO.setTask(resultSet.getObject("task_val"));
             return taskDTO;
         }
     }
