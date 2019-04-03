@@ -107,7 +107,7 @@ public class TaskController {
         try {
             taskService.createTask(session.getAttribute("user").toString(), taskDTO);
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(UserStatus.SUCCESSFULLY_CREATED);
+                    .body(taskDTO);
         } catch (DuplicateKeyException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(UserStatus.ALREADY_EXISTS);
@@ -127,7 +127,7 @@ public class TaskController {
         try {
             taskService.addTaskToUnit(session.getAttribute("user").toString(), task);
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(UserStatus.SUCCESSFULLY_CREATED);
+                    .body(task);
         } catch (DuplicateKeyException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(UserStatus.ALREADY_EXISTS);
@@ -147,7 +147,7 @@ public class TaskController {
         try {
             taskService.changeTask(session.getAttribute("user").toString(), taskDTO);
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(UserStatus.SUCCESSFULLY_CHANGED);
+                    .body(taskDTO);
         } catch (DuplicateKeyException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(UserStatus.NOT_FOUND);
@@ -167,7 +167,7 @@ public class TaskController {
         try {
             taskService.deleteTask(session.getAttribute("user").toString(), id);
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(UserStatus.SUCCESSFULLY_CHANGED);
+                    .body(UserStatus.SUCCESSFULLY_DELETED);
         } catch (DuplicateKeyException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(UserStatus.NOT_FOUND);

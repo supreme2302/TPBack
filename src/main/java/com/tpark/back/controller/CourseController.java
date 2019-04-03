@@ -92,7 +92,7 @@ public class CourseController {
         try {
             courseService.createCourse(courseDTO, session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(UserStatus.SUCCESSFULLY_CREATED);
+                    .body(courseDTO);
         } catch (DuplicateKeyException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(UserStatus.ALREADY_EXISTS);
@@ -112,7 +112,7 @@ public class CourseController {
         try {
             courseService.changeCourse(courseDTO, session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(UserStatus.SUCCESSFULLY_CHANGED);
+                    .body(courseDTO);
         } catch (DuplicateKeyException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(UserStatus.ALREADY_EXISTS);
@@ -132,7 +132,7 @@ public class CourseController {
         try {
             courseService.deleteCourse(id, session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(UserStatus.SUCCESSFULLY_CHANGED);
+                    .body(UserStatus.SUCCESSFULLY_DELETED);
         } catch (DuplicateKeyException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(UserStatus.ALREADY_EXISTS);

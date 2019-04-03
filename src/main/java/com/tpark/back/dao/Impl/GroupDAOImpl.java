@@ -50,9 +50,9 @@ public class GroupDAOImpl implements GroupDAO {
     @Transactional
     public void changeGroup(GroupDTO groupDTO, String email) {
         Integer school_id = schoolIDDAO.getSchoolId(email);
-        String sql = "UPDATE group_course SET group_name = ?, description = ?, course_id = ?  WHERE id = ? AND  school_id =?;";
+        String sql = "UPDATE group_course SET group_name = ?, description = ?, course_id = ?  WHERE id = ? AND  school_id = ?;";
         jdbc.update(sql, groupDTO.getName(), groupDTO.getDescription(), groupDTO.getCourse_id(), groupDTO.getId(), school_id);
-        if(groupDTO.getCurr_unit() != 0) {
+        if (groupDTO.getCurr_unit() != 0) {
             try {
                 sql = "SELECT id FROM unit WHERE course_id=? AND id=?;";
                 Integer id = jdbc.queryForObject(sql, unitIdMapper, groupDTO.getCourse_id(), groupDTO.getCurr_unit());
@@ -72,12 +72,13 @@ public class GroupDAOImpl implements GroupDAO {
     public void createGroup(GroupDTO groupDTO, String email) {
         Integer school_id = schoolIDDAO.getSchoolId(email);
         final String sql = "INSERT INTO group_course(group_name, course_id, current_unit,school_id, description) VALUES (?, ?, ?,?,?);";
-        if(groupDTO.getCurr_unit() == 0){
+        if (groupDTO.getCurr_unit() == 0) {
             jdbc.update(sql, groupDTO.getName(), groupDTO.getCourse_id(), null, school_id, groupDTO.getDescription());
         }
         else {
             jdbc.update(sql, groupDTO.getName(), groupDTO.getCourse_id(), groupDTO.getCurr_unit(), school_id, groupDTO.getDescription());
         }
+        groupDTO.setCourse_id(school_id);
     }
 
     @Override

@@ -18,4 +18,8 @@ public interface GroupDAO {
     List<GroupDTO> getGroupsForAdmin(String user);
 
     List<GroupDTO> getGroupsForStudent(String student);
+
+    GroupDTO getGroupByStudent(Integer courseId, String student);
+
+    Object getGroupForStudent(String student, Integer id);
 }

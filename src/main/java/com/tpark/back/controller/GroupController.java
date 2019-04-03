@@ -115,7 +115,7 @@ public class GroupController {
         try {
             groupService.createGroup(groupDTO, session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(UserStatus.SUCCESSFULLY_CREATED);
+                    .body(groupDTO);
         } catch (DuplicateKeyException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(UserStatus.ALREADY_EXISTS);
@@ -134,9 +134,9 @@ public class GroupController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            groupService.changeGroup(groupDTO,session.getAttribute("user").toString());
+            groupService.changeGroup(groupDTO, session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(UserStatus.SUCCESSFULLY_CHANGED);
+                    .body(groupDTO);
         } catch (DuplicateKeyException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(UserStatus.NOT_FOUND);
@@ -156,7 +156,7 @@ public class GroupController {
         try {
             groupService.deleteGroup(id ,session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(UserStatus.SUCCESSFULLY_CHANGED);
+                    .body(UserStatus.SUCCESSFULLY_DELETED);
         } catch (DuplicateKeyException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(UserStatus.NOT_FOUND);

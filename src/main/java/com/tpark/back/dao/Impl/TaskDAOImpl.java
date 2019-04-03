@@ -64,7 +64,7 @@ public class TaskDAOImpl implements TaskDAO {
     @Override
     public void createTask(String admin , TaskDTO taskDTO) {
         Integer school_id = schoolIDDAO.getSchoolId(admin);
-        String sql = "INSERT INTO task (name, task_val, task_type,school_id) VALUES (?, ?, ?,?);";
+        String sql = "INSERT INTO task (name, task_val, task_type,school_id) VALUES (?, ?, ?,?)";
         jdbc.update(sql, taskDTO.getName(), taskDTO.getTask(), taskDTO.getTask_type(),school_id);
         sql = "SELECT * FROM task WHERE name = ? AND school_id=?";
         TaskDTO created = jdbc.queryForObject(sql, taskMapper, taskDTO.getName(),school_id);
@@ -123,8 +123,8 @@ public class TaskDAOImpl implements TaskDAO {
     @Override
     public void addTaskToUnit(String user, TaskUnitDTO task) {
         Integer school_id = schoolIDDAO.getSchoolId(user);
-        String sql  = "SELECT * FROM task WHERE task.id = ? AND task.school_id = ?;";
-        if(jdbc.query(sql, taskMapper, task.getTaskID(), school_id)!= null) {
+        String sql  = "SELECT * FROM task WHERE task.id = ? AND task.school_id = ?";
+        if (jdbc.query(sql, taskMapper, task.getTaskID(), school_id)!= null) {
             sql = "INSERT INTO task_unit (unit_id, task_id) VALUES (?, ?);";
             jdbc.update(sql, task.getUnitID(), task.getTaskID());
         }

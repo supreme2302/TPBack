@@ -37,6 +37,7 @@ public class StudentDAOImpl implements StudentDAO {
     @Transactional
     public void addStudent(StudentDTO studentDTO, String admin) {
         Integer school_id = schoolIDDAO.getSchoolId(admin);
+        studentDTO.setSchool_id(school_id);
         String sql = "INSERT INTO student(email, first_name, last_name, password, school_id) "
                 + "VALUES (?, ?, ?, ?, ?);";
         jdbc.update(sql, studentDTO.getEmail(), studentDTO.getName(), studentDTO.getSurname(),
@@ -110,7 +111,8 @@ public class StudentDAOImpl implements StudentDAO {
     @Override
     public void changeStudent(StudentDTO studentDTO, String admin) {
         Integer school_id = schoolIDDAO.getSchoolId(admin);
-        String sql = "UPDATE student SET email=?, first_name=?, last_name=?, password=? WHERE id = ? AND school_id = ?;";
+        String sql = "UPDATE student SET email=?, first_name=?, last_name=?, password=? WHERE id = ? AND school_id = ?";
+        studentDTO.setSchool_id(school_id);
         jdbc.update(sql, studentDTO.getEmail(), studentDTO.getName(), studentDTO.getSurname(),
                 studentDTO.getPassword(),studentDTO.getId(), school_id);
         sql = "DELETE FROM student_group WHERE student_id = ?;";

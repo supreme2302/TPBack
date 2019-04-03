@@ -34,7 +34,8 @@ public class CourseDAOImpl implements CourseDAO {
     @Override
     public void createCourse(CourseDTO courseDTO, String email) {
         Integer school_id = schoolIDDAO.getSchoolId(email);
-        final String sql = "INSERT INTO course(course_name, school_id) VALUES (?, ?);";
+        final String sql = "INSERT INTO course(course_name, school_id) VALUES (?, ?)";
+        courseDTO.setSchoolId(school_id);
         jdbc.update(sql, courseDTO.getName(),school_id);
     }
 
@@ -43,7 +44,7 @@ public class CourseDAOImpl implements CourseDAO {
         Integer school_id = schoolIDDAO.getSchoolId(email);
         String sql = "DELETE FROM group_course WHERE school_id = ? AND course_id = ?;";
         jdbc.update(sql,school_id, id);
-        sql = "DELETE FROM course WHERE id = ? AND school_id = ?;\n";
+        sql = "DELETE FROM course WHERE id = ? AND school_id = ?;";
         jdbc.update(sql,id, school_id);
     }
 
@@ -58,6 +59,7 @@ public class CourseDAOImpl implements CourseDAO {
     public void changeCourse(CourseDTO courseDTO, String admin){
         Integer school_id = schoolIDDAO.getSchoolId(admin);
         final String sql = "UPDATE course SET course_name = ? WHERE id = ? AND school_id = ?;";
+        courseDTO.setSchoolId(school_id);
         jdbc.update(sql, courseDTO.getName(), courseDTO.getId(),school_id);
     }
 

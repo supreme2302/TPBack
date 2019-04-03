@@ -1,5 +1,6 @@
 package com.tpark.back.service.Impl;
 
+import com.tpark.back.dao.GroupDAO;
 import com.tpark.back.dao.Impl.GroupDAOImpl;
 import com.tpark.back.model.dto.GroupDTO;
 import com.tpark.back.service.GroupService;
@@ -11,10 +12,10 @@ import java.util.List;
 
 @Service
 public class GroupServiceImpl implements GroupService {
-    private final GroupDAOImpl groupDAO;
+    private final GroupDAO groupDAO;
 
     @Autowired
-    GroupServiceImpl(GroupDAOImpl groupDAO){
+    GroupServiceImpl(GroupDAO groupDAO){
         this.groupDAO = groupDAO;
     }
 

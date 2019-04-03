@@ -97,7 +97,7 @@ public class UnitDAOImpl implements UnitDAO {
         Integer schoolId = schoolIDDAO.getSchoolId(email);
         String sql ="SELECT * FROM unit WHERE id = ? AND school_id=?;";
         UnitDTO old = jdbc.queryForObject(sql,unitMapper,unitDTO.getId(),schoolId);
-        if((old.getNext_pos() == unitDTO.getNext_pos() && old.getPrev_pos() == unitDTO.getPrev_pos()) ||(unitDTO.getNext_pos() == null && unitDTO.getPrev_pos() == null)) {
+        if ((old.getNext_pos() == unitDTO.getNext_pos() && old.getPrev_pos() == unitDTO.getPrev_pos()) ||(unitDTO.getNext_pos() == null && unitDTO.getPrev_pos() == null)) {
             sql = "UPDATE unit SET unit_name = ?, course_id = ?, description=? WHERE id = ? AND school_id=?;";
             jdbc.update(sql, unitDTO.getUnit_name(), unitDTO.getCourse_id(), unitDTO.getDescription(), unitDTO.getId(), schoolId);
         } else {
@@ -113,7 +113,6 @@ public class UnitDAOImpl implements UnitDAO {
             jdbc.update(sql,unitDTO.getId(),unitDTO.getNext_pos());
             sql = "UPDATE unit SET unit_name = ?, course_id = ?, prev_unit=?, next_unit = ?, description=? WHERE id = ? AND school_id=?;";
             jdbc.update(sql, unitDTO.getUnit_name(), unitDTO.getCourse_id(), unitDTO.getPrev_pos(), unitDTO.getNext_pos(), unitDTO.getDescription(), unitDTO.getId(), schoolId);
-
         }
     }
 

@@ -107,7 +107,7 @@ public class UnitController {
         try {
             unitService.changeUnit(unitDTO, session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(UserStatus.SUCCESSFULLY_CHANGED);
+                    .body(unitDTO);
         } catch (DuplicateKeyException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(UserStatus.NOT_FOUND);
@@ -127,7 +127,7 @@ public class UnitController {
         try {
             unitService.deleteUnit(id, session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(UserStatus.SUCCESSFULLY_CHANGED);
+                    .body(UserStatus.SUCCESSFULLY_DELETED);
         } catch (DuplicateKeyException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(UserStatus.NOT_FOUND);
