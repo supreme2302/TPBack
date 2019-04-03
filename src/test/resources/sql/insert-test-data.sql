@@ -1,8 +1,10 @@
-INSERT INTO admin (email, password) VALUES ('exist@e.ru', '$2a$05$c8YM1tfJdPl7xAp5CV.pU.3qlXoj0Haf7vSYGL85PfVS1pkR.sXqm');
--- INSERT INTO school (id, school_name) VALUES (1,'SSOE');
--- INSERT INTO school (id, school_name) VALUES (2,'EFG');
--- INSERT INTO admin (email, password, school_id) VALUES ('existForKostyan@e.ru', '$2a$10$rXn4xiRPY45wJVi39KAm.eKElUDcBQI4b58sqiEjrTXaTFrRn5nOW', 2);
--- INSERT INTO course (course_name, school_id,description) VALUES ('TOEFL prep',1, 'Preparation for TOEFL');
+INSERT INTO admin (email, password)
+VALUES ('exist@e.ru', '$2a$05$c8YM1tfJdPl7xAp5CV.pU.3qlXoj0Haf7vSYGL85PfVS1pkR.sXqm');
+INSERT INTO school (school_name, ownerid) VALUES ('SSOE', 1);
+UPDATE admin SET school_id = 1 WHERE id = 1;
+
+
+INSERT INTO course (id, course_name, school_id,description) VALUES (1, 'TOEFL prep', 1, 'Preparation for TOEFL');
 -- INSERT INTO course (course_name, school_id, description) VALUES ( 'IELTS prep',1, 'Preparation for IELTS');
 -- INSERT INTO course (course_name, school_id) VALUES ('English for g...',2);
 -- INSERT INTO unit (unit_name, course_id,school_id) VALUES ('English for g...',2,1,2);

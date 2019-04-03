@@ -1,6 +1,7 @@
 package com.tpark.back.service.Impl;
 
 import com.tpark.back.dao.Impl.UnitDAOImpl;
+import com.tpark.back.dao.UnitDAO;
 import com.tpark.back.model.dto.UnitDTO;
 import com.tpark.back.service.UnitService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +11,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class UnitServiceImpl implements UnitService {
 
-    private final UnitDAOImpl unitDAO;
+    private final UnitDAO unitDAO;
 
     @Autowired
-    UnitServiceImpl(UnitDAOImpl unitDAO){
+    UnitServiceImpl(UnitDAO unitDAO){
         this.unitDAO = unitDAO;
     }
 

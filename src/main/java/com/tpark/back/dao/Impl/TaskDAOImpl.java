@@ -31,7 +31,7 @@ public class TaskDAOImpl implements TaskDAO {
 
     @Override
     public void deleteTask(String admin ,int id) {
-        Integer school_id = schoolIDDAO.GetSchoolId(admin);
+        Integer school_id = schoolIDDAO.getSchoolId(admin);
         final String sql ="DELETE FROM task WHERE id = ? AND school_id=?;";
         jdbc.update(sql,id,school_id);
     }
@@ -39,7 +39,7 @@ public class TaskDAOImpl implements TaskDAO {
     @Override
     public void changeTask(String admin , TaskDTO taskDTO) {
 
-        Integer school_id = schoolIDDAO.GetSchoolId(admin);
+        Integer school_id = schoolIDDAO.getSchoolId(admin);
         final String sql = "UPDATE task SET description = ?, task_ref = ?, task_type=? WHERE id = ? AND school_id=?;";
         jdbc.update(sql, taskDTO.getDescription(), taskDTO.getTask_ref(), taskDTO.getTask_type(), taskDTO.getId(),school_id);
 
@@ -47,28 +47,28 @@ public class TaskDAOImpl implements TaskDAO {
 
     @Override
     public void createTask(String admin , TaskDTO taskDTO) {
-        Integer school_id = schoolIDDAO.GetSchoolId(admin);
+        Integer school_id = schoolIDDAO.getSchoolId(admin);
         final String sql = "INSERT INTO task (description, task_ref, task_type,school_id) VALUES (?, ?, ?,?);";
         jdbc.update(sql, taskDTO.getDescription(), taskDTO.getTask_ref(), taskDTO.getTask_type(),school_id);
     }
 
     @Override
     public TaskDTO getTask(String admin , Integer taskId) {
-        Integer school_id = schoolIDDAO.GetSchoolId(admin);
+        Integer school_id = schoolIDDAO.getSchoolId(admin);
         final String sql = "SELECT * FROM task WHERE id = ?  and school_id = ? LIMIT 1;";
         return jdbc.queryForObject(sql, taskMapper, taskId, school_id);
     }
 
     @Override
     public List<TaskDTO> getTasksByUnit(String admin , Integer unitId) {
-        Integer school_id = schoolIDDAO.GetSchoolId(admin);
+        Integer school_id = schoolIDDAO.getSchoolId(admin);
         final String sql = "SELECT * FROM task JOIN task_unit ON task_unit.unit_id = ? AND task.id = task_unit.task_id AND school_id=?;";
         return jdbc.query(sql, taskMapper, unitId, school_id);
     }
 
     @Override
     public List<TaskDTO> getAllTasks(String admin) {
-        Integer school_id = schoolIDDAO.GetSchoolId(admin);
+        Integer school_id = schoolIDDAO.getSchoolId(admin);
         final String sql = "SELECT * FROM task WHERE school_id=?;";
         return jdbc.query(sql, taskMapper, school_id);
     }
@@ -98,7 +98,7 @@ public class TaskDAOImpl implements TaskDAO {
 
     @Override
     public void addTaskToUnit(String user, TaskUnitDTO task) {
-        Integer school_id = schoolIDDAO.GetSchoolId(user);
+        Integer school_id = schoolIDDAO.getSchoolId(user);
         String sql  = "SELECT * FROM task WHERE task.id = ? AND task.school_id = ?;";
         if(jdbc.query(sql, taskMapper, task.getTaskID(), school_id)!= null) {
             sql = "INSERT INTO task_unit (unit_id, task_id) VALUES (?, ?);";

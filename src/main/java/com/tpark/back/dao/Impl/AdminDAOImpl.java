@@ -42,7 +42,7 @@ public class AdminDAOImpl implements AdminDAO {
 
     @Override
     public void addNewAdmin(String toString, AdminDTO adminDTO) {
-        Integer school_id = schoolIDDAO.GetSchoolId(toString);
+        Integer school_id = schoolIDDAO.getSchoolId(toString);
         final String sql = "INSERT INTO admin(email, password, school_id) VALUES (?, ?, ?)";
         jdbc.update(sql, adminDTO.getEmail(), adminDTO.getPassword(), school_id) ;
 

@@ -4,7 +4,6 @@ import com.tpark.back.dao.StudentDAO;
 import com.tpark.back.model.dto.GroupDTO;
 import com.tpark.back.model.dto.StudentDTO;
 import com.tpark.back.model.dto.StudentWithGroupsDTO;
-import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -37,7 +36,7 @@ public class StudentDAOImpl implements StudentDAO {
     @Override
     @Transactional
     public void addStudent(StudentDTO studentDTO, String admin) {
-        Integer school_id = schoolIDDAO.GetSchoolId(admin);
+        Integer school_id = schoolIDDAO.getSchoolId(admin);
         String sql = "INSERT INTO student(email, first_name, last_name, password, school_id) "
                 + "VALUES (?, ?, ?, ?, ?);";
         jdbc.update(sql, studentDTO.getEmail(), studentDTO.getName(), studentDTO.getSurname(),
@@ -102,7 +101,7 @@ public class StudentDAOImpl implements StudentDAO {
 
     @Override
     public void deleteStudent(Integer id, String admin) {
-        Integer school_id = schoolIDDAO.GetSchoolId(admin);
+        Integer school_id = schoolIDDAO.getSchoolId(admin);
         String sql = "DELETE FROM student WHERE id = ? AND school_id = ?";
         jdbc.update(sql,  id, school_id);
 
@@ -110,7 +109,7 @@ public class StudentDAOImpl implements StudentDAO {
 
     @Override
     public void changeStudent(StudentDTO studentDTO, String admin) {
-        Integer school_id = schoolIDDAO.GetSchoolId(admin);
+        Integer school_id = schoolIDDAO.getSchoolId(admin);
         String sql = "UPDATE student SET email=?, first_name=?, last_name=?, password=? WHERE id = ? AND school_id = ?;";
         jdbc.update(sql, studentDTO.getEmail(), studentDTO.getName(), studentDTO.getSurname(),
                 studentDTO.getPassword(),studentDTO.getId(), school_id);

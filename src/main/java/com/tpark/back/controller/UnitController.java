@@ -5,6 +5,7 @@ import com.tpark.back.model.UserStatus;
 import com.tpark.back.service.AdminService;
 import com.tpark.back.service.Impl.UnitServiceImpl;
 import com.tpark.back.service.StudentService;
+import com.tpark.back.service.UnitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -20,12 +21,12 @@ import javax.servlet.http.HttpSession;
 @EnableJdbcHttpSession
 public class UnitController {
 
-    private final UnitServiceImpl unitService;
+    private final UnitService unitService;
     private final AdminService adminService;
     private final StudentService studentService;
 
     @Autowired
-    public UnitController(UnitServiceImpl unitService, AdminService adminService, StudentService studentService) {
+    public UnitController(UnitService unitService, AdminService adminService, StudentService studentService) {
         this.unitService = unitService;
         this.adminService = adminService;
         this.studentService = studentService;
