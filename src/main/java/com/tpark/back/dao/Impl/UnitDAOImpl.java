@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -22,6 +23,27 @@ public class UnitDAOImpl implements UnitDAO {
     private final static IntMapper intMapper = new IntMapper();
     private final SchoolIDDAO schoolIDDAO;
 
+    private List<UnitDTO> sort(List<UnitDTO> data){
+        List<UnitDTO> lst = new ArrayList<>();
+        for (int i=0;i<data.size();i++){
+            if(data.get(i).getPrev_pos() == 0){
+                lst.add(data.get(i));
+                data.remove(i);
+                break;
+            }
+        }
+        while (data.size()>0 && lst.get(lst.size()-1).getNext_pos()!=0){
+            for (int i=0;i<data.size();i++) {
+                if (data.get(i).getId() == lst.get(lst.size() - 1).getNext_pos()) {
+                    lst.add(data.get(i));
+                    data.remove(i);
+                    break;
+                }
+            }
+        };
+        return lst;
+    }
+
     @Autowired
     public UnitDAOImpl(JdbcTemplate jdbc, SchoolIDDAO schoolIDDAO) {
         this.jdbc = jdbc;
@@ -32,7 +54,7 @@ public class UnitDAOImpl implements UnitDAO {
     public List<UnitDTO> getUnitsByCourse(Integer courseId, String email) {
         Integer schoolId = schoolIDDAO.getSchoolId(email);
         final String sql = "SELECT * FROM unit WHERE course_id = ? AND school_id = ?;";
-        return jdbc.query(sql, unitMapper, courseId, schoolId);
+        return sort(jdbc.query(sql, unitMapper, courseId, schoolId));
     }
 
     @Override
@@ -125,7 +147,7 @@ public class UnitDAOImpl implements UnitDAO {
                 "on student.id = sg.student_id AND student.email = ?)" +
                 " AS rg JOIN group_course ON group_course.id = rg.group_id) " +
                 "AS g ON g.course_id = unit.course_id AND unit.course_id = ?;";
-        return jdbc.query(sql, unitMapper, student, courseId);
+        return sort(jdbc.query(sql, unitMapper, student, courseId));
     }
 
     private static final class IntMapper implements RowMapper<Integer> {
