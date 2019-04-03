@@ -34,14 +34,18 @@ public class TaskDAOImpl implements TaskDAO {
 
 
     @Override
+    @Transactional
     public void deleteTask(String admin ,int id) {
         Integer school_id = schoolIDDAO.getSchoolId(admin);
-        final String sql ="DELETE FROM task WHERE id = ? AND school_id=?;";
+        String sql = "DELETE FROM task_unit WHERE task_id=?;";
+        jdbc.update(sql,id);
+        sql ="DELETE FROM task WHERE id = ? AND school_id=?;";
         jdbc.update(sql,id,school_id);
     }
     //TODO: дописать таску(работа с unit_id и Jsonищем)
 
     @Override
+    @Transactional
     public void changeTask(String admin , TaskDTO taskDTO) {
 
         Integer school_id = schoolIDDAO.getSchoolId(admin);
