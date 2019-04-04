@@ -53,7 +53,7 @@ public class TaskDAOImpl implements TaskDAO {
         jdbc.update(sql, taskDTO.getName(), taskDTO.getTask(), taskDTO.getTask_type(), taskDTO.getId(),school_id);
         sql = "DELETE FROM task_unit WHERE task_id = ?";
         jdbc.update(sql,taskDTO.getId());
-        Integer i = 0;
+        int i = 0;
         while (i<taskDTO.getUnit_id().size()){
             sql = "INSERT INTO task_unit (task_id, unit_id) VALUES (?,?);";
             jdbc.update(sql,taskDTO.getId(),taskDTO.getUnit_id().get(i));
@@ -61,19 +61,21 @@ public class TaskDAOImpl implements TaskDAO {
         }
     }
 
+    @Transactional
     @Override
     public void createTask(String admin , TaskDTO taskDTO) {
         Integer school_id = schoolIDDAO.getSchoolId(admin);
-        String sql = "INSERT INTO task (name, task_val, task_type,school_id) VALUES (?, ?, ?,?)";
-        jdbc.update(sql, taskDTO.getName(), taskDTO.getTask(), taskDTO.getTask_type(),school_id);
-        sql = "SELECT * FROM task WHERE name = ? AND school_id=?";
-        TaskDTO created = jdbc.queryForObject(sql, taskMapper, taskDTO.getName(),school_id);
-        Integer i = 0;
-        while (i<taskDTO.getUnit_id().size()){
-            sql = "INSERT INTO task_unit (task_id, unit_id) VALUES (?,?);";
-            jdbc.update(sql,created.getId(),taskDTO.getUnit_id().get(i));
+        String sql = "INSERT INTO task (name, task_val, task_type,school_id) VALUES (?, ?, ?, ?) RETURNING id";
+        Integer id = jdbc.queryForObject(sql, Integer.class, taskDTO.getName(), taskDTO.getTask(), taskDTO.getTask_type(),school_id);
+//        sql = "SELECT * FROM task WHERE name = ? AND school_id=?";
+//        TaskDTO created = jdbc.queryForObject(sql, taskMapper, taskDTO.getName(), school_id);
+        int i = 0;
+        while (i < taskDTO.getUnit_id().size()) {
+            sql = "INSERT INTO task_unit (task_id, unit_id) VALUES (?, ?);";
+            jdbc.update(sql, id, taskDTO.getUnit_id().get(i));
             i++;
         }
+        taskDTO.setId(id);
     }
 
     @Override

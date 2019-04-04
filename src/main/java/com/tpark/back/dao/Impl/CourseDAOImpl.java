@@ -34,9 +34,10 @@ public class CourseDAOImpl implements CourseDAO {
     @Override
     public void createCourse(CourseDTO courseDTO, String email) {
         Integer school_id = schoolIDDAO.getSchoolId(email);
-        final String sql = "INSERT INTO course(course_name, school_id) VALUES (?, ?)";
+        final String sql = "INSERT INTO course(course_name, school_id) VALUES (?, ?) RETURNING id";
+        Integer id = jdbc.queryForObject(sql, Integer.class, courseDTO.getName(), school_id);
         courseDTO.setSchoolId(school_id);
-        jdbc.update(sql, courseDTO.getName(),school_id);
+        courseDTO.setId(id);
     }
 
     @Override

@@ -49,7 +49,7 @@ public class TaskControllerTests {
         taskDTO.setName("test_name");
 //        taskDTO.setTask("test_surname");
         taskDTO.setTask_type(1);
-        this.mockMvc.perform(post("/taskDTO/create")
+        this.mockMvc.perform(post("/task/create")
                 .contentType(contentType)
                 .content(gson.toJson(taskDTO))
                 .cookie(allCookies))
