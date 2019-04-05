@@ -65,7 +65,7 @@ public class TaskDAOImpl implements TaskDAO {
     @Override
     public void createTask(String admin , TaskDTO taskDTO) {
         Integer school_id = schoolIDDAO.getSchoolId(admin);
-        String sql = "INSERT INTO task (name, task_val, task_type,school_id) VALUES (?, ?, ?, ?) RETURNING id";
+        String sql = "INSERT INTO task (name, task_val, task_type,school_id) VALUES (?, ?::jsonb, ?, ?) RETURNING id";
         Integer id = jdbc.queryForObject(sql, Integer.class, taskDTO.getName(), taskDTO.getTask(), taskDTO.getTask_type(),school_id);
 //        sql = "SELECT * FROM task WHERE name = ? AND school_id=?";
 //        TaskDTO created = jdbc.queryForObject(sql, taskMapper, taskDTO.getName(), school_id);
@@ -130,7 +130,6 @@ public class TaskDAOImpl implements TaskDAO {
             sql = "INSERT INTO task_unit (unit_id, task_id) VALUES (?, ?);";
             jdbc.update(sql, task.getUnitID(), task.getTaskID());
         }
-
     }
 
     private static final class TaskMapper implements RowMapper<TaskDTO> {

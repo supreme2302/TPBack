@@ -1,9 +1,12 @@
 package com.tpark.back.service.Impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tpark.back.dao.Impl.TaskDAOImpl;
 import com.tpark.back.model.dto.TaskDTO;
 import com.tpark.back.model.dto.TaskUnitDTO;
 import com.tpark.back.service.TaskService;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,13 +16,15 @@ import java.util.List;
 @Service
 public class TaskServiceImpl implements TaskService {
 
+    private final ObjectMapper objectMapper;
     private final TaskDAOImpl taskDAO;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public TaskServiceImpl(TaskDAOImpl taskDAO, PasswordEncoder passwordEncoder) {
+    public TaskServiceImpl(TaskDAOImpl taskDAO, PasswordEncoder passwordEncoder, ObjectMapper objectMapper) {
         this.taskDAO = taskDAO;
         this.passwordEncoder = passwordEncoder;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -33,7 +38,10 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @SneakyThrows(JsonProcessingException.class)
     public void createTask(String admin , TaskDTO taskDTO) {
+        String task = objectMapper.writeValueAsString(taskDTO.getTask());
+        taskDTO.setTask(task);
         taskDAO.createTask(admin , taskDTO);
     }
 
