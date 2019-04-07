@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
+@Transactional
 public class UnitDAOImpl implements UnitDAO {
 
     private final JdbcTemplate jdbc;
@@ -116,12 +117,15 @@ public class UnitDAOImpl implements UnitDAO {
         }
     }
 
+    @Transactional
     @Override
     public void deleteUnit(int id, String email) {
         Integer schoolId = schoolIDDAO.getSchoolId(email);
         Integer temp = 0;
         String sql ="SELECT course_id FROM unit WHERE id = ? AND school_id = ?;";
         temp = jdbc.queryForObject(sql,intMapper , id, schoolId);
+        sql = "DELETE FROM task_unit WHERE unit_id = ? ;";
+        jdbc.update(sql, id);
         sql = "UPDATE group_course SET current_unit = NULL WHERE course_id=? AND school_id = ?";
         jdbc.update(sql,temp, schoolId);
         sql ="DELETE FROM unit WHERE id = ? AND school_id = ?;";
@@ -134,13 +138,12 @@ public class UnitDAOImpl implements UnitDAO {
         Integer schoolId = schoolIDDAO.getSchoolId(email);
         String sql = "SELECT * FROM unit WHERE course_id = ? AND school_id = ?;";
         List<UnitDTO> lst = jdbc.query(sql, unitMapper, id, schoolId);
-        for(int i =0;i<lst.size();i++){
-        sql ="DELETE FROM task_unit WHERE unit_id = ? ;";
-        jdbc.update(sql,lst.get(i).getId(), schoolId);
+        for (UnitDTO aLst : lst) {
+            sql = "DELETE FROM task_unit WHERE unit_id = ? ;";
+            jdbc.update(sql, aLst.getId());
         }
         sql ="DELETE FROM unit WHERE course_id = ? AND school_id = ?;";
         jdbc.update(sql,id, schoolId);
-
     }
 
     @Override
