@@ -56,24 +56,24 @@ public class SchoolController {
         }
     }
 
-//    @PostMapping(path = "/create")
-//    public ResponseEntity create(HttpSession session, @RequestBody SchoolDTO schoolDTO) {
-//        if (session.getAttribute("user") == null) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-//                    .body(UserStatus.ACCESS_ERROR);
-//        }
-//        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null){
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-//                    .body(UserStatus.ACCESS_ERROR);
-//        }
-//        try {
-//            schoolService.createSchool(schoolDTO.getName(), session.getAttribute("user").toString());
-//            return ResponseEntity.status(HttpStatus.CREATED)
-//                    .body(UserStatus.SUCCESSFULLY_CREATED);
-//        } catch (DuplicateKeyException e) {
-//            return ResponseEntity.status(HttpStatus.CONFLICT)
-//                    .body(UserStatus.ALREADY_EXISTS);
-//        }
-//    }
+    @PostMapping(path = "/change")
+    public ResponseEntity create(HttpSession session, @RequestBody SchoolDTO schoolDTO) {
+        if (session.getAttribute("user") == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(UserStatus.ACCESS_ERROR);
+        }
+        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(UserStatus.ACCESS_ERROR);
+        }
+        try {
+            schoolService.changeSchool(schoolDTO, session.getAttribute("user").toString());
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(UserStatus.SUCCESSFULLY_CREATED);
+        } catch (DuplicateKeyException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(UserStatus.ALREADY_EXISTS);
+        }
+    }
 
    }

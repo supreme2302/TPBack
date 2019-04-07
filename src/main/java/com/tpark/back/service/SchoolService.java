@@ -8,4 +8,6 @@ public interface SchoolService {
     SchoolDTO getSchoolByAdmin(String email);
 
     SchoolDTO getSchoolByStudent(String student);
+
+    void changeSchool(SchoolDTO schoolDTO, String user);
 }

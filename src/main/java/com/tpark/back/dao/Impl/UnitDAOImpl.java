@@ -116,27 +116,50 @@ public class UnitDAOImpl implements UnitDAO {
         }
     }
 
+    @Transactional
     @Override
     public void deleteUnit(int id, String email) {
         Integer schoolId = schoolIDDAO.getSchoolId(email);
         Integer temp = 0;
-        String sql ="SELECT course_id FROM unit WHERE id = ? AND school_id = ?;";
+
+
+        String sql ="SELECT * FROM unit WHERE id=?;";
+        UnitDTO old = jdbc.queryForObject(sql,unitMapper,id);
+        if(old.getNext_pos()==0) {
+            sql = "UPDATE unit SET next_unit = ? WHERE id = ?";
+            jdbc.update(sql,null,old.getPrev_pos());
+        }
+        else {
+            sql = "UPDATE unit SET next_unit = ? WHERE id = ?";
+            jdbc.update(sql, old.getNext_pos(), old.getPrev_pos());
+        }
+        if(old.getPrev_pos()==0){
+
+            sql = "UPDATE unit SET prev_unit = ? WHERE id = ?";
+            jdbc.update(sql, null, old.getNext_pos());
+        }
+        else {
+            sql = "UPDATE unit SET prev_unit = ? WHERE id = ?";
+            jdbc.update(sql, old.getPrev_pos(), old.getNext_pos());
+        }
+
+        sql ="SELECT course_id FROM unit WHERE id = ? AND school_id = ?;";
         temp = jdbc.queryForObject(sql,intMapper , id, schoolId);
+        sql = "DELETE FROM task_unit WHERE unit_id = ? ;";
+        jdbc.update(sql, id);
         sql = "UPDATE group_course SET current_unit = NULL WHERE course_id=? AND school_id = ?";
         jdbc.update(sql,temp, schoolId);
         sql ="DELETE FROM unit WHERE id = ? AND school_id = ?;";
         jdbc.update(sql,id, schoolId);
-
     }
-
     @Transactional
     public void deleteUnitsByCourse(int id, String email) {
         Integer schoolId = schoolIDDAO.getSchoolId(email);
         String sql = "SELECT * FROM unit WHERE course_id = ? AND school_id = ?;";
         List<UnitDTO> lst = jdbc.query(sql, unitMapper, id, schoolId);
         for(int i =0;i<lst.size();i++){
-        sql ="DELETE FROM task_unit WHERE unit_id = ? ;";
-        jdbc.update(sql,lst.get(i).getId(), schoolId);
+            sql ="DELETE FROM task_unit WHERE unit_id = ? ;";
+            jdbc.update(sql,lst.get(i).getId());
         }
         sql ="DELETE FROM unit WHERE course_id = ? AND school_id = ?;";
         jdbc.update(sql,id, schoolId);

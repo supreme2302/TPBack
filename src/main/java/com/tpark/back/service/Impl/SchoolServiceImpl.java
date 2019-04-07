@@ -35,4 +35,9 @@ public class SchoolServiceImpl implements SchoolService {
     public SchoolDTO getSchoolByStudent(String student) {
         return schoolDAO.getSchoolByStudent(student);
     }
+
+    @Override
+    public void changeSchool(SchoolDTO school, String user) {
+        schoolDAO.changeSchool(school, user);
+    }
 }

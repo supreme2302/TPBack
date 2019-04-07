@@ -8,4 +8,6 @@ public interface SchoolDAO {
     SchoolDTO getSchoolByAdmin(String admin);
 
     SchoolDTO getSchoolByStudent(String student);
+
+    void changeSchool(SchoolDTO school, String user);
 }

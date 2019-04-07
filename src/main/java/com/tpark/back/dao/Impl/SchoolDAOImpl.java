@@ -19,7 +19,7 @@ import java.sql.SQLException;
 public class SchoolDAOImpl implements SchoolDAO {
     private final JdbcTemplate jdbc;
     private final static SchoolMapper schoolMapper = new SchoolMapper();
-
+    private final static AdminIDMapper adminIdMapper = new AdminIDMapper();
     private final Logger logger = LoggerFactory.getLogger(SchoolDAOImpl.class);
 
     @Autowired
@@ -55,12 +55,24 @@ public class SchoolDAOImpl implements SchoolDAO {
         return jdbc.queryForObject(sql, schoolMapper, student);
     }
 
+    @Transactional
+    @Override
+    public void changeSchool(SchoolDTO school, String user) {
+
+        final String sqlForSelect = "SELECT id FROM admin WHERE email = ?;";
+        int id = jdbc.queryForObject(sqlForSelect, adminIdMapper,user);
+        final String sqlForInsert = "UPDATE school SET main_color=?, school_name=?, secondary_color=?, language=?, school_logo=? WHERE ownerid=?;";
+        jdbc.update(sqlForInsert, Integer.class, school.getMain_color(),school.getName(), school.getSecondary_color(),school.getLanguage(),school.getSchool_logo(), id);
+        logger.info("createSchool -  created");
+    }
+
     private final static class AdminIDMapper implements RowMapper<Integer> {
         @Override
         public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
             return rs.getInt("id");
         }
     }
+
 
     private final static class SchoolMapper implements RowMapper<SchoolDTO> {
         @Override
