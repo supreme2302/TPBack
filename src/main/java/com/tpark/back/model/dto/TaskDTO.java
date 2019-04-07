@@ -1,8 +1,8 @@
 package com.tpark.back.model.dto;
 
 
-import com.google.gson.JsonObject;
 import lombok.Data;
+
 import java.util.List;
 
 @Data
