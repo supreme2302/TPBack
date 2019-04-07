@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
+@Transactional
 public class UnitDAOImpl implements UnitDAO {
 
     private final JdbcTemplate jdbc;
@@ -152,18 +153,18 @@ public class UnitDAOImpl implements UnitDAO {
         sql ="DELETE FROM unit WHERE id = ? AND school_id = ?;";
         jdbc.update(sql,id, schoolId);
     }
+
     @Transactional
     public void deleteUnitsByCourse(int id, String email) {
         Integer schoolId = schoolIDDAO.getSchoolId(email);
         String sql = "SELECT * FROM unit WHERE course_id = ? AND school_id = ?;";
         List<UnitDTO> lst = jdbc.query(sql, unitMapper, id, schoolId);
-        for(int i =0;i<lst.size();i++){
-            sql ="DELETE FROM task_unit WHERE unit_id = ? ;";
-            jdbc.update(sql,lst.get(i).getId());
+        for (UnitDTO aLst : lst) {
+            sql = "DELETE FROM task_unit WHERE unit_id = ? ;";
+            jdbc.update(sql, aLst.getId());
         }
         sql ="DELETE FROM unit WHERE course_id = ? AND school_id = ?;";
         jdbc.update(sql,id, schoolId);
-
     }
 
     @Override
