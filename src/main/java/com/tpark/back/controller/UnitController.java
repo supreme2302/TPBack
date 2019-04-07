@@ -1,5 +1,6 @@
 package com.tpark.back.controller;
 
+import com.tpark.back.model.dto.IdDTO;
 import com.tpark.back.model.dto.UnitDTO;
 import com.tpark.back.model.UserStatus;
 import com.tpark.back.service.AdminService;
@@ -60,7 +61,7 @@ public class UnitController {
         }
 
         try {
-            if(session.getAttribute("user") != null) {
+            if (session.getAttribute("user") != null) {
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(unitService.getUnit(unitId, session.getAttribute("user").toString()));
             } else {
@@ -115,7 +116,7 @@ public class UnitController {
     }
 
     @PostMapping(path = "/delete")
-    public ResponseEntity delete(HttpSession session, @RequestBody int id) {
+    public ResponseEntity delete(HttpSession session, @RequestBody IdDTO idDTO) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -125,7 +126,7 @@ public class UnitController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            unitService.deleteUnit(id, session.getAttribute("user").toString());
+            unitService.deleteUnit(idDTO.getId(), session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.OK)
                     .body(UserStatus.SUCCESSFULLY_DELETED);
         } catch (DuplicateKeyException e) {
