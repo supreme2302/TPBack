@@ -17,11 +17,13 @@ public class CourseDAOImpl implements CourseDAO {
     private final JdbcTemplate jdbc;
     private final static CourseMapper courseMapper = new CourseMapper();
     private final SchoolIDDAO schoolIDDAO;
+    private final UnitDAOImpl unitDAO;
 
     @Autowired
-    public CourseDAOImpl(JdbcTemplate jdbc, SchoolIDDAO schoolIDDAO) {
+    public CourseDAOImpl(JdbcTemplate jdbc,UnitDAOImpl unitDAO, SchoolIDDAO schoolIDDAO) {
         this.jdbc = jdbc;
         this.schoolIDDAO = schoolIDDAO;
+        this.unitDAO = unitDAO;
     }
 
     @Override
@@ -42,6 +44,7 @@ public class CourseDAOImpl implements CourseDAO {
 
     @Override
     public void deleteCourse(int id, String email) {
+        this.unitDAO.deleteUnitsByCourse(id, email);
         Integer school_id = schoolIDDAO.getSchoolId(email);
         String sql = "DELETE FROM group_course WHERE school_id = ? AND course_id = ?;";
         jdbc.update(sql,school_id, id);
