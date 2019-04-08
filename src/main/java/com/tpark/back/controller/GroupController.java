@@ -8,6 +8,7 @@ import com.tpark.back.service.GroupService;
 import com.tpark.back.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession;
@@ -87,7 +88,6 @@ public class GroupController {
                         .body(UserStatus.ACCESS_ERROR);
             }
         }
-
         try {
             if(session.getAttribute("user") != null) {
                 return ResponseEntity.status(HttpStatus.OK)
@@ -96,7 +96,7 @@ public class GroupController {
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(groupService.getGroupForStudent(session.getAttribute("student").toString(),groupId));
             }
-        } catch (NullPointerException e) {
+        } catch (EmptyResultDataAccessException | NullPointerException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(UserStatus.NOT_FOUND);
         }
