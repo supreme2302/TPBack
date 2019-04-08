@@ -1,5 +1,6 @@
 package com.tpark.back.dao.Impl;
 import com.tpark.back.dao.AdminDAO;
+import com.tpark.back.mapper.AdminMapper;
 import com.tpark.back.model.dto.AdminDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -15,13 +16,16 @@ public class AdminDAOImpl implements AdminDAO {
 
     private final JdbcTemplate jdbc;
 
-    private final static AdminMapper adminMapper = new AdminMapper();
+    private final AdminMapper adminMapper;
     private final SchoolIDDAO schoolIDDAO;
 
     @Autowired
-    public AdminDAOImpl(JdbcTemplate jdbc, SchoolIDDAO schoolIDDAO) {
+    public AdminDAOImpl(JdbcTemplate jdbc,
+                        SchoolIDDAO schoolIDDAO,
+                        AdminMapper adminMapper) {
         this.jdbc = jdbc;
         this.schoolIDDAO = schoolIDDAO;
+        this.adminMapper = adminMapper;
     }
 
     @Override
@@ -58,19 +62,19 @@ public class AdminDAOImpl implements AdminDAO {
 
     }
 
-    public static class AdminMapper implements RowMapper<AdminDTO> {
-        @Override
-        public AdminDTO mapRow(ResultSet resultSet, int i) throws SQLException {
-            AdminDTO adminDTO = new AdminDTO();
-            adminDTO.setEmail(resultSet.getString("email"));
-            adminDTO.setPassword(resultSet.getString("password"));
-            adminDTO.setId(resultSet.getInt("id"));
-            return adminDTO;
-        }
-    }
-
     public void changePassword(String email, String password) {
         final String sql = "UPDATE admin SET password = ? WHERE lower(admin.email) = lower(?);";
         jdbc.update(sql, password, email);
     }
+
+//    public static class AdminMapper implements RowMapper<AdminDTO> {
+//        @Override
+//        public AdminDTO mapRow(ResultSet resultSet, int i) throws SQLException {
+//            AdminDTO adminDTO = new AdminDTO();
+//            adminDTO.setEmail(resultSet.getString("email"));
+//            adminDTO.setPassword(resultSet.getString("password"));
+//            adminDTO.setId(resultSet.getInt("id"));
+//            return adminDTO;
+//        }
+//    }
 }

@@ -44,7 +44,7 @@ public class SchoolController {
         }
 
         try {
-            if(session.getAttribute("user") != null) {
+            if (session.getAttribute("user") != null) {
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(schoolService.getSchoolByAdmin(session.getAttribute("user").toString()));
             } else {

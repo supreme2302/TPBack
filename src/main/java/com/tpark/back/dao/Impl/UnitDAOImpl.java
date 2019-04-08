@@ -1,6 +1,7 @@
 package com.tpark.back.dao.Impl;
 
 import com.tpark.back.dao.UnitDAO;
+import com.tpark.back.mapper.UnitMapper;
 import com.tpark.back.model.dto.UnitDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -20,35 +21,37 @@ public class UnitDAOImpl implements UnitDAO {
 
     private final JdbcTemplate jdbc;
 
-    private final static UnitMapper unitMapper = new UnitMapper();
-    private final static IntMapper intMapper = new IntMapper();
+    private final UnitMapper unitMapper;
     private final SchoolIDDAO schoolIDDAO;
 
-    private List<UnitDTO> sort(List<UnitDTO> data){
+    @Autowired
+    public UnitDAOImpl(JdbcTemplate jdbc,
+                       SchoolIDDAO schoolIDDAO,
+                       UnitMapper unitMapper) {
+        this.jdbc = jdbc;
+        this.schoolIDDAO = schoolIDDAO;
+        this.unitMapper = unitMapper;
+    }
+
+    private List<UnitDTO> sort(List<UnitDTO> data) {
         List<UnitDTO> lst = new ArrayList<>();
-        for (int i=0;i<data.size();i++){
-            if(data.get(i).getPrev_pos() == 0){
+        for (int i = 0; i < data.size(); ++i){
+            if (data.get(i).getPrev_pos() == 0){
                 lst.add(data.get(i));
                 data.remove(i);
                 break;
             }
         }
-        while (data.size()>0 && lst.get(lst.size()-1).getNext_pos()!=0){
-            for (int i=0;i<data.size();i++) {
-                if (data.get(i).getId() == lst.get(lst.size() - 1).getNext_pos()) {
+        while (data.size() > 0 && lst.get(lst.size() - 1).getNext_pos() != 0) {
+            for (int i = 0; i < data.size(); ++i) {
+                if (data.get(i).getId().equals(lst.get(lst.size() - 1).getNext_pos())) {
                     lst.add(data.get(i));
                     data.remove(i);
                     break;
                 }
             }
-        };
+        }
         return lst;
-    }
-
-    @Autowired
-    public UnitDAOImpl(JdbcTemplate jdbc, SchoolIDDAO schoolIDDAO) {
-        this.jdbc = jdbc;
-        this.schoolIDDAO = schoolIDDAO;
     }
 
     @Override
@@ -145,7 +148,7 @@ public class UnitDAOImpl implements UnitDAO {
         }
 
         sql ="SELECT course_id FROM unit WHERE id = ? AND school_id = ?;";
-        temp = jdbc.queryForObject(sql,intMapper , id, schoolId);
+        temp = jdbc.queryForObject(sql, ((resultSet, i) -> resultSet.getInt("course_id")), id, schoolId);
         sql = "DELETE FROM task_unit WHERE unit_id = ? ;";
         jdbc.update(sql, id);
         sql = "UPDATE group_course SET current_unit = NULL WHERE course_id=? AND school_id = ?";
@@ -187,26 +190,12 @@ public class UnitDAOImpl implements UnitDAO {
         return sort(jdbc.query(sql, unitMapper, student, courseId));
     }
 
-    private static final class IntMapper implements RowMapper<Integer> {
-        @Override
-        public Integer mapRow(ResultSet resultSet, int i) throws SQLException {
-            Integer temp = 0;
-            temp = resultSet.getInt("course_id");
-            return temp;
-        }
-    }
-
-    private static final class UnitMapper implements RowMapper<UnitDTO> {
-        @Override
-        public UnitDTO mapRow(ResultSet resultSet, int i) throws SQLException {
-            UnitDTO unitDTO = new UnitDTO();
-            unitDTO.setId(resultSet.getInt("id"));
-            unitDTO.setCourse_id(resultSet.getInt("course_id"));
-            unitDTO.setUnit_name(resultSet.getString("unit_name"));
-            unitDTO.setPrev_pos(resultSet.getInt("prev_unit"));
-            unitDTO.setNext_pos(resultSet.getInt("next_unit"));
-            unitDTO.setDescription(resultSet.getString("description"));
-            return unitDTO;
-        }
-    }
+//    private static final class IntMapper implements RowMapper<Integer> {
+//        @Override
+//        public Integer mapRow(ResultSet resultSet, int i) throws SQLException {
+//            int temp = 0;
+//            temp = resultSet.getInt("course_id");
+//            return temp;
+//        }
+//    }
 }

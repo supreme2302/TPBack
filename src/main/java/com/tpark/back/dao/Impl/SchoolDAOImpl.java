@@ -1,6 +1,7 @@
 package com.tpark.back.dao.Impl;
 
 import com.tpark.back.dao.SchoolDAO;
+import com.tpark.back.mapper.SchoolMapper;
 import com.tpark.back.model.dto.SchoolDTO;
 import com.tpark.back.model.exception.ConflictException;
 import org.slf4j.Logger;
@@ -18,13 +19,15 @@ import java.sql.SQLException;
 @Repository
 public class SchoolDAOImpl implements SchoolDAO {
     private final JdbcTemplate jdbc;
-    private final static SchoolMapper schoolMapper = new SchoolMapper();
+    private final SchoolMapper schoolMapper;
     private final static AdminIDMapper adminIdMapper = new AdminIDMapper();
     private final Logger logger = LoggerFactory.getLogger(SchoolDAOImpl.class);
 
     @Autowired
-    public SchoolDAOImpl(JdbcTemplate jdbc) {
+    public SchoolDAOImpl(JdbcTemplate jdbc,
+                         SchoolMapper schoolMapper) {
         this.jdbc = jdbc;
+        this.schoolMapper = schoolMapper;
     }
 
     @Transactional
@@ -70,18 +73,6 @@ public class SchoolDAOImpl implements SchoolDAO {
         @Override
         public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
             return rs.getInt("id");
-        }
-    }
-
-
-    private final static class SchoolMapper implements RowMapper<SchoolDTO> {
-        @Override
-        public SchoolDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
-            SchoolDTO schoolDTO = new SchoolDTO();
-            schoolDTO.setName(rs.getString("school_name"));
-            schoolDTO.setId(rs.getInt("id"));
-            schoolDTO.setAdmin(rs.getInt("ownerid"));
-            return schoolDTO;
         }
     }
 }

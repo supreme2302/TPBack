@@ -48,13 +48,14 @@ public class StudentController {
         String password = RandomString.getShortTokenString();
         studentDTO.setPassword(password);
         try {
-            studentService.addStudent(studentDTO,adminSession.toString());
+            studentService.addStudent(studentDTO, adminSession.toString());
         } catch (DuplicateKeyException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(UserStatus.NOT_UNIQUE_FIELDS_IN_REQUEST);
         }
-
         studentDTO.setPassword(password);
+        studentService.sendMessageToUser(existingAdmin, studentDTO);
+        studentDTO.setPassword(null);
         return ResponseEntity.status(HttpStatus.CREATED).body(studentDTO);
     }
 
