@@ -3,29 +3,28 @@ package com.tpark.back.dao.Impl;
 import com.tpark.back.dao.StudentDAO;
 import com.tpark.back.mapper.GroupMapper;
 import com.tpark.back.mapper.StudentMapper;
+import com.tpark.back.mapper.StudentWithGroupMapper;
 import com.tpark.back.model.dto.GroupDTO;
 import com.tpark.back.model.dto.StudentDTO;
 import com.tpark.back.model.dto.StudentWithGroupsDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
+@Transactional
 public class StudentDAOImpl implements StudentDAO {
 
 
     private final JdbcTemplate jdbc;
 
     private final StudentMapper studentMapper;
-    private final static StudentGMapper studentGMapper = new StudentGMapper();
+    private final StudentWithGroupMapper studentWithGroupMapper;
     private final GroupMapper groupMapper;
     private final SchoolIDDAO schoolIDDAO;
 
@@ -33,11 +32,13 @@ public class StudentDAOImpl implements StudentDAO {
     public StudentDAOImpl(JdbcTemplate jdbc,
                           SchoolIDDAO schoolIDDAO,
                           GroupMapper groupMapper,
-                          StudentMapper studentMapper) {
+                          StudentMapper studentMapper,
+                          StudentWithGroupMapper studentWithGroupMapper) {
         this.jdbc = jdbc;
         this.schoolIDDAO = schoolIDDAO;
         this.groupMapper = groupMapper;
         this.studentMapper = studentMapper;
+        this.studentWithGroupMapper = studentWithGroupMapper;
     }
 
     @Override
@@ -49,13 +50,15 @@ public class StudentDAOImpl implements StudentDAO {
                 + "VALUES (?, ?, ?, ?, ?);";
         jdbc.update(sql, studentDTO.getEmail(), studentDTO.getName(), studentDTO.getSurname(),
                 studentDTO.getPassword(), school_id);
-        sql = "SELECT * FROM student WHERE email=?;";
+        sql = "SELECT * FROM student WHERE email = ?;";
         StudentDTO res =jdbc.queryForObject(sql,studentMapper,studentDTO.getEmail());
         int i = 0;
         sql = "INSERT INTO student_group(group_id, student_id) VALUES (?,?);";
-        while ( i < studentDTO.getGroup_id().size()){
-            jdbc.update(sql, studentDTO.getGroup_id().get(i), res.getId());
-            i++;
+        if (studentDTO.getGroup_id() != null) {
+            while ( i < studentDTO.getGroup_id().size()) {
+                jdbc.update(sql, studentDTO.getGroup_id().get(i), res.getId());
+                i++;
+            }
         }
     }
 
@@ -89,7 +92,7 @@ public class StudentDAOImpl implements StudentDAO {
             int i = 0;
             while (i< studentDTOS.size()){
                 List<GroupDTO> groups = jdbc.query(sql, groupMapper, studentDTOS.get(i).getId());
-//                studentDTOS.get(i).setGroup_id(groups);
+//                studentDTOS.get(i).setGroup(groups);
                 studentDTOS.get(i).setGroup_id(groups.stream()
                         .map(GroupDTO::getId).collect(Collectors.toList()));
                 i++;
@@ -103,6 +106,7 @@ public class StudentDAOImpl implements StudentDAO {
     @Override
     public void deleteStudent(Integer id, String admin) {
         Integer school_id = schoolIDDAO.getSchoolId(admin);
+        jdbc.update("DELETE FROM student_group WHERE student_id = ?", id);
         String sql = "DELETE FROM student WHERE id = ? AND school_id = ?";
         jdbc.update(sql,  id, school_id);
 
@@ -130,11 +134,11 @@ public class StudentDAOImpl implements StudentDAO {
         String sql = "SELECT student.id, email, first_name, last_name, password, school_id " +
                 "FROM student WHERE lower(email) = lower(?)";
         try {
-            StudentWithGroupsDTO studentDTO =  jdbc.queryForObject(sql, studentGMapper, email);
+            StudentWithGroupsDTO studentDTO =  jdbc.queryForObject(sql, studentWithGroupMapper, email);
             sql = "SELECT group_course.id, group_name, course_id, school_id, description, current_unit FROM group_course " +
                     "JOIN student_group ON student_id = ? AND student_group.group_id = group_course.id;";
             List<GroupDTO> groups = jdbc.query(sql, groupMapper, studentDTO.getId());
-            studentDTO.setGroup_id(groups);
+            studentDTO.setGroup(groups);
             return studentDTO;
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -142,7 +146,6 @@ public class StudentDAOImpl implements StudentDAO {
     }
 
     @Override
-    @Transactional
     public StudentDTO getStudentByEmailWithGroupId(String email) {
 
         String sql = "SELECT student.id, email, first_name, last_name, password, school_id " +
@@ -156,20 +159,6 @@ public class StudentDAOImpl implements StudentDAO {
             return studentDTO;
         } catch (EmptyResultDataAccessException e) {
             return null;
-        }
-    }
-
-    private static final class StudentGMapper implements RowMapper<StudentWithGroupsDTO> {
-        @Override
-        public StudentWithGroupsDTO mapRow(ResultSet resultSet, int i) throws SQLException {
-            StudentWithGroupsDTO studentDTO = new StudentWithGroupsDTO();
-            studentDTO.setId(resultSet.getInt("id"));
-            studentDTO.setEmail(resultSet.getString("email"));
-            studentDTO.setName(resultSet.getString("first_name"));
-            studentDTO.setSurname(resultSet.getString("last_name"));
-            studentDTO.setPassword(resultSet.getString("password"));
-            studentDTO.setSchool_id(resultSet.getInt("school_id"));
-            return studentDTO;
         }
     }
 }

@@ -11,7 +11,7 @@ public class StudentWithGroupsDTO {
     private String name;
     private String surname;
     private String password;
-    private List<GroupDTO> group_id;
+    private List<GroupDTO> group;
     private String phone;
     private int school_id;
 }
