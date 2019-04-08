@@ -1,16 +1,14 @@
 package com.tpark.back.dao.Impl;
 
 import com.tpark.back.dao.GroupDAO;
+import com.tpark.back.mapper.GroupMapper;
 import com.tpark.back.model.dto.GroupDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 
@@ -18,16 +16,17 @@ import java.util.List;
 public class GroupDAOImpl implements GroupDAO {
 
     private final JdbcTemplate jdbc;
-    private final static GroupMapper groupMapper = new GroupMapper();
+    private final GroupMapper groupMapper;
     private final SchoolIDDAO schoolIDDAO;
-    private final SchoolMapper schoolMapper = new SchoolMapper();
-    private final UnitIdMapper unitIdMapper = new UnitIdMapper();
 
 
     @Autowired
-    public GroupDAOImpl(JdbcTemplate jdbc, SchoolIDDAO schoolIDDAO) {
+    public GroupDAOImpl(JdbcTemplate jdbc,
+                        SchoolIDDAO schoolIDDAO,
+                        GroupMapper groupMapper) {
         this.jdbc = jdbc;
         this.schoolIDDAO = schoolIDDAO;
+        this.groupMapper = groupMapper;
     }
 
 
@@ -37,7 +36,7 @@ public class GroupDAOImpl implements GroupDAO {
 
         Integer school_id = schoolIDDAO.getSchoolId(email);
         String sql ="SELECT school_id FROM group_course WHERE id = ?;";
-        Integer Sid = jdbc.queryForObject(sql, schoolMapper ,id);
+        Integer Sid = jdbc.queryForObject(sql, ((resultSet, i) -> resultSet.getInt("school_id")) ,id);
         if(Sid.equals(school_id)) {
             sql = "DELETE  FROM  student_group  WHERE group_id = ?;";
             jdbc.update(sql, id);
@@ -55,7 +54,8 @@ public class GroupDAOImpl implements GroupDAO {
         if (groupDTO.getCurr_unit() != 0) {
             try {
                 sql = "SELECT id FROM unit WHERE course_id=? AND id=?;";
-                Integer id = jdbc.queryForObject(sql, unitIdMapper, groupDTO.getCourse_id(), groupDTO.getCurr_unit());
+                Integer id = jdbc.queryForObject(sql, Integer.class,
+                        groupDTO.getCourse_id(), groupDTO.getCurr_unit());
                 sql = "UPDATE group_course SET current_unit=? WHERE id=? AND school_id=?;";
                 jdbc.update(sql, groupDTO.getCurr_unit(), groupDTO.getId(), school_id);
             } catch (EmptyResultDataAccessException e){
@@ -130,37 +130,4 @@ public class GroupDAOImpl implements GroupDAO {
         return jdbc.queryForObject(sql, groupMapper, student, id);
     }
 
-    public static class GroupMapper implements RowMapper<GroupDTO> {
-        @Override
-        public GroupDTO mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-            GroupDTO groupDTO = new GroupDTO();
-            groupDTO.setId(resultSet.getInt("id"));
-            groupDTO.setName(resultSet.getString("group_name"));
-            groupDTO.setCourse_id(resultSet.getInt("course_id"));
-            groupDTO.setCurr_unit(resultSet.getInt("current_unit"));
-            groupDTO.setDescription(resultSet.getString("description"));
-            //TODO: Нужно добавить Timestamp
-
-
-            return groupDTO;
-        }
-    }
-
-    public final class SchoolMapper implements RowMapper<Integer> {
-        @Override
-        public Integer mapRow(ResultSet resultSet, int i) throws SQLException {
-            return resultSet.getInt("school_id");
-        }
-
-
-    }
-
-    public final class UnitIdMapper implements RowMapper<Integer> {
-        @Override
-        public Integer mapRow(ResultSet resultSet, int i) throws SQLException {
-            return resultSet.getInt("id");
-        }
-
-
-    }
 }

@@ -1,6 +1,7 @@
 package com.tpark.back.dao.Impl;
 
 import com.tpark.back.dao.TaskDAO;
+import com.tpark.back.mapper.TaskMapper;
 import com.tpark.back.model.dto.TaskDTO;
 import com.tpark.back.model.dto.TaskUnitDTO;
 import com.tpark.back.model.exception.NotFoundException;
@@ -22,17 +23,18 @@ public class TaskDAOImpl implements TaskDAO {
 
     private final JdbcTemplate jdbc;
 
-    private final static TaskMapper taskMapper = new TaskMapper();
+    private final TaskMapper taskMapper;
     private final SchoolIDDAO schoolIDDAO;
 
 
     @Autowired
-    public TaskDAOImpl(JdbcTemplate jdbc, SchoolIDDAO schoolIDDAO) {
+    public TaskDAOImpl(JdbcTemplate jdbc,
+                       SchoolIDDAO schoolIDDAO,
+                       TaskMapper taskMapper) {
         this.jdbc = jdbc;
         this.schoolIDDAO = schoolIDDAO;
+        this.taskMapper = taskMapper;
     }
-
-
 
     @Override
     @Transactional
@@ -130,18 +132,6 @@ public class TaskDAOImpl implements TaskDAO {
         if (jdbc.query(sql, taskMapper, task.getTaskID(), school_id)!= null) {
             sql = "INSERT INTO task_unit (unit_id, task_id) VALUES (?, ?);";
             jdbc.update(sql, task.getUnitID(), task.getTaskID());
-        }
-    }
-
-    private static final class TaskMapper implements RowMapper<TaskDTO> {
-        @Override
-        public TaskDTO mapRow(ResultSet resultSet, int i) throws SQLException {
-            TaskDTO taskDTO = new TaskDTO();
-            taskDTO.setId(resultSet.getInt("id"));
-            taskDTO.setTask_type(resultSet.getInt("task_type"));
-            taskDTO.setName(resultSet.getString("name"));
-            taskDTO.setTask(resultSet.getObject("task_val"));
-            return taskDTO;
         }
     }
 }

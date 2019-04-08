@@ -1,29 +1,31 @@
 package com.tpark.back.dao.Impl;
 
 import com.tpark.back.dao.CourseDAO;
+import com.tpark.back.mapper.CourseMapper;
 import com.tpark.back.model.dto.CourseDTO;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 @Repository
 public class CourseDAOImpl implements CourseDAO {
 
     private final JdbcTemplate jdbc;
-    private final static CourseMapper courseMapper = new CourseMapper();
+    private final CourseMapper courseMapper;
     private final SchoolIDDAO schoolIDDAO;
     private final UnitDAOImpl unitDAO;
 
     @Autowired
-    public CourseDAOImpl(JdbcTemplate jdbc,UnitDAOImpl unitDAO, SchoolIDDAO schoolIDDAO) {
+    public CourseDAOImpl(JdbcTemplate jdbc,
+                         UnitDAOImpl unitDAO,
+                         SchoolIDDAO schoolIDDAO,
+                         CourseMapper courseMapper) {
         this.jdbc = jdbc;
         this.schoolIDDAO = schoolIDDAO;
         this.unitDAO = unitDAO;
+        this.courseMapper = courseMapper;
     }
 
     @Override
@@ -84,20 +86,6 @@ public class CourseDAOImpl implements CourseDAO {
                 "                 ON course.id = res.course_id;\n";
         return jdbc.query(sql, courseMapper, student);
 
-    }
-
-    ;
-
-    public static class CourseMapper implements RowMapper<CourseDTO> {
-        @Override
-        public CourseDTO mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-            CourseDTO courseDTO = new CourseDTO();
-            courseDTO.setName(resultSet.getString("course_name"));
-            courseDTO.setSchoolId(resultSet.getInt("school_id"));
-            courseDTO.setId(resultSet.getInt("id"));
-            courseDTO.setDescription(resultSet.getString("description"));
-            return courseDTO;
-        }
     }
 }
 
