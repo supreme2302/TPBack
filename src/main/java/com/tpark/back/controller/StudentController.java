@@ -1,10 +1,7 @@
 package com.tpark.back.controller;
 
-import com.tpark.back.model.dto.AdminDTO;
-import com.tpark.back.model.dto.StudentDTO;
-import com.tpark.back.model.dto.StudentAuthDTO;
+import com.tpark.back.model.dto.*;
 import com.tpark.back.model.UserStatus;
-import com.tpark.back.model.dto.StudentWithGroupsDTO;
 import com.tpark.back.service.AdminService;
 import com.tpark.back.service.StudentService;
 import com.tpark.back.util.RandomString;
@@ -87,7 +84,7 @@ public class StudentController {
     }
 
     @PostMapping(path = "/delete")
-    public ResponseEntity deleteStudent(HttpSession session, @RequestBody Integer id) {
+    public ResponseEntity deleteStudent(HttpSession session, @RequestBody IdDTO idDTO) {
         Object adminSession = session.getAttribute("user");
         if (adminSession == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UserStatus.ACCESS_ERROR);
@@ -100,7 +97,7 @@ public class StudentController {
         }
 
         try {
-            studentService.deleteStudent(id, adminSession.toString());
+            studentService.deleteStudent(idDTO.getId(), adminSession.toString());
         } catch (DuplicateKeyException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(UserStatus.NOT_UNIQUE_FIELDS_IN_REQUEST);
@@ -153,17 +150,7 @@ public class StudentController {
     }
 
     @GetMapping(path = "/group/{id}")
-    public ResponseEntity getStudentsFromGroup(@PathVariable(name = "id") int id,
-                                               HttpSession httpSession) {
-//        Object session = httpSession.getAttribute("student");
-//        if (session == null) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UserStatus.ACCESS_ERROR);
-//        }
-//        StudentDTO student = studentService.getStudentByEmailWithoutGroupId(session.toString());
-//        if (student == null) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(UserStatus.NOT_FOUND);
-//        }
-
+    public ResponseEntity getStudentsFromGroup(@PathVariable(name = "id") int id) {
         List<StudentDTO> studentDTOS = studentService.getStudentsFromGroupById(id);
         return ResponseEntity.ok(studentDTOS);
     }

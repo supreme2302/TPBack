@@ -52,7 +52,7 @@ public class SchoolControllerTests {
     }
 
     @Test
-    public void CreateSchoolTest() throws Exception {
+    public void createSchoolTest() throws Exception {
         SchoolDTO schoolDTO = new SchoolDTO();
         CookieAssistant assistant= new CookieAssistant(mockMvc);
         Cookie[] allCookies = assistant.getAdminCookie("exist@e.ru");

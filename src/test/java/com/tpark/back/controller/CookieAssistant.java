@@ -25,7 +25,7 @@ public class CookieAssistant {
             Charset.forName("utf8"));
 
 
-    CookieAssistant(MockMvc mock){
+    CookieAssistant(MockMvc mock) {
         this.mockMvc = mock;
     }
 

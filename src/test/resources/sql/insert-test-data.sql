@@ -15,9 +15,9 @@ INSERT INTO course (id, course_name, school_id,description) VALUES (1, 'TOEFL pr
 -- INSERT INTO student (email, first_name, last_name, password, school_id) VALUES ('egor@mail.ru', 'Coursant', 'Chuvashow',  '$2a$05$c8YM1tfJdPl7xAp5CV.pU.3qlXoj0Haf7vSYGL85PfVS1pkR.sXqm',2);
 -- INSERT INTO task_type (type_value, type_name) VALUES (1, 'Test na muzhika');
 -- INSERT INTO task (task_type, task_ref,description,school_id) VALUES (1,1, 'Test na muzhika', 'Test nachala',2);
--- INSERT INTO student_group (group_id, student_id) VALUES (1,1);
--- INSERT INTO student_group(group_id,student_id) VALUES(2,2);
--- INSERT INTO student_group(group_id,student_id) VALUES(3,2);
+-- INSERT INTO student_group (group, student_id) VALUES (1,1);
+-- INSERT INTO student_group(group,student_id) VALUES(2,2);
+-- INSERT INTO student_group(group,student_id) VALUES(3,2);
 
 
 -- TODO: Сделать так, чтобы нельзя было создать group_course с юнитом из другого курса
