@@ -100,6 +100,8 @@ public class TaskDAOImpl implements TaskDAO {
         return jdbc.query(sql, taskMapper, school_id);
     }
 
+
+//    TODO: Надо поправить гет таск(для
     public Object getTaskStudent(Integer taskId, String student) {
         final String sql = "SELECT * FROM task JOIN ( task_unit JOIN" +
                 "(SELECT unit.id FROM unit JOIN" +

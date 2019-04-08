@@ -15,6 +15,7 @@ import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHtt
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 
 @RestController
@@ -68,12 +69,33 @@ public class SchoolController {
         }
         try {
             schoolService.changeSchool(schoolDTO, session.getAttribute("user").toString());
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(UserStatus.SUCCESSFULLY_CREATED);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(UserStatus.SUCCESSFULLY_CHANGED);
         } catch (DuplicateKeyException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(UserStatus.ALREADY_EXISTS);
+                    .body(UserStatus.NOT_FOUND);
         }
+    }
+
+    @PostMapping(path = "/makeapp")
+    public ResponseEntity makeapp(HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(UserStatus.ACCESS_ERROR);
+        }
+        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(UserStatus.ACCESS_ERROR);
+        }
+        try {
+            schoolService.makeApp(session.getAttribute("user").toString());
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(UserStatus.SUCCESSFULLY_CHANGED);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(UserStatus.NOT_FOUND);
+        }
+
     }
 
    }
