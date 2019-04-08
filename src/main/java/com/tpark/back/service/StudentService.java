@@ -1,5 +1,6 @@
 package com.tpark.back.service;
 
+import com.tpark.back.model.dto.AdminDTO;
 import com.tpark.back.model.dto.StudentDTO;
 import com.tpark.back.model.dto.StudentWithGroupsDTO;
 
@@ -23,4 +24,6 @@ public interface StudentService {
     void changeStudent(StudentDTO studentDTO, String toString);
 
     StudentWithGroupsDTO getStudentByEmailWithGroups(String email);
+
+    void sendMessageToUser(AdminDTO sender, StudentDTO receiver);
 }

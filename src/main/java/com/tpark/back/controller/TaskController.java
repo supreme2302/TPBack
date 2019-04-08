@@ -1,6 +1,7 @@
 package com.tpark.back.controller;
 
 
+import com.tpark.back.model.dto.IdDTO;
 import com.tpark.back.model.dto.TaskDTO;
 import com.tpark.back.model.dto.TaskUnitDTO;
 import com.tpark.back.model.UserStatus;
@@ -155,7 +156,7 @@ public class TaskController {
     }
 
     @PostMapping(path = "/delete")
-    public ResponseEntity delete(HttpSession session, @RequestBody int id) {
+    public ResponseEntity delete(HttpSession session, @RequestBody IdDTO idDTO) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -165,7 +166,7 @@ public class TaskController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            taskService.deleteTask(session.getAttribute("user").toString(), id);
+            taskService.deleteTask(session.getAttribute("user").toString(), idDTO.getId());
             return ResponseEntity.status(HttpStatus.OK)
                     .body(UserStatus.SUCCESSFULLY_DELETED);
         } catch (DuplicateKeyException e) {
