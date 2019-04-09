@@ -54,7 +54,7 @@ public class SchoolServiceImpl implements SchoolService {
     }
 
     @Override
-    public void makeApp(String user) throws IOException {
+    public String makeApp(String user) throws IOException {
         SchoolDTO schoolDTO = schoolDAO.getSchoolByAdmin(user);
         ProcessBuilder pb = new ProcessBuilder("src/main/resources/scripts/build.sh", Integer.toString(schoolDTO.getId()), schoolDTO.getMain_color(),
                 schoolDTO.getSecondary_color(), schoolDTO.getName(), schoolDTO.getLanguage());
@@ -64,11 +64,11 @@ public class SchoolServiceImpl implements SchoolService {
         while ((line = reader.readLine()) != null) {
             System.out.println(line);
         }
-        sendMessageToUser(schoolDTO, user);
+        return sendMessageToUser(schoolDTO, user);
     }
 
     @Override
-    public void sendMessageToUser(SchoolDTO schoolDTO, String email) {
+    public String sendMessageToUser(SchoolDTO schoolDTO, String email) {
         String message = String.format(
                 "Welcome to lingvomake! Link to download the application" +
                         "\nhttp://lingvomake.ml/%s.apk",
@@ -76,5 +76,6 @@ public class SchoolServiceImpl implements SchoolService {
 
         );
         mailSender.send(email, "Welcome to " + schoolDTO.getName(), message);
+        return message;
     }
 }

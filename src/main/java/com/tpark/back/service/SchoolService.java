@@ -14,7 +14,7 @@ public interface SchoolService {
 
     void changeSchool(SchoolDTO schoolDTO, String user);
 
-    void makeApp(String user) throws IOException;
+    String makeApp(String user) throws IOException;
 
-    void sendMessageToUser(SchoolDTO schoolDTO, String receiver);
+    String sendMessageToUser(SchoolDTO schoolDTO, String receiver);
 }
