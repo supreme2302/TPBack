@@ -88,13 +88,11 @@ public class StudentDAOImpl implements StudentDAO {
                 "FROM student JOIN admin ON admin.email = ? AND admin.school_id = student.school_id";
         try {
             List<StudentDTO> studentDTOS =  jdbc.query(sql, studentMapper, admin);
-            sql = "SELECT group_id FROM student_group WHERE student_id = ?;";
+            sql = "SELECT * FROM student_group WHERE student_id = ?;";
             int i = 0;
             while (i< studentDTOS.size()){
-                List<GroupDTO> groups = jdbc.query(sql, groupMapper, studentDTOS.get(i).getId());
-//                studentDTOS.get(i).setGroup(groups);
-                studentDTOS.get(i).setGroup_id(groups.stream()
-                        .map(GroupDTO::getId).collect(Collectors.toList()));
+                List<Integer> groups = jdbc.query(sql, ((resultSet, i1) -> resultSet.getInt("group_id")), studentDTOS.get(i).getId());
+                studentDTOS.get(i).setGroup_id(groups);
                 i++;
             }
             return studentDTOS;
@@ -153,9 +151,9 @@ public class StudentDAOImpl implements StudentDAO {
         try {
             StudentDTO studentDTO =  jdbc.queryForObject(sql, studentMapper, email);
             sql = "SELECT group_id FROM student_group WHERE student_id = ?;";
-            List<GroupDTO> groups = jdbc.query(sql, groupMapper, studentDTO.getId());
-            studentDTO.setGroup_id(groups.stream()
-                    .map(GroupDTO::getId).collect(Collectors.toList()));
+            List<Integer> groups = jdbc.query(sql, (resultSet, i) -> resultSet.getInt("group_id"),
+                    studentDTO.getId());
+            studentDTO.setGroup_id(groups);
             return studentDTO;
         } catch (EmptyResultDataAccessException e) {
             return null;
