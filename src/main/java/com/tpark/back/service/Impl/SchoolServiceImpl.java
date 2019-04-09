@@ -57,12 +57,9 @@ public class SchoolServiceImpl implements SchoolService {
                 schoolDTO.getSecondary_color(), schoolDTO.getName(), schoolDTO.getLanguage());
         Process p = pb.start();
         BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-        String line = null;
-        while ((line = reader.readLine()) != null)
-        {
+        String line = "";
+        while ((line = reader.readLine()) != null) {
             System.out.println(line);
         }
-
-
     }
 }
