@@ -7,7 +7,7 @@ UPDATE admin SET school_id=2 WHERE id=2;
 INSERT INTO course (course_name, school_id, description) VALUES ('Russian for besprizorniki',1,'This is not a course, this is a miracle.');
 INSERT INTO course (course_name, school_id, description) VALUES ('Math for besprizorniki',2,'This is not a course, this is math.');
 INSERT INTO unit (course_id, unit_name, school_id, description, prev_unit, next_unit) VALUES (1,'Subverbs',1,'And another one bites te dust',null,null);
-INSERT INTO unit (coпurse_id, unit_name, school_id, description, prev_unit, next_unit) VALUES (1,'Proverbs',1,'And another one bites te dust',1,null);
+INSERT INTO unit (course_id, unit_name, school_id, description, prev_unit, next_unit) VALUES (1,'Proverbs',1,'And another one bites te dust',1,null);
 UPDATE unit SET next_unit=2 WHERE id=1;
 INSERT INTO unit (course_id, unit_name, school_id, description, prev_unit, next_unit) VALUES (1,'Multiverbs',1,'And another one bites te dust',2,null);
 UPDATE unit SET next_unit=3 WHERE id=2;
