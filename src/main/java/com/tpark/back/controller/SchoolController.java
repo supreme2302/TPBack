@@ -88,8 +88,9 @@ public class SchoolController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
+            schoolService.makeApp(session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(schoolService.makeApp(session.getAttribute("user").toString()));
+                    .body(UserStatus.SUCCESSFULLY_CHANGED);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(UserStatus.NOT_FOUND);

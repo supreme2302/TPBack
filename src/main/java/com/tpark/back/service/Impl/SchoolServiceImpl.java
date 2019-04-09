@@ -75,6 +75,8 @@ public class SchoolServiceImpl implements SchoolService {
                 schoolDTO.getId()
 
         );
+        System.out.println("sending............");
+        System.out.println("email " + email);
         mailSender.send(email, "Welcome to " + schoolDTO.getName(), message);
         return message;
     }
