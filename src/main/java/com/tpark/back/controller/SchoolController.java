@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.concurrent.Future;
 
 
 @RestController
@@ -88,11 +89,18 @@ public class SchoolController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            String link = schoolService.makeApp(session.getAttribute("user").toString());
+            // todo механизм на время тестирования, потом переделать
+            String adminEmail = session.getAttribute("user").toString();
+            SchoolDTO schoolDTO = schoolService.getSchoolByAdmin(adminEmail);
+            schoolService.makeApp(schoolDTO);
+            schoolService.sendMessageToUser(schoolDTO, adminEmail);
+            String message = String.format("http://lingvomake.ml/%s.apk",
+                    schoolDTO.getId()
+            );
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(link);
+                    .body(message);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
+            return ResponseEntity.status(HttpStatus.OK)
                     .body(UserStatus.NOT_FOUND);
         }
 
