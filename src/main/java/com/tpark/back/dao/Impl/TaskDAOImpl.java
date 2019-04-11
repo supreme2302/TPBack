@@ -4,18 +4,11 @@ import com.tpark.back.dao.TaskDAO;
 import com.tpark.back.mapper.TaskMapper;
 import com.tpark.back.model.dto.TaskDTO;
 import com.tpark.back.model.dto.TaskUnitDTO;
-import com.tpark.back.model.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.ServletContext;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 @Repository
@@ -53,7 +46,7 @@ public class TaskDAOImpl implements TaskDAO {
 
         Integer school_id = schoolIDDAO.getSchoolId(admin);
         String sql = "UPDATE task SET name = ?, task_val = ?, task_val2 = ?, task_val3 = ?, task_type=? WHERE id = ? AND school_id=?;";
-        jdbc.update(sql, taskDTO.getName(), taskDTO.getTaskT1(), taskDTO.getTaskT2(), taskDTO.getTaskT3(), taskDTO.getTask_type(), taskDTO.getId(),school_id);
+        jdbc.update(sql, taskDTO.getName(), taskDTO.getDataT1(), taskDTO.getDataT2(), taskDTO.getDataT3(), taskDTO.getTask_type(), taskDTO.getId(),school_id);
         sql = "DELETE FROM task_unit WHERE task_id = ?";
         jdbc.update(sql,taskDTO.getId());
         int i = 0;
@@ -70,17 +63,17 @@ public class TaskDAOImpl implements TaskDAO {
         Integer school_id = schoolIDDAO.getSchoolId(admin);
         Integer id = 0;
         String sql = "";
-        if(taskDTO.getTaskT1()!=null) {
+        if(taskDTO.getDataT1()!=null) {
             sql = "INSERT INTO task (name, task_val, task_type,school_id) VALUES (?, ?::jsonb, ?, ?) RETURNING id";
-            id = jdbc.queryForObject(sql, Integer.class, taskDTO.getName(), taskDTO.getTaskT1(), taskDTO.getTask_type(), school_id);
+            id = jdbc.queryForObject(sql, Integer.class, taskDTO.getName(), taskDTO.getDataT1(), taskDTO.getTask_type(), school_id);
         }else {
-            if(taskDTO.getTaskT2()!=null) {
+            if(taskDTO.getDataT2()!=null) {
                 sql = "INSERT INTO task (name, task_val2, task_type,school_id) VALUES (?, ?::jsonb, ?, ?) RETURNING id";
-                id = jdbc.queryForObject(sql, Integer.class, taskDTO.getName(), taskDTO.getTaskT2(), taskDTO.getTask_type(), school_id);
+                id = jdbc.queryForObject(sql, Integer.class, taskDTO.getName(), taskDTO.getDataT2(), taskDTO.getTask_type(), school_id);
             }
             else {
                 sql = "INSERT INTO task (name, task_val3, task_type,school_id) VALUES (?, ?::jsonb, ?, ?) RETURNING id";
-                id = jdbc.queryForObject(sql, Integer.class, taskDTO.getName(), taskDTO.getTaskT3(), taskDTO.getTask_type(), school_id);
+                id = jdbc.queryForObject(sql, Integer.class, taskDTO.getName(), taskDTO.getDataT3(), taskDTO.getTask_type(), school_id);
 
             }
         }

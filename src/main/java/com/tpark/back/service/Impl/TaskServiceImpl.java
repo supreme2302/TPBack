@@ -40,12 +40,12 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @SneakyThrows(JsonProcessingException.class)
     public void createTask(String admin , TaskDTO taskDTO) {
-        String task = objectMapper.writeValueAsString(taskDTO.getTaskT1());
-        taskDTO.setTaskT1(task);
-        task = objectMapper.writeValueAsString(taskDTO.getTaskT2());
-        taskDTO.setTaskT2(task);
-        task = objectMapper.writeValueAsString(taskDTO.getTaskT3());
-        taskDTO.setTaskT3(task);
+        String task = objectMapper.writeValueAsString(taskDTO.getDataT1());
+        taskDTO.setDataT1(task);
+        task = objectMapper.writeValueAsString(taskDTO.getDataT2());
+        taskDTO.setDataT2(task);
+        task = objectMapper.writeValueAsString(taskDTO.getDataT3());
+        taskDTO.setDataT3(task);
         taskDAO.createTask(admin , taskDTO);
     }
 

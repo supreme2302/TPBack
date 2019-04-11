@@ -11,7 +11,7 @@ public class TaskDTO {
     String name;
     Integer task_type;
     List<Integer> unit_id;
-    Object taskT1;
-    Object taskT2;
-    Object taskT3;
+    Object dataT1;
+    Object dataT2;
+    Object dataT3;
 }
