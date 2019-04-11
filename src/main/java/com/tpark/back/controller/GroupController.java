@@ -1,8 +1,10 @@
 package com.tpark.back.controller;
 
 
+import com.tpark.back.model.dto.AdminDTO;
 import com.tpark.back.model.dto.GroupDTO;
 import com.tpark.back.model.UserStatus;
+import com.tpark.back.model.dto.StudentDTO;
 import com.tpark.back.service.AdminService;
 import com.tpark.back.service.GroupService;
 import com.tpark.back.service.StudentService;
@@ -15,6 +17,7 @@ import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHtt
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @RestController
 @RequestMapping("/group")
@@ -101,6 +104,22 @@ public class GroupController {
                     .body(UserStatus.NOT_FOUND);
         }
     }
+
+//    @GetMapping(path = "/students/{groupId}")
+//    public ResponseEntity getStudentsByGroupId(HttpSession httpSession,
+//                                               @PathVariable(name = "groupId") Integer groupId) {
+//        Object adminSession = httpSession.getAttribute("user");
+//        if (adminSession == null) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UserStatus.ACCESS_ERROR);
+//        }
+//        String adminEmailFromSession = adminSession.toString();
+//        AdminDTO adminDTO = adminService.getAdminByEmail(adminEmailFromSession);
+//        if (adminDTO == null) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(UserStatus.ACCESS_ERROR);
+//        }
+//        List<StudentDTO> students = studentService;
+//
+//    }
 
     @PostMapping(path = "/create")
     public ResponseEntity create(HttpSession session, @RequestBody GroupDTO groupDTO) {

@@ -2,12 +2,17 @@ package com.tpark.back.service.Impl;
 
 import com.tpark.back.dao.AdminDAO;
 import com.tpark.back.dao.SchoolDAO;
+import com.tpark.back.model.dto.AdminDTO;
 import com.tpark.back.model.dto.SchoolDTO;
+import com.tpark.back.model.dto.StudentDTO;
 import com.tpark.back.model.exception.NotFoundException;
+import com.tpark.back.service.MailSender;
 import com.tpark.back.service.SchoolService;
 import io.swagger.models.auth.In;
 import lombok.ToString;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -15,17 +20,20 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 @Service
 public class SchoolServiceImpl implements SchoolService {
 
     private final SchoolDAO schoolDAO;
     private final AdminDAO adminDAO;
+    private final MailSender mailSender;
 
     @Autowired
-    SchoolServiceImpl(SchoolDAO schoolDAO, AdminDAO adminDAO){
+    SchoolServiceImpl(SchoolDAO schoolDAO, AdminDAO adminDAO, MailSender mailSender){
         this.schoolDAO = schoolDAO;
         this.adminDAO = adminDAO;
+        this.mailSender = mailSender;
     }
 
     @Override
@@ -49,20 +57,31 @@ public class SchoolServiceImpl implements SchoolService {
     }
 
     @Override
-    public void makeApp(String user) throws IOException {
-        SchoolDTO schoolDTO = schoolDAO.getSchoolByAdmin(user);
-
-
+    @Async
+    public void makeApp(SchoolDTO schoolDTO) throws IOException {
+//        SchoolDTO schoolDTO = schoolDAO.getSchoolByAdmin(user);
         ProcessBuilder pb = new ProcessBuilder("src/main/resources/scripts/build.sh", Integer.toString(schoolDTO.getId()), schoolDTO.getMain_color(),
                 schoolDTO.getSecondary_color(), schoolDTO.getName(), schoolDTO.getLanguage());
         Process p = pb.start();
         BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-        String line = null;
-        while ((line = reader.readLine()) != null)
-        {
+        String line = "";
+        while ((line = reader.readLine()) != null) {
             System.out.println(line);
         }
+    }
 
+    @Override
+    @Async
+    public void sendMessageToUser(SchoolDTO schoolDTO, String email) {
+        String message = String.format(
+                "Welcome to lingvomake! Link to download the application" +
+                        "\nhttp://lingvomake.ml/%s.apk",
+                schoolDTO.getId()
 
+        );
+        System.out.println("sending............");
+        System.out.println("email " + email);
+        mailSender.send(email, "Welcome to " + schoolDTO.getName(), message);
+//        return message;
     }
 }

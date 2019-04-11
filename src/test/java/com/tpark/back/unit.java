@@ -11,17 +11,12 @@ public class unit {
 
     @Test
     public void test() {
-        List<GroupDTO> list = new ArrayList<>();
-        for (int i = 0; i < 10; ++i) {
-            GroupDTO groupDTO = new GroupDTO();
-            groupDTO.setId(i);
-            groupDTO.setName("a + " + String.valueOf(i));
-            list.add(groupDTO);
-        }
-        List<Integer> newList = list.stream()
-                .map(GroupDTO::getId).collect(Collectors.toList());
-        for (Integer id: newList) {
-            System.out.println(id);
-        }
+        String message = String.format(
+                "Welcome to lingvomake! Link to download the application" +
+                        "\nhttp://lingvomake.ml/%s.apk",
+                5
+
+        );
+        System.out.println(message);
     }
 }
