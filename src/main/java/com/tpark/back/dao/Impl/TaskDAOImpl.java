@@ -52,8 +52,8 @@ public class TaskDAOImpl implements TaskDAO {
     public void changeTask(String admin , TaskDTO taskDTO) {
 
         Integer school_id = schoolIDDAO.getSchoolId(admin);
-        String sql = "UPDATE task SET name = ?, task_val = ?, task_type=? WHERE id = ? AND school_id=?;";
-        jdbc.update(sql, taskDTO.getName(), taskDTO.getTask(), taskDTO.getTask_type(), taskDTO.getId(),school_id);
+        String sql = "UPDATE task SET name = ?, task_val = ?, task_val2 = ?, task_val3 = ?, task_type=? WHERE id = ? AND school_id=?;";
+        jdbc.update(sql, taskDTO.getName(), taskDTO.getTaskT1(), taskDTO.getTaskT2(), taskDTO.getTaskT3(), taskDTO.getTask_type(), taskDTO.getId(),school_id);
         sql = "DELETE FROM task_unit WHERE task_id = ?";
         jdbc.update(sql,taskDTO.getId());
         int i = 0;
@@ -68,9 +68,23 @@ public class TaskDAOImpl implements TaskDAO {
     @Override
     public void createTask(String admin , TaskDTO taskDTO) {
         Integer school_id = schoolIDDAO.getSchoolId(admin);
-        String sql = "INSERT INTO task (name, task_val, task_type,school_id) VALUES (?, ?::jsonb, ?, ?) RETURNING id";
-        Integer id = jdbc.queryForObject(sql, Integer.class, taskDTO.getName(), taskDTO.getTask(), taskDTO.getTask_type(),school_id);
-//        sql = "SELECT * FROM task WHERE name = ? AND school_id=?";
+        Integer id = 0;
+        String sql = "";
+        if(taskDTO.getTaskT1()!=null) {
+            sql = "INSERT INTO task (name, task_val, task_type,school_id) VALUES (?, ?::jsonb, ?, ?) RETURNING id";
+            id = jdbc.queryForObject(sql, Integer.class, taskDTO.getName(), taskDTO.getTaskT1(), taskDTO.getTask_type(), school_id);
+        }else {
+            if(taskDTO.getTaskT2()!=null) {
+                sql = "INSERT INTO task (name, task_val2, task_type,school_id) VALUES (?, ?::jsonb, ?, ?) RETURNING id";
+                id = jdbc.queryForObject(sql, Integer.class, taskDTO.getName(), taskDTO.getTaskT2(), taskDTO.getTask_type(), school_id);
+            }
+            else {
+                sql = "INSERT INTO task (name, task_val3, task_type,school_id) VALUES (?, ?::jsonb, ?, ?) RETURNING id";
+                id = jdbc.queryForObject(sql, Integer.class, taskDTO.getName(), taskDTO.getTaskT3(), taskDTO.getTask_type(), school_id);
+
+            }
+        }
+        //        sql = "SELECT * FROM task WHERE name = ? AND school_id=?";
 //        TaskDTO created = jdbc.queryForObject(sql, taskMapper, taskDTO.getName(), school_id);
         int i = 0;
         while (i < taskDTO.getUnit_id().size()) {
