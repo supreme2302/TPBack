@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpSession;
 
@@ -35,22 +36,18 @@ public class TaskController {
     }
 
     @GetMapping(path = "/")
-    public ResponseEntity getAll(HttpSession session ) {
+    public ResponseEntity getAll(@ApiIgnore HttpSession session ) {
         if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {
-            if(session.getAttribute("student") == null || studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(UserStatus.ACCESS_ERROR);
-            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(UserStatus.ACCESS_ERROR);
         }
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(taskService.getTasks(session.getAttribute("user").toString()));
-        //TODO: Промежуточная таблица для taskов
-
     }
 
     @GetMapping(path = "/{unitId}")
-    public ResponseEntity getTasks(HttpSession session, @PathVariable Integer unitId) {
+    public ResponseEntity getTasks(@ApiIgnore HttpSession session, @PathVariable Integer unitId) {
 
         Object adminSession = session.getAttribute("user");
         Object studentSession = session.getAttribute("student");
@@ -80,7 +77,7 @@ public class TaskController {
     }
 
     @GetMapping(path = "/find/{taskId}")
-    public ResponseEntity getTask(HttpSession session,@PathVariable Integer taskId) {
+    public ResponseEntity getTask(@ApiIgnore HttpSession session,@PathVariable Integer taskId) {
         if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {
             if(session.getAttribute("student") == null || studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -104,7 +101,7 @@ public class TaskController {
     }
 
     @PostMapping(path = "/create")
-    public ResponseEntity create(HttpSession session, @RequestBody TaskDTO taskDTO) {
+    public ResponseEntity create(@ApiIgnore HttpSession session, @RequestBody TaskDTO taskDTO) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -124,7 +121,7 @@ public class TaskController {
     }
 
     @PostMapping(path = "/add")
-    public ResponseEntity add(HttpSession session, @RequestBody TaskUnitDTO task) {
+    public ResponseEntity add(@ApiIgnore HttpSession session, @RequestBody TaskUnitDTO task) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -144,7 +141,7 @@ public class TaskController {
     }
 
     @PostMapping(path = "/change")
-    public ResponseEntity change(HttpSession session, @RequestBody TaskDTO taskDTO) {
+    public ResponseEntity change(@ApiIgnore HttpSession session, @RequestBody TaskDTO taskDTO) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -164,7 +161,7 @@ public class TaskController {
     }
 
     @PostMapping(path = "/delete")
-    public ResponseEntity delete(HttpSession session, @RequestBody IdDTO idDTO) {
+    public ResponseEntity delete(@ApiIgnore HttpSession session, @RequestBody IdDTO idDTO) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);

@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpSession;
 
@@ -29,7 +30,7 @@ public class AdminController {
     }
 
     @GetMapping(path = "/info")
-    public ResponseEntity getUser(HttpSession session) {
+    public ResponseEntity getUser(@ApiIgnore HttpSession session) {
 
         logger.info("info session - ", session.getId());
 
@@ -52,7 +53,7 @@ public class AdminController {
     }
 
     @PostMapping(path = "/register")
-    public ResponseEntity register(HttpSession session, @RequestBody AdminDTO user) {
+    public ResponseEntity register(@ApiIgnore HttpSession session, @RequestBody AdminDTO user) {
 
         logger.info("register session - ", session.getId());
 
@@ -78,7 +79,7 @@ public class AdminController {
     }
 
     @PostMapping(path = "/auth")
-    public ResponseEntity auth(HttpSession httpSession, @RequestBody AdminDTO adminDTO) {
+    public ResponseEntity auth(@ApiIgnore HttpSession httpSession, @RequestBody AdminDTO adminDTO) {
 
         if (httpSession.getAttribute("user") != null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -105,7 +106,7 @@ public class AdminController {
     }
 
     @PostMapping(path = "/change")
-    public ResponseEntity change(HttpSession httpSession,
+    public ResponseEntity change(@ApiIgnore HttpSession httpSession,
                                  @RequestBody ChangePasswordDTO changePassword) {
 
         Object userSession = httpSession.getAttribute("user");
@@ -130,7 +131,7 @@ public class AdminController {
 
 
     @PostMapping(path = "/add")
-    public ResponseEntity add(HttpSession httpSession,
+    public ResponseEntity add(@ApiIgnore HttpSession httpSession,
                                  @RequestBody AdminDTO adminDTO) {
 
         Object userSession = httpSession.getAttribute("user");
@@ -146,7 +147,7 @@ public class AdminController {
     }
 
     @PostMapping(path = "/logout")
-    public ResponseEntity logout(HttpSession httpSession) {
+    public ResponseEntity logout(@ApiIgnore HttpSession httpSession) {
         if (httpSession.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);

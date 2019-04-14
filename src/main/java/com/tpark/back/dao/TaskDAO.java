@@ -16,7 +16,7 @@ public interface TaskDAO {
 
     List<TaskDTO> getTasksByUnit(String admin , Integer unitId);
 
-    List<TaskDTO> getAllTasks(String admin);
+    List<TaskDTO> getAllTasksBySchoolId(int schoolId);
 
     Object getTaskStudent(Integer taskId, String student);
 

@@ -103,10 +103,9 @@ public class TaskDAOImpl implements TaskDAO {
     }
 
     @Override
-    public List<TaskDTO> getAllTasks(String admin) {
-        Integer school_id = schoolIDDAO.getSchoolId(admin);
-        final String sql = "SELECT * FROM task WHERE school_id=?;";
-        return jdbc.query(sql, taskMapper, school_id);
+    public List<TaskDTO> getAllTasksBySchoolId(int schoolId) {
+        final String sql = "SELECT * FROM task WHERE school_id= ? ;";
+        return jdbc.query(sql, taskMapper, schoolId);
     }
 
 

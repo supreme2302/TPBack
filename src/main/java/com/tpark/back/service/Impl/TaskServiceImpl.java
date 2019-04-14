@@ -2,6 +2,7 @@ package com.tpark.back.service.Impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tpark.back.dao.Impl.SchoolIDDAO;
 import com.tpark.back.dao.Impl.TaskDAOImpl;
 import com.tpark.back.model.dto.TaskDTO;
 import com.tpark.back.model.dto.TaskUnitDTO;
@@ -19,12 +20,17 @@ public class TaskServiceImpl implements TaskService {
     private final ObjectMapper objectMapper;
     private final TaskDAOImpl taskDAO;
     private final PasswordEncoder passwordEncoder;
+    private final SchoolIDDAO schoolIDDAO;
 
     @Autowired
-    public TaskServiceImpl(TaskDAOImpl taskDAO, PasswordEncoder passwordEncoder, ObjectMapper objectMapper) {
+    public TaskServiceImpl(TaskDAOImpl taskDAO,
+                           PasswordEncoder passwordEncoder,
+                           ObjectMapper objectMapper,
+                           SchoolIDDAO schoolIDDAO) {
         this.taskDAO = taskDAO;
         this.passwordEncoder = passwordEncoder;
         this.objectMapper = objectMapper;
+        this.schoolIDDAO = schoolIDDAO;
     }
 
     @Override
@@ -61,7 +67,8 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<TaskDTO> getTasks(String admin) {
-        return taskDAO.getAllTasks(admin);
+        Integer schoolId = schoolIDDAO.getSchoolId(admin);
+        return taskDAO.getAllTasksBySchoolId(schoolId);
     }
 
     @Override

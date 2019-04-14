@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -37,7 +38,7 @@ public class GroupController {
 
 
     @GetMapping(path = "/")
-    public ResponseEntity getAllGroups(HttpSession session) {
+    public ResponseEntity getAllGroups(@ApiIgnore HttpSession session) {
         if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {
             if(session.getAttribute("student") == null || studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -62,7 +63,7 @@ public class GroupController {
 
 
     @GetMapping(path = "/{courseId}")
-    public ResponseEntity getGroups(HttpSession session,@PathVariable Integer courseId) {
+    public ResponseEntity getGroups(@ApiIgnore HttpSession session,@PathVariable Integer courseId) {
         if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {
             if(session.getAttribute("student") == null || studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -84,7 +85,7 @@ public class GroupController {
     }
 
     @GetMapping(path = "/find/{groupId}")
-    public ResponseEntity getGroup(HttpSession session,@PathVariable Integer groupId) {
+    public ResponseEntity getGroup(@ApiIgnore HttpSession session,@PathVariable Integer groupId) {
         if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {
             if(session.getAttribute("student") == null || studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -122,7 +123,7 @@ public class GroupController {
 //    }
 
     @PostMapping(path = "/create")
-    public ResponseEntity create(HttpSession session, @RequestBody GroupDTO groupDTO) {
+    public ResponseEntity create(@ApiIgnore HttpSession session, @RequestBody GroupDTO groupDTO) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -142,7 +143,7 @@ public class GroupController {
     }
 
     @PostMapping(path = "/edit")
-    public ResponseEntity changeGroup(HttpSession session, @RequestBody GroupDTO groupDTO) {
+    public ResponseEntity changeGroup(@ApiIgnore HttpSession session, @RequestBody GroupDTO groupDTO) {
         System.out.println("editing");
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -163,7 +164,7 @@ public class GroupController {
     }
 
     @PostMapping(path = "/delete")
-    public ResponseEntity delete(HttpSession session, @RequestBody int id) {
+    public ResponseEntity delete(@ApiIgnore HttpSession session, @RequestBody int id) {
         if (session.getAttribute("user") == null && session.getAttribute("student") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);

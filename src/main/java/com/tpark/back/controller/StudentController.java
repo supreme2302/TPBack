@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -30,7 +31,7 @@ public class StudentController {
     }
 
     @PostMapping(path = "/create")
-    public ResponseEntity createStudent(HttpSession session, @RequestBody StudentDTO studentDTO) {
+    public ResponseEntity createStudent(@ApiIgnore HttpSession session, @RequestBody StudentDTO studentDTO) {
         Object adminSession = session.getAttribute("user");
         if (adminSession == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UserStatus.ACCESS_ERROR);
@@ -58,7 +59,7 @@ public class StudentController {
 
 
     @PostMapping(path = "/change")
-    public ResponseEntity changeStudent(HttpSession session, @RequestBody StudentDTO studentDTO) {
+    public ResponseEntity changeStudent(@ApiIgnore HttpSession session, @RequestBody StudentDTO studentDTO) {
         Object adminSession = session.getAttribute("user");
         if (adminSession == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UserStatus.ACCESS_ERROR);
@@ -84,7 +85,7 @@ public class StudentController {
     }
 
     @PostMapping(path = "/delete")
-    public ResponseEntity deleteStudent(HttpSession session, @RequestBody IdDTO idDTO) {
+    public ResponseEntity deleteStudent(@ApiIgnore HttpSession session, @RequestBody IdDTO idDTO) {
         Object adminSession = session.getAttribute("user");
         if (adminSession == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UserStatus.ACCESS_ERROR);
@@ -106,7 +107,7 @@ public class StudentController {
     }
 
     @PostMapping(path = "/auth")
-    public ResponseEntity authStudent(HttpSession session, @RequestBody StudentAuthDTO student) {
+    public ResponseEntity authStudent(@ApiIgnore HttpSession session, @RequestBody StudentAuthDTO student) {
         Object studentSession = session.getAttribute("student");
         if (studentSession != null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -140,7 +141,7 @@ public class StudentController {
     }
 
     @PostMapping(path = "/logout")
-    public ResponseEntity logout(HttpSession httpSession) {
+    public ResponseEntity logout(@ApiIgnore HttpSession httpSession) {
         Object object = httpSession.getAttribute("student");
         if (object == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UserStatus.ACCESS_ERROR);
@@ -157,7 +158,7 @@ public class StudentController {
 
 
     @GetMapping(path = "/")
-    public ResponseEntity getAllStudents(HttpSession session) {
+    public ResponseEntity getAllStudents(@ApiIgnore HttpSession session) {
         System.out.println("students");
         Object adminSession = session.getAttribute("user");
         if (adminSession == null) {

@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpSession;
 
@@ -35,7 +36,7 @@ public class CourseController {
     }
 
     @GetMapping(path = "/{courseId}")
-    public ResponseEntity getCourse(HttpSession session,@PathVariable int courseID) {
+    public ResponseEntity getCourse(@ApiIgnore HttpSession session, @PathVariable int courseID) {
         if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {
             if(session.getAttribute("student") == null || studentService.getStudentByEmailWithGroupId(session.getAttribute("student").toString()) == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -58,7 +59,7 @@ public class CourseController {
     }
 
     @GetMapping(path = "/")
-    public ResponseEntity getSchoolCourses(HttpSession session) {
+    public ResponseEntity getSchoolCourses(@ApiIgnore HttpSession session) {
         if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {
             if(session.getAttribute("student") == null || studentService.getStudentByEmailWithGroupId(session.getAttribute("student").toString()) == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -80,7 +81,7 @@ public class CourseController {
     }
 
     @PostMapping(path = "/create")
-    public ResponseEntity create(HttpSession session, @RequestBody CourseDTO courseDTO) {
+    public ResponseEntity create(@ApiIgnore HttpSession session, @RequestBody CourseDTO courseDTO) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -100,7 +101,7 @@ public class CourseController {
     }
 
     @PostMapping(path = "/change")
-    public ResponseEntity change(HttpSession session, @RequestBody CourseDTO courseDTO) {
+    public ResponseEntity change(@ApiIgnore HttpSession session, @RequestBody CourseDTO courseDTO) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -120,7 +121,7 @@ public class CourseController {
     }
 
     @PostMapping(path = "/delete")
-    public ResponseEntity delete(HttpSession session, @RequestBody Integer id) {
+    public ResponseEntity delete(@ApiIgnore HttpSession session, @RequestBody Integer id) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);

@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
@@ -36,7 +37,7 @@ public class SchoolController {
     }
 
     @GetMapping(path = "/")
-    public ResponseEntity getSchool(HttpSession session) {
+    public ResponseEntity getSchool(@ApiIgnore HttpSession session) {
         if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {
             if(session.getAttribute("student") == null || studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -59,7 +60,7 @@ public class SchoolController {
     }
 
     @PostMapping(path = "/change")
-    public ResponseEntity create(HttpSession session, @RequestBody SchoolDTO schoolDTO) {
+    public ResponseEntity create(@ApiIgnore HttpSession session, @RequestBody SchoolDTO schoolDTO) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -79,7 +80,7 @@ public class SchoolController {
     }
 
     @PostMapping(path = "/makeapp")
-    public ResponseEntity makeapp(HttpSession session) {
+    public ResponseEntity makeapp(@ApiIgnore HttpSession session) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
