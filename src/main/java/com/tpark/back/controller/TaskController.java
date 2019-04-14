@@ -51,24 +51,32 @@ public class TaskController {
 
     @GetMapping(path = "/{unitId}")
     public ResponseEntity getTasks(HttpSession session, @PathVariable Integer unitId) {
+
+        Object adminSession = session.getAttribute("user");
+        Object studentSession = session.getAttribute("student");
         if (session.getAttribute("user") == null && session.getAttribute("student") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
         }
-        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null &&
-                studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(UserStatus.ACCESS_ERROR);
+
+
+        if (adminSession != null) {
+            if (adminService.getAdminByEmail(adminSession.toString()) == null) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(UserStatus.ACCESS_ERROR);
+            }
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(taskService.getTasksByUnit(adminSession.toString(), unitId));
         }
 
-        if(session.getAttribute("user") != null) {
+        else {
+            if (studentService.getStudentByEmailWithoutGroupId(studentSession.toString()) == null) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(UserStatus.ACCESS_ERROR);
+            }
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(taskService.getTasksByUnit(session.getAttribute("user").toString(), unitId));
-        } else {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(taskService.getTasksByUnitStudent(unitId, session.getAttribute("student").toString()));
+                    .body(taskService.getTasksByUnitStudent(unitId, studentSession.toString()));
         }
-
     }
 
     @GetMapping(path = "/find/{taskId}")
