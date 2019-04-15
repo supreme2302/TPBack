@@ -19,6 +19,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpSession;
 
+@SuppressWarnings("Duplicates")
 @RestController
 @RequestMapping("/task")
 @EnableJdbcHttpSession

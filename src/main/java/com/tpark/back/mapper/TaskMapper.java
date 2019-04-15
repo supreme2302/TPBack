@@ -16,9 +16,9 @@ public class TaskMapper implements RowMapper<TaskDTO> {
         taskDTO.setId(resultSet.getInt("id"));
         taskDTO.setTask_type(resultSet.getInt("task_type"));
         taskDTO.setName(resultSet.getString("name"));
-        taskDTO.setDataT1(resultSet.getObject("task_val"));
-        taskDTO.setDataT2(resultSet.getObject("task_val2"));
-        taskDTO.setDataT3(resultSet.getObject("task_val3"));
+        taskDTO.setDataT1(resultSet.getString("task_val"));
+        taskDTO.setDataT2(resultSet.getString("task_val2"));
+        taskDTO.setDataT3(resultSet.getString("task_val3"));
         return taskDTO;
     }
 }

@@ -16,6 +16,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
+@SuppressWarnings("Duplicates")
 @RestController
 @RequestMapping(path = "/student")
 @EnableJdbcHttpSession
