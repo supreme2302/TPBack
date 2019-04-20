@@ -44,7 +44,7 @@ public class StudentController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(UserStatus.ACCESS_ERROR);
         }
 
-        String password = RandomString.getShortTokenString();
+        String password = RandomString.getRandomString();
         studentDTO.setPassword(password);
         try {
             studentService.addStudent(studentDTO, adminSession.toString());
@@ -72,7 +72,7 @@ public class StudentController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(UserStatus.ACCESS_ERROR);
         }
 
-        String password = RandomString.getShortTokenString();
+        String password = RandomString.getRandomString();
         studentDTO.setPassword(password);
         try {
             studentService.changeStudent(studentDTO,adminSession.toString());

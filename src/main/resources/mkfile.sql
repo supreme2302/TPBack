@@ -1,8 +1,8 @@
 INSERT INTO admin (id, email, password) VALUES (1, 'Makarenko.A@mail.ussr','$2a$05$fZeCfCuDnwlKhOdtZzut7.Rl7D1NXekss54GpJAQoApx02MBpq196');
-INSERT INTO school (id, school_name, ownerid, main_color, secondary_color, language, school_logo) VALUES (1, 'SchoolRus', 1,'#86030b','#86030b','Russian',null);
+INSERT INTO school (id, school_name, ownerid, main_color, secondary_color, language) VALUES (1, 'SchoolRus', 1,'#86030b','#86030b','Russian');
 UPDATE admin SET school_id=1 WHERE id=1;
 INSERT INTO admin (id, email, password) VALUES (2, 'Aristotel@lingva.macedon','$2a$05$fZeCfCuDnwlKhOdtZzut7.Rl7D1NXekss54GpJAQoApx02MBpq196');
-INSERT INTO school (id, school_name, ownerid, main_color, secondary_color, language, school_logo) VALUES (2, 'GreekCsarSchool', 2,'#ffffff','#937ef6','Greek',null);
+INSERT INTO school (id, school_name, ownerid, main_color, secondary_color, language) VALUES (2, 'GreekCsarSchool', 2,'#ffffff','#937ef6','Greek');
 UPDATE admin SET school_id=2 WHERE id=2;
 
 

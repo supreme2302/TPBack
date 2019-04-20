@@ -15,4 +15,8 @@ public interface CourseDAO {
     CourseDTO getStudentCourse(Integer student, String s);
 
     List<CourseDTO> getCoursesByStudent(String student);
+
+    void savePicture(String link, int id);
+
+    String getImageLink(int courseId);
 }

@@ -6,10 +6,12 @@ import com.tpark.back.model.dto.CourseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Repository
+@Transactional
 public class CourseDAOImpl implements CourseDAO {
 
     private final JdbcTemplate jdbc;
@@ -86,6 +88,17 @@ public class CourseDAOImpl implements CourseDAO {
                 "                 ON course.id = res.course_id;\n";
         return jdbc.query(sql, courseMapper, student);
 
+    }
+
+    @Override
+    public void savePicture(String link, int id) {
+        String sql = "UPDATE course SET image_link = ? WHERE id = ?";
+        jdbc.update(sql, link, id);
+    }
+
+    @Override
+    public String getImageLink(int courseId) {
+        return jdbc.queryForObject("SELECT image_link FROM course WHERE id = ?", String.class, courseId);
     }
 }
 

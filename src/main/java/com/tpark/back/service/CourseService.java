@@ -1,7 +1,9 @@
 package com.tpark.back.service;
 
 import com.tpark.back.model.dto.CourseDTO;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface CourseService {
@@ -16,4 +18,8 @@ public interface CourseService {
     CourseDTO getStudentCourse(Integer courseID, String student);
 
     List<CourseDTO> getCoursesByStudent(String student);
+
+    String store(MultipartFile file, int id) throws IOException;
+
+    String getImageLink(int id);
 }

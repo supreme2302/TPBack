@@ -1,7 +1,5 @@
 package com.tpark.back.controller;
 
-
-
 import com.tpark.back.model.dto.CourseDTO;
 import com.tpark.back.model.UserStatus;
 import com.tpark.back.service.AdminService;
@@ -14,10 +12,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.imageio.IIOException;
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpSession;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 
+import static com.tpark.back.model.Resourses.PATH_COURSE_AVATARS_FOLDER;
 
 @RestController
 @RequestMapping("/course")
@@ -138,6 +144,41 @@ public class CourseController {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(UserStatus.ALREADY_EXISTS);
         }
+    }
+
+    /**
+     * @param file - картиночка
+     * @param id - id курса
+     */
+    @PostMapping("/changeAvatar")
+    public ResponseEntity changeAva(@RequestParam("image") MultipartFile file,
+                                    @RequestParam("id") int id,
+                                    HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not Found");
+        }
+        String link;
+        try {
+            link = courseService.store(file, id);
+        } catch (IOException except) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    "Unexpected Error");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(link);
+    }
+
+    @GetMapping(path = "/image/{imageName}")
+    public ResponseEntity getImageByEmail(@PathVariable("imageName") String imageName) throws IOException {
+        BufferedImage file;
+        ByteArrayOutputStream bao = new ByteArrayOutputStream();
+        try {
+            file = ImageIO.read(new File(PATH_COURSE_AVATARS_FOLDER + imageName));
+        } catch (IIOException e) {
+            file = ImageIO.read(new File(PATH_COURSE_AVATARS_FOLDER + "default_course.jpg"));
+        }
+
+        ImageIO.write(file, "png", bao);
+        return ResponseEntity.ok(bao.toByteArray());
     }
 
 }

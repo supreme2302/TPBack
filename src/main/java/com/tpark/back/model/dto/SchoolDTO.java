@@ -9,5 +9,5 @@ public class SchoolDTO {
     private String main_color= "#FFFFFF";//3F51B5
     private String secondary_color = "#AAAAAA";//303F9F
     private String language = "english";
-    private String school_logo;
+    private String imageLink;
 }
