@@ -74,11 +74,24 @@ public class StudentDAOImpl implements StudentDAO {
     }
 
     @Override
+    @Transactional
     public List<StudentDTO> getStudentsFromGroupById(int id) {
-        final String sql = "SELECT * FROM student "
+        String sql = "SELECT * FROM student "
                 + "JOIN student_group g on student.id = g.student_id "
                 + "JOIN group_course gc on g.group_id = gc.id WHERE gc.id = ?";
-        return jdbc.query(sql, studentMapper, id);
+        try {
+            List<StudentDTO> studentDTOS =  jdbc.query(sql, studentMapper, id);
+            sql = "SELECT * FROM student_group WHERE student_id = ?;";
+            int i = 0;
+            while (i< studentDTOS.size()){
+                List<Integer> groups = jdbc.query(sql, ((resultSet, i1) -> resultSet.getInt("group_id")), studentDTOS.get(i).getId());
+                studentDTOS.get(i).setGroup_id(groups);
+                i++;
+            }
+            return studentDTOS;
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     @Override
