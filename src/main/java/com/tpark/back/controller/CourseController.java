@@ -73,7 +73,7 @@ public class CourseController {
             }
         }
         try {
-            if(session.getAttribute("user") != null) {
+            if (session.getAttribute("user") != null) {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(courseService.getCoursesByAdmin(session.getAttribute("user").toString()));
             }  else {

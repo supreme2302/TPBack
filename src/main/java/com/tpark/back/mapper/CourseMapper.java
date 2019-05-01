@@ -16,6 +16,7 @@ public class CourseMapper implements RowMapper<CourseDTO> {
         courseDTO.setSchoolId(resultSet.getInt("school_id"));
         courseDTO.setId(resultSet.getInt("id"));
         courseDTO.setDescription(resultSet.getString("description"));
+        courseDTO.setCourseImage(resultSet.getString("image_link"));
         return courseDTO;
     }
 }

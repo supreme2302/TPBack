@@ -8,4 +8,5 @@ public class CourseDTO {
     String name;
     String description;
     int schoolId;
+    String courseImage;
 }
