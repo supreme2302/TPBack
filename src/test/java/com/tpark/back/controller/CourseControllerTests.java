@@ -67,10 +67,11 @@ public class CourseControllerTests {
         CourseDTO courseDTO = new CourseDTO();
         courseDTO.setName("BES");
         courseDTO.setSchoolId(1);
+        courseDTO.setDescription("Des");
         String authJSON = gson.toJson(courseDTO);
         CookieAssistant assistant= new CookieAssistant(mockMvc);
         Cookie[] allCookies = assistant.getAdminCookie("existforkostyan@e.ru");
-        this.mockMvc.perform(post("/courseDTO/create")
+        this.mockMvc.perform(post("/course/create")
                 .contentType(contentType)
                 .content(authJSON)
                 .cookie(allCookies))
