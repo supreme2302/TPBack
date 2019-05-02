@@ -35,25 +35,25 @@ public class UnitController {
     }
 
     @GetMapping(path = "/{courseId}")
-    public ResponseEntity getGroups(@ApiIgnore HttpSession session, @PathVariable Integer courseId) {
+    public ResponseEntity getUnitsByCourse(@ApiIgnore HttpSession session, @PathVariable Integer courseId) {
         if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {
             if(session.getAttribute("student") == null || studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(UserStatus.ACCESS_ERROR);
             }
         }
-        if(session.getAttribute("user") != null) {
+        if (session.getAttribute("user") != null) {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(unitService.getUnitsByCourse(courseId, session.getAttribute("user").toString()));
         } else {
-            return  ResponseEntity.status(HttpStatus.OK)
+            return ResponseEntity.status(HttpStatus.OK)
                     .body(unitService.getUnitsByCourseForStudent(courseId, session.getAttribute("student").toString()));
         }
 
     }
 
     @GetMapping(path = "/find/{unitId}")
-    public ResponseEntity getGroup(@ApiIgnore HttpSession session, @PathVariable Integer unitId) {
+    public ResponseEntity getUnitById(@ApiIgnore HttpSession session, @PathVariable Integer unitId) {
         if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {
             if(session.getAttribute("student") == null || studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)

@@ -2,6 +2,7 @@ package com.tpark.back.controller;
 
 import com.tpark.back.model.dto.CourseDTO;
 import com.tpark.back.model.UserStatus;
+import com.tpark.back.model.dto.IdDTO;
 import com.tpark.back.service.AdminService;
 import com.tpark.back.service.CourseService;
 import com.tpark.back.service.StudentService;
@@ -42,7 +43,7 @@ public class CourseController {
     }
 
     @GetMapping(path = "/{courseId}")
-    public ResponseEntity getCourse(@ApiIgnore HttpSession session, @PathVariable int courseID) {
+    public ResponseEntity getCourse(@ApiIgnore HttpSession session, @PathVariable(name = "courseId") int courseID) {
         if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {
             if(session.getAttribute("student") == null || studentService.getStudentByEmailWithGroupId(session.getAttribute("student").toString()) == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -80,7 +81,7 @@ public class CourseController {
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(courseService.getCoursesByStudent(session.getAttribute("student").toString()));
             }
-                   } catch (EmptyResultDataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(UserStatus.NOT_FOUND);
         }
@@ -127,7 +128,7 @@ public class CourseController {
     }
 
     @PostMapping(path = "/delete")
-    public ResponseEntity delete(@ApiIgnore HttpSession session, @RequestBody Integer id) {
+    public ResponseEntity delete(@ApiIgnore HttpSession session, @RequestBody IdDTO idDTO) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -137,7 +138,7 @@ public class CourseController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            courseService.deleteCourse(id, session.getAttribute("user").toString());
+            courseService.deleteCourse(idDTO.getId(), session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.OK)
                     .body(UserStatus.SUCCESSFULLY_DELETED);
         } catch (DuplicateKeyException e) {
@@ -153,7 +154,7 @@ public class CourseController {
     @PostMapping("/changeAvatar")
     public ResponseEntity changeAva(@RequestParam("image") MultipartFile file,
                                     @RequestParam("id") int id,
-                                    HttpSession session) {
+                                    @ApiIgnore HttpSession session) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not Found");
         }
@@ -172,7 +173,7 @@ public class CourseController {
         BufferedImage file;
         ByteArrayOutputStream bao = new ByteArrayOutputStream();
         try {
-            file = ImageIO.read(new File(PATH_COURSE_AVATARS_FOLDER + imageName));
+            file = ImageIO.read(new File(PATH_COURSE_AVATARS_FOLDER + imageName + ".jpg"));
         } catch (IIOException e) {
             file = ImageIO.read(new File(PATH_COURSE_AVATARS_FOLDER + "default_course.jpg"));
         }

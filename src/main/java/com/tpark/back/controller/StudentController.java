@@ -179,5 +179,4 @@ public class StudentController {
         session.setAttribute("student", email);
         session.setMaxInactiveInterval(60*60*24);
     }
-
 }
