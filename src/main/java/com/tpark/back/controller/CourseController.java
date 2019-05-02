@@ -6,6 +6,7 @@ import com.tpark.back.model.dto.IdDTO;
 import com.tpark.back.service.AdminService;
 import com.tpark.back.service.CourseService;
 import com.tpark.back.service.StudentService;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -152,6 +153,7 @@ public class CourseController {
      * @param id - id курса
      */
     @PostMapping("/changeAvatar")
+    @SneakyThrows(IOException.class)
     public ResponseEntity changeAva(@RequestParam("image") MultipartFile file,
                                     @RequestParam("id") int id,
                                     @ApiIgnore HttpSession session) {
@@ -159,12 +161,7 @@ public class CourseController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not Found");
         }
         String link;
-        try {
-            link = courseService.store(file, id);
-        } catch (IOException except) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    "Unexpected Error");
-        }
+        link = courseService.store(file, id);
         return ResponseEntity.status(HttpStatus.OK).body(link);
     }
 

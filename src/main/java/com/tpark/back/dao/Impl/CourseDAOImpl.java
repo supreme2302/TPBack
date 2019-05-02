@@ -67,9 +67,9 @@ public class CourseDAOImpl implements CourseDAO {
     @Override
     public void changeCourse(CourseDTO courseDTO, String admin){
         Integer school_id = schoolIDDAO.getSchoolId(admin);
-        final String sql = "UPDATE course SET course_name = ? WHERE id = ? AND school_id = ?;";
+        final String sql = "UPDATE course SET course_name = ?, description = ? WHERE id = ? AND school_id = ?;";
         courseDTO.setSchoolId(school_id);
-        jdbc.update(sql, courseDTO.getName(), courseDTO.getId(),school_id);
+        jdbc.update(sql, courseDTO.getName(), courseDTO.getDescription(), courseDTO.getId(), school_id);
     }
 
     @Override

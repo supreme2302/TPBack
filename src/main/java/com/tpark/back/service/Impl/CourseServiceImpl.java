@@ -70,5 +70,4 @@ public class CourseServiceImpl implements CourseService {
         courseDAO.savePicture(link, id);
         return link;
     }
-
 }

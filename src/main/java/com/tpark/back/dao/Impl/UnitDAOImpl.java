@@ -73,9 +73,9 @@ public class UnitDAOImpl implements UnitDAO {
     @Transactional
     public void createUnit(UnitDTO unitDTO, String email) {
         Integer schoolId = schoolIDDAO.getSchoolId(email);
-        String sql = "SELECT * FROM unit WHERE course_id = ? AND  school_id =? AND next_unit IS null;";
+        String sql = "SELECT * FROM unit WHERE course_id = ? AND  school_id = ? AND next_unit IS null;";
         try {
-            UnitDTO obj = jdbc.queryForObject(sql,unitMapper,unitDTO.getCourse_id(),schoolId);
+            UnitDTO obj = jdbc.queryForObject(sql, unitMapper, unitDTO.getCourse_id(), schoolId);
             sql = "INSERT INTO unit(unit_name, course_id, description,school_id,prev_unit) VALUES (?, ?, ?,?,?);";
             jdbc.update(sql, unitDTO.getUnit_name(), unitDTO.getCourse_id(),unitDTO.getDescription(), schoolId, obj.getId());
             sql = "SELECT * FROM unit WHERE unit_name = ? AND course_id=?";
