@@ -22,4 +22,6 @@ public interface GroupDAO {
     GroupDTO getGroupByStudent(Integer courseId, String student);
 
     Object getGroupForStudent(String student, Integer id);
+
+    void deleteGroupByCourseIdAndSchoolId(int courseId, int schoolId);
 }

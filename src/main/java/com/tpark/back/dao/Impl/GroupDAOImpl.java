@@ -13,6 +13,7 @@ import java.util.List;
 
 
 @Repository
+@Transactional
 public class GroupDAOImpl implements GroupDAO {
 
     private final JdbcTemplate jdbc;
@@ -37,12 +38,23 @@ public class GroupDAOImpl implements GroupDAO {
         Integer school_id = schoolIDDAO.getSchoolId(email);
         String sql ="SELECT school_id FROM group_course WHERE id = ?;";
         Integer Sid = jdbc.queryForObject(sql, ((resultSet, i) -> resultSet.getInt("school_id")) ,id);
-        if(Sid.equals(school_id)) {
+        if (Sid.equals(school_id)) {
             sql = "DELETE  FROM  student_group  WHERE group_id = ?;";
             jdbc.update(sql, id);
             sql = "DELETE FROM group_course WHERE id = ?;";
             jdbc.update(sql, id);
         }
+    }
+
+    @Override
+    public void deleteGroupByCourseIdAndSchoolId(int courseId, int schoolId) {
+        List<Integer> ids = jdbc.queryForList("SELECT id FROM group_course " +
+                "WHERE course_id = ? AND school_id = ? ", Integer.class, courseId, schoolId);
+        for (Integer id: ids) {
+            jdbc.update("DELETE FROM student_group WHERE id = ?", id);
+        }
+        jdbc.update("DELETE FROM group_course WHERE course_id = ? AND school_id = ?",
+                courseId, schoolId);
     }
 
     @Override

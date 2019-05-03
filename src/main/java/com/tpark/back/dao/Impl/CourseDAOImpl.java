@@ -1,6 +1,7 @@
 package com.tpark.back.dao.Impl;
 
 import com.tpark.back.dao.CourseDAO;
+import com.tpark.back.dao.GroupDAO;
 import com.tpark.back.mapper.CourseMapper;
 import com.tpark.back.model.dto.CourseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +19,19 @@ public class CourseDAOImpl implements CourseDAO {
     private final CourseMapper courseMapper;
     private final SchoolIDDAO schoolIDDAO;
     private final UnitDAOImpl unitDAO;
+    private final GroupDAO groupDAO;
 
     @Autowired
     public CourseDAOImpl(JdbcTemplate jdbc,
                          UnitDAOImpl unitDAO,
                          SchoolIDDAO schoolIDDAO,
-                         CourseMapper courseMapper) {
+                         CourseMapper courseMapper,
+                         GroupDAO groupDAO) {
         this.jdbc = jdbc;
         this.schoolIDDAO = schoolIDDAO;
         this.unitDAO = unitDAO;
         this.courseMapper = courseMapper;
+        this.groupDAO = groupDAO;
     }
 
     @Override
@@ -51,10 +55,8 @@ public class CourseDAOImpl implements CourseDAO {
     public void deleteCourse(int id, String email) {
         this.unitDAO.deleteUnitsByCourse(id, email);
         Integer school_id = schoolIDDAO.getSchoolId(email);
-        String sql = "DELETE FROM group_course WHERE school_id = ? AND course_id = ?;";
-        jdbc.update(sql,school_id, id);
-        sql = "DELETE FROM course WHERE id = ? AND school_id = ?;";
-        jdbc.update(sql,id, school_id);
+        groupDAO.deleteGroupByCourseIdAndSchoolId(id, school_id);
+        jdbc.update("DELETE FROM course WHERE id = ? AND school_id = ?", id, school_id);
     }
 
     @Override
