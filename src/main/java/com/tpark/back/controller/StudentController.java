@@ -53,7 +53,7 @@ public class StudentController {
                     .body(UserStatus.NOT_UNIQUE_FIELDS_IN_REQUEST);
         }
         studentDTO.setPassword(password);
-        studentService.sendMessageToUser(existingAdmin, studentDTO);
+        studentService.sendWelcomeMessageToUser(existingAdmin, studentDTO);
         studentDTO.setPassword(null);
         return ResponseEntity.status(HttpStatus.CREATED).body(studentDTO);
     }
@@ -72,17 +72,33 @@ public class StudentController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(UserStatus.ACCESS_ERROR);
         }
 
-        String password = RandomString.getRandomString();
-        studentDTO.setPassword(password);
         try {
-            studentService.changeStudent(studentDTO,adminSession.toString());
+            studentService.changeStudent(studentDTO, adminSession.toString());
         } catch (DuplicateKeyException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(UserStatus.NOT_UNIQUE_FIELDS_IN_REQUEST);
         }
-
-        studentDTO.setPassword(password);
         return ResponseEntity.status(HttpStatus.CREATED).body(studentDTO);
+    }
+
+    @PostMapping(path = "/reset")
+    public ResponseEntity resetPassword(@ApiIgnore HttpSession session,
+                                        @RequestBody StudentDTO studentDTO) {
+        Object adminSession = session.getAttribute("user");
+        if (adminSession == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UserStatus.ACCESS_ERROR);
+        }
+
+        AdminDTO existingAdmin = adminService.getAdminByEmail(adminSession.toString());
+
+        if (existingAdmin == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(UserStatus.ACCESS_ERROR);
+        }
+        String newPassword = RandomString.getRandomString();
+        studentDTO.setPassword(newPassword);
+        studentService.changePassword(studentDTO, adminSession.toString());
+        studentService.sendRestoreMessageToUser(studentDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(UserStatus.SUCCESSFULLY_CHANGED);
     }
 
     @PostMapping(path = "/delete")

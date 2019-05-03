@@ -34,7 +34,8 @@ public class StudentControllerTests {
     @Autowired
     private MockMvc mockMvc;
 
-    private Gson gson = new Gson();
+    @Autowired
+    private Gson gson;
 
     private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),

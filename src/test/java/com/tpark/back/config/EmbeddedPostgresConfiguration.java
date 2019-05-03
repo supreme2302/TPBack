@@ -1,5 +1,6 @@
 package com.tpark.back.config;
 
+import com.google.gson.Gson;
 import com.opentable.db.postgres.embedded.EmbeddedPostgres;
 import com.opentable.db.postgres.embedded.PgBinaryResolver;
 import lombok.SneakyThrows;
@@ -64,5 +65,10 @@ public class EmbeddedPostgresConfiguration {
     @DependsOn("flyway")
     public ExecuteTestScript testData(@Qualifier("embeddedDataSource") DataSource dataSource) {
         return new ExecuteTestScript(dataSource, new ClassPathResource("sql/insert-test-data.sql"));
+    }
+
+    @Bean
+    public Gson gson() {
+        return new Gson();
     }
 }

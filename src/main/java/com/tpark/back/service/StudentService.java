@@ -21,9 +21,13 @@ public interface StudentService {
 
     void deleteStudent(Integer id, String toString);
 
-    void changeStudent(StudentDTO studentDTO, String toString);
+    void changeStudent(StudentDTO studentDTO, String email);
 
     StudentWithGroupsDTO getStudentByEmailWithGroups(String email);
 
-    void sendMessageToUser(AdminDTO sender, StudentDTO receiver);
+    void sendWelcomeMessageToUser(AdminDTO sender, StudentDTO receiver);
+
+    void sendRestoreMessageToUser(StudentDTO receiver);
+
+    void changePassword(StudentDTO studentDTO, String adminEmail);
 }

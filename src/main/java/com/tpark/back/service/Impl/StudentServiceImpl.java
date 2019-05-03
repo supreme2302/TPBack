@@ -1,5 +1,6 @@
 package com.tpark.back.service.Impl;
 
+import com.tpark.back.dao.Impl.SchoolIDDAO;
 import com.tpark.back.dao.StudentDAO;
 import com.tpark.back.model.dto.AdminDTO;
 import com.tpark.back.model.dto.SchoolDTO;
@@ -20,17 +21,20 @@ public class StudentServiceImpl implements StudentService {
     private final StudentDAO studentDAO;
     private final PasswordEncoder passwordEncoder;
     private final SchoolService schoolService;
+    private final SchoolIDDAO schoolIDDAO;
     private final MailSender mailSender;
 
     @Autowired
     public StudentServiceImpl(StudentDAO studentDAO,
                               PasswordEncoder passwordEncoder,
                               SchoolService schoolService,
-                              MailSender mailSender) {
+                              MailSender mailSender,
+                              SchoolIDDAO schoolIDDAO) {
         this.studentDAO = studentDAO;
         this.passwordEncoder = passwordEncoder;
         this.schoolService = schoolService;
         this.mailSender = mailSender;
+        this.schoolIDDAO = schoolIDDAO;
     }
 
     @Override
@@ -71,8 +75,8 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public void changeStudent(StudentDTO studentDTO, String toString) {
-        studentDAO.changeStudent(studentDTO, toString);
+    public void changeStudent(StudentDTO studentDTO, String email) {
+        studentDAO.changeStudent(studentDTO, email);
     }
 
     @Override
@@ -81,7 +85,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public void sendMessageToUser(AdminDTO sender, StudentDTO receiver) {
+    public void sendWelcomeMessageToUser(AdminDTO sender, StudentDTO receiver) {
         SchoolDTO school = schoolService.getSchoolByAdmin(sender.getEmail());
         String message = String.format(
                 "Hello, %s! \n" +
@@ -92,5 +96,22 @@ public class StudentServiceImpl implements StudentService {
                 receiver.getPassword()
         );
         mailSender.send(receiver.getEmail(), "Welcome to " + school.getName(), message);
+    }
+
+    @Override
+    public void sendRestoreMessageToUser(StudentDTO receiver) {
+        String message = String.format(
+                "Your password has been reset.\n" +
+                        "Your new password: %s",
+                receiver.getPassword()
+        );
+        mailSender.send(receiver.getEmail(), "Password recovery", message);
+    }
+
+    @Override
+    public void changePassword(StudentDTO studentDTO, String adminEmail) {
+        Integer school_id = schoolIDDAO.getSchoolId(adminEmail);
+        studentDTO.setSchool_id(school_id);
+        studentDAO.changePassword(studentDTO);
     }
 }

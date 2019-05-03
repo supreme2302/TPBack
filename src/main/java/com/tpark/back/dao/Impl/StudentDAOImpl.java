@@ -125,17 +125,16 @@ public class StudentDAOImpl implements StudentDAO {
     }
 
     @Override
-    public void changeStudent(StudentDTO studentDTO, String admin) {
-        Integer school_id = schoolIDDAO.getSchoolId(admin);
-        String sql = "UPDATE student SET email=?, first_name=?, last_name=?, password=? WHERE id = ? AND school_id = ?";
+    public void changeStudent(StudentDTO studentDTO, String adminEmail) {
+        Integer school_id = schoolIDDAO.getSchoolId(adminEmail);
+        String sql = "UPDATE student SET email = ?, first_name = ?, last_name = ? WHERE id = ? AND school_id = ?";
         studentDTO.setSchool_id(school_id);
-        jdbc.update(sql, studentDTO.getEmail(), studentDTO.getName(), studentDTO.getSurname(),
-                studentDTO.getPassword(),studentDTO.getId(), school_id);
+        jdbc.update(sql, studentDTO.getEmail(), studentDTO.getName(), studentDTO.getSurname(),studentDTO.getId(), school_id);
         sql = "DELETE FROM student_group WHERE student_id = ?;";
-        jdbc.update(sql,studentDTO.getId());
+        jdbc.update(sql, studentDTO.getId());
         int i = 0;
-        sql = "INSERT INTO student_group(group_id, student_id) VALUES (?,?);";
-        while ( i < studentDTO.getGroup_id().size()){
+        sql = "INSERT INTO student_group(group_id, student_id) VALUES (?, ?);";
+        while ( i < studentDTO.getGroup_id().size()) {
             jdbc.update(sql, studentDTO.getGroup_id().get(i), studentDTO.getId());
             i++;
         }
@@ -155,6 +154,12 @@ public class StudentDAOImpl implements StudentDAO {
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
+    }
+
+    @Override
+    public void changePassword(StudentDTO studentDTO) {
+        final String sql = "UPDATE student SET password = ? WHERE id = ? AND school_id = ?";
+        jdbc.update(sql, studentDTO.getPassword(), studentDTO.getId(), studentDTO.getSchool_id());
     }
 
     @Override

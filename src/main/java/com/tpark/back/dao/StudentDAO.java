@@ -19,7 +19,9 @@ public interface StudentDAO {
 
     void deleteStudent(Integer id, String admin);
 
-    void changeStudent(StudentDTO studentDTO, String toString);
+    void changeStudent(StudentDTO studentDTO, String email);
 
     StudentWithGroupsDTO getStudentByEmailWithGroups(String email);
+
+    void changePassword(StudentDTO studentDTO);
 }
