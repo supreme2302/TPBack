@@ -66,8 +66,8 @@ public class AdminDAOImpl implements AdminDAO {
     @Override
     public List<AdminDTO> getSchoolAdmins(AdminDTO user) {
         try {
-            final String SQL = "SELECT * FROM admin WHERE school_id = ?;";
-            return jdbc.query(SQL, adminMapper, user.getSchoolId());
+            final String SQL = "SELECT * FROM admin JOIN school ON school_id = ? AND admin.id<>school.ownerid AND school.id = ?;";
+            return jdbc.query(SQL, adminMapper, user.getSchoolId(), user.getSchoolId());
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
