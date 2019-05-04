@@ -47,8 +47,9 @@ public class SchoolController {
 
         try {
             if (session.getAttribute("user") != null) {
+                SchoolDTO res = schoolService.getSchoolByAdmin(session.getAttribute("user").toString());
                 return ResponseEntity.status(HttpStatus.OK)
-                        .body(schoolService.getSchoolByAdmin(session.getAttribute("user").toString()));
+                            .body(res);
             } else {
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(schoolService.getSchoolByStudent(session.getAttribute("student").toString()));
@@ -65,7 +66,9 @@ public class SchoolController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
         }
-        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null){
+        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null ||
+                adminService.getAdminByEmail(session.getAttribute("user").toString()).getId()!=
+                        schoolService.getSchoolByAdmin(session.getAttribute("user").toString()).getAdmin()){
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(UserStatus.ACCESS_ERROR);
         }
@@ -81,11 +84,13 @@ public class SchoolController {
 
     @PostMapping(path = "/makeapp")
     public ResponseEntity makeapp(@ApiIgnore HttpSession session) {
-        if (session.getAttribute("user") == null) {
+        if (session.getAttribute("user") == null ) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
         }
-        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null){
+        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null ||
+                adminService.getAdminByEmail(session.getAttribute("user").toString()).getId()!=
+                        schoolService.getSchoolByAdmin(session.getAttribute("user").toString()).getAdmin()){
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(UserStatus.ACCESS_ERROR);
         }

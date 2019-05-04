@@ -52,6 +52,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public void addNewAdmin(String toString, AdminDTO adminDTO) {
+        adminDTO.setPassword(passwordEncoder.encode(adminDTO.getPassword()));
         adminDAO.addNewAdmin(toString, adminDTO);
     }
 

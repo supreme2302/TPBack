@@ -4,6 +4,7 @@ import com.tpark.back.model.dto.ChangePasswordDTO;
 import com.tpark.back.model.dto.AdminDTO;
 import com.tpark.back.model.UserStatus;
 import com.tpark.back.service.AdminService;
+import com.tpark.back.service.SchoolService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +23,13 @@ import javax.servlet.http.HttpSession;
 public class AdminController {
 
     private final AdminService adminService;
+    private final SchoolService schoolService;
     private final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
     @Autowired
-    public AdminController(AdminService adminService) {
+    public AdminController(AdminService adminService, SchoolService schoolService) {
         this.adminService = adminService;
+        this.schoolService = schoolService;
     }
 
     @GetMapping(path = "/info")
@@ -58,7 +61,7 @@ public class AdminController {
         logger.info("info session - ", session.getId());
 
         Object sessionAttribute = session.getAttribute("user");
-        if (sessionAttribute == null) {
+        if (sessionAttribute == null ) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
         }
@@ -67,7 +70,8 @@ public class AdminController {
 
         AdminDTO user = adminService.getAdminByEmail(email);
 
-        if (user == null) {
+        if (user == null ||
+                schoolService.getSchoolByAdmin(sessionAttribute.toString()).getAdmin()!=user.getId()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(UserStatus.NOT_FOUND);
         } else {
@@ -158,7 +162,9 @@ public class AdminController {
                                  @RequestBody AdminDTO adminDTO) {
 
         Object userSession = httpSession.getAttribute("user");
-        if (userSession == null) {
+        if (userSession == null ||
+                adminService.getAdminByEmail(httpSession.getAttribute("user").toString()).getId()!=
+                        schoolService.getSchoolByAdmin(httpSession.getAttribute("user").toString()).getAdmin()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(UserStatus.ACCESS_ERROR);
         }
