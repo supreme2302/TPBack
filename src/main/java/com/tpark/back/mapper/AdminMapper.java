@@ -12,6 +12,7 @@ public class AdminMapper implements RowMapper<AdminDTO> {
     @Override
     public AdminDTO mapRow(ResultSet resultSet, int i) throws SQLException {
         AdminDTO adminDTO = new AdminDTO();
+        adminDTO.setSchoolId(resultSet.getInt("school_id"));
         adminDTO.setEmail(resultSet.getString("email"));
         adminDTO.setPassword(resultSet.getString("password"));
         adminDTO.setId(resultSet.getInt("id"));

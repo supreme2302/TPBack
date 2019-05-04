@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 @Repository
 public class AdminDAOImpl implements AdminDAO {
@@ -60,6 +61,16 @@ public class AdminDAOImpl implements AdminDAO {
             return null;
         }
 
+    }
+
+    @Override
+    public List<AdminDTO> getSchoolAdmins(AdminDTO user) {
+        try {
+            final String SQL = "SELECT * FROM admin WHERE school_id = ?;";
+            return jdbc.query(SQL, adminMapper, user.getSchoolId());
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     public void changePassword(String email, String password) {

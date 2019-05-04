@@ -2,6 +2,8 @@ package com.tpark.back.dao;
 
 import com.tpark.back.model.dto.AdminDTO;
 
+import java.util.List;
+
 public interface AdminDAO {
     AdminDTO getAdminByEmail(String email);
 
@@ -12,4 +14,6 @@ public interface AdminDAO {
     void changePassword(String email, String encode);
 
     Integer getAdminIdByEmail(String email);
+
+    List<AdminDTO> getSchoolAdmins(AdminDTO user);
 }

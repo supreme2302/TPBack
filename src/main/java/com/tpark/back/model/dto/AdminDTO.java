@@ -10,6 +10,7 @@ public class AdminDTO {
     private String email;
     private String password;
     private String schoolName;
+    private Integer schoolId;
 
     public AdminDTO() {}
 
@@ -18,11 +19,13 @@ public class AdminDTO {
             @JsonProperty("id") int id,
             @JsonProperty("email") String email,
             @JsonProperty("password") String password,
-            @JsonProperty("schoolName") String schoolName) {
+            @JsonProperty("schoolName") String schoolName,
+            @JsonProperty("schoolId") Integer schoolId) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.schoolName = schoolName;
+        this.schoolId = schoolId;
     }
 
     public int getId() {
@@ -56,5 +59,13 @@ public class AdminDTO {
 
     public void setSchoolName(String schoolName) {
         this.schoolName = schoolName;
+    }
+
+    public Integer getSchoolId() {
+        return schoolId;
+    }
+
+    public void setSchoolId(Integer schoolId) {
+        this.schoolId = schoolId;
     }
 }

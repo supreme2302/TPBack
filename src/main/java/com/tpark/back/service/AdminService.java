@@ -2,6 +2,8 @@ package com.tpark.back.service;
 
 import com.tpark.back.model.dto.AdminDTO;
 
+import java.util.List;
+
 public interface AdminService {
 
     AdminDTO getAdminByEmail(String email);
@@ -13,4 +15,6 @@ public interface AdminService {
     void changeAdminPassword(String email, String password);
 
     void addNewAdmin(String toString, AdminDTO adminDTO);
+
+    List<AdminDTO> getSchoolAdmins(AdminDTO user);
 }

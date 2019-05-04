@@ -52,6 +52,29 @@ public class AdminController {
         }
     }
 
+    @GetMapping(path = "/all")
+    public ResponseEntity getAllAdmins(@ApiIgnore HttpSession session) {
+
+        logger.info("info session - ", session.getId());
+
+        Object sessionAttribute = session.getAttribute("user");
+        if (sessionAttribute == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(UserStatus.ACCESS_ERROR);
+        }
+
+        String email = sessionAttribute.toString();
+
+        AdminDTO user = adminService.getAdminByEmail(email);
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(UserStatus.NOT_FOUND);
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(adminService.getSchoolAdmins(user));
+        }
+    }
+
     @PostMapping(path = "/register")
     public ResponseEntity register(@ApiIgnore HttpSession session, @RequestBody AdminDTO user) {
 

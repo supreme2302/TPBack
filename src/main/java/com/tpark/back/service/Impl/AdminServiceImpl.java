@@ -9,6 +9,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class AdminServiceImpl implements AdminService {
 
@@ -51,5 +53,10 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void addNewAdmin(String toString, AdminDTO adminDTO) {
         adminDAO.addNewAdmin(toString, adminDTO);
+    }
+
+    @Override
+    public List<AdminDTO> getSchoolAdmins(AdminDTO user) {
+        return adminDAO.getSchoolAdmins(user);
     }
 }
