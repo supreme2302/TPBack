@@ -2,10 +2,12 @@ package com.tpark.back.service;
 
 import com.tpark.back.model.dto.UnitDTO;
 
-public interface UnitService {
-    Object getUnitsByCourse(Integer courseId, String email) ;
+import java.util.List;
 
-    Object getUnit(Integer groupId, String email) ;
+public interface UnitService {
+    List<UnitDTO> getUnitsByCourse(Integer courseId, String email) ;
+
+    UnitDTO getUnit(Integer groupId, String email) ;
 
     void createUnit(UnitDTO unitDTO, String email) ;
 
@@ -13,9 +15,9 @@ public interface UnitService {
 
     void deleteUnit(int id, String email) ;
 
-    Object getUnitForStudent(Integer unitId, String student);
+    UnitDTO getUnitForStudent(Integer unitId, String student);
 
-    Object getUnitsByCourseForStudent(Integer courseId, String student);
+    List<UnitDTO> getUnitsByCourseForStudent(Integer courseId, String student);
 
     Object getAllUnits(String user);
 
