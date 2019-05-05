@@ -190,6 +190,23 @@ public class UnitDAOImpl implements UnitDAO {
         return sort(jdbc.query(sql, unitMapper, student, courseId));
     }
 
+    @Override
+    public Object getUnits(String user) {
+        Integer schoolId = schoolIDDAO.getSchoolId(user);
+        final String sql = "SELECT * FROM unit WHERE school_id = ?;";
+        return sort(jdbc.query(sql, unitMapper, schoolId));
+    }
+
+    @Override
+    public Object getUnitsForStudent(String student) {
+        final String sql = "SELECT * FROM unit JOIN" +
+                "((SELECT email, group_id FROM student JOIN student_group sg " +
+                "on student.id = sg.student_id AND student.email = ?)" +
+                " AS rg JOIN group_course ON group_course.id = rg.group_id) " +
+                "AS g ON g.course_id = unit.course_id ;";
+        return sort(jdbc.query(sql, unitMapper, student ));
+    }
+
 //    private static final class IntMapper implements RowMapper<Integer> {
 //        @Override
 //        public Integer mapRow(ResultSet resultSet, int i) throws SQLException {

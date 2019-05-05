@@ -18,4 +18,8 @@ public interface UnitDAO {
     UnitDTO getUnitForStudent(Integer unitId, String student);
 
     List<UnitDTO> getUnitByCourseForStudent(Integer courseId, String student);
+
+    Object getUnits(String user);
+
+    Object getUnitsForStudent(String student);
 }

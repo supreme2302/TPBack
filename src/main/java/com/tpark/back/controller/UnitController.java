@@ -34,6 +34,24 @@ public class UnitController {
         this.studentService = studentService;
     }
 
+    @GetMapping(path = "/all")
+    public ResponseEntity getUnitsByCourse(@ApiIgnore HttpSession session) {
+        if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {
+            if(session.getAttribute("student") == null || studentService.getStudentByEmailWithoutGroupId(session.getAttribute("student").toString()) == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(UserStatus.ACCESS_ERROR);
+            }
+        }
+        if (session.getAttribute("user") != null) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(unitService.getAllUnits(session.getAttribute("user").toString()));
+        } else {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(unitService.getAllUnitsForStudent(session.getAttribute("student").toString()));
+        }
+
+    }
+
     @GetMapping(path = "/{courseId}")
     public ResponseEntity getUnitsByCourse(@ApiIgnore HttpSession session, @PathVariable Integer courseId) {
         if (session.getAttribute("user") == null || adminService.getAdminByEmail(session.getAttribute("user").toString()) == null) {

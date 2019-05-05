@@ -16,4 +16,8 @@ public interface UnitService {
     Object getUnitForStudent(Integer unitId, String student);
 
     Object getUnitsByCourseForStudent(Integer courseId, String student);
+
+    Object getAllUnits(String user);
+
+    Object getAllUnitsForStudent(String student);
 }

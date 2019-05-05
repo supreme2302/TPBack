@@ -53,5 +53,15 @@ public class UnitServiceImpl implements UnitService {
         return unitDAO.getUnitByCourseForStudent(courseId, student);
     }
 
+    @Override
+    public Object getAllUnits(String user) {
+        return unitDAO.getUnits( user);
+    }
+
+    @Override
+    public Object getAllUnitsForStudent(String student) {
+        return unitDAO.getUnitsForStudent(student);
+    }
+
 
 }
