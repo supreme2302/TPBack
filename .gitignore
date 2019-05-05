@@ -31,6 +31,4 @@ HELP.md
 
 /src/main/resources/test.sql
 
-/src/main/resources/application.properties
-
-/uploads/
+#/src/main/resources/application.properties
