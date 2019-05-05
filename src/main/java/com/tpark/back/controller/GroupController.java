@@ -4,6 +4,7 @@ package com.tpark.back.controller;
 import com.tpark.back.model.dto.AdminDTO;
 import com.tpark.back.model.dto.GroupDTO;
 import com.tpark.back.model.UserStatus;
+import com.tpark.back.model.dto.IdDTO;
 import com.tpark.back.model.dto.StudentDTO;
 import com.tpark.back.service.AdminService;
 import com.tpark.back.service.GroupService;
@@ -164,7 +165,7 @@ public class GroupController {
     }
 
     @PostMapping(path = "/delete")
-    public ResponseEntity delete(@ApiIgnore HttpSession session, @RequestBody int id) {
+    public ResponseEntity delete(@ApiIgnore HttpSession session, @RequestBody IdDTO idDTO) {
         if (session.getAttribute("user") == null && session.getAttribute("student") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
@@ -174,7 +175,7 @@ public class GroupController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            groupService.deleteGroup(id ,session.getAttribute("user").toString());
+            groupService.deleteGroup(idDTO.getId() ,session.getAttribute("user").toString());
             return ResponseEntity.status(HttpStatus.OK)
                     .body(UserStatus.SUCCESSFULLY_DELETED);
         } catch (DuplicateKeyException e) {
