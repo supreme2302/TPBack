@@ -98,10 +98,11 @@ public class StudentDAOImpl implements StudentDAO {
     @Override
     @Transactional
     public List<StudentDTO> getAllStudents(String admin) {
+        Integer school_id = schoolIDDAO.getSchoolId(admin);
         String sql = "SELECT student.id, student.email, first_name, last_name, student.password, student.school_id " +
-                "FROM student JOIN admin ON admin.email = ? AND admin.school_id = student.school_id";
+                "FROM student WHERE student.school_id=?";
         try {
-            List<StudentDTO> studentDTOS =  jdbc.query(sql, studentMapper, admin);
+            List<StudentDTO> studentDTOS =  jdbc.query(sql, studentMapper, school_id);
             sql = "SELECT * FROM student_group WHERE student_id = ?;";
             int i = 0;
             while (i< studentDTOS.size()){
