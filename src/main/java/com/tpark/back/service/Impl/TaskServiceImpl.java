@@ -39,7 +39,14 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @SneakyThrows(JsonProcessingException.class)
     public void changeTask(String admin , TaskDTO taskDTO) {
+        String task = objectMapper.writeValueAsString(taskDTO.getDataT1());
+        taskDTO.setDataT1(task);
+        task = objectMapper.writeValueAsString(taskDTO.getDataT2());
+        taskDTO.setDataT2(task);
+        task = objectMapper.writeValueAsString(taskDTO.getDataT3());
+        taskDTO.setDataT3(task);
         taskDAO.changeTask(admin , taskDTO);
     }
 

@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Repository
+@Transactional
 public class TaskDAOImpl implements TaskDAO {
 
     private final JdbcTemplate jdbc;
@@ -45,12 +46,12 @@ public class TaskDAOImpl implements TaskDAO {
     public void changeTask(String admin , TaskDTO taskDTO) {
 
         Integer school_id = schoolIDDAO.getSchoolId(admin);
-        String sql = "UPDATE task SET name = ?, task_val = ?, task_val2 = ?, task_val3 = ?, task_type=? WHERE id = ? AND school_id=?;";
-        jdbc.update(sql, taskDTO.getName(), taskDTO.getDataT1(), taskDTO.getDataT2(), taskDTO.getDataT3(), taskDTO.getTask_type(), taskDTO.getId(),school_id);
+        String sql = "UPDATE task SET task_val = ?::jsonb, task_val2 = ?::jsonb, task_val3 = ?::jsonb WHERE id = ? AND school_id = ?;";
+        jdbc.update(sql, taskDTO.getDataT1(), taskDTO.getDataT2(), taskDTO.getDataT3(), taskDTO.getId(),school_id);
         sql = "DELETE FROM task_unit WHERE task_id = ?";
         jdbc.update(sql,taskDTO.getId());
         int i = 0;
-        while (i<taskDTO.getUnit_id().size()){
+        while (i < taskDTO.getUnit_id().size()) {
             sql = "INSERT INTO task_unit (task_id, unit_id) VALUES (?,?);";
             jdbc.update(sql,taskDTO.getId(),taskDTO.getUnit_id().get(i));
             i++;
@@ -64,7 +65,7 @@ public class TaskDAOImpl implements TaskDAO {
         Integer id = 0;
         String sql = "";
         if(taskDTO.getDataT1()!=null) {
-            sql = "INSERT INTO task (name, task_val, task_type,school_id) VALUES (?, ?::jsonb, ?, ?) RETURNING id";
+            sql = "INSERT INTO task (name, task_val, task_type, school_id) VALUES (?, ?::jsonb, ?, ?) RETURNING id";
             id = jdbc.queryForObject(sql, Integer.class, taskDTO.getName(), taskDTO.getDataT1(), taskDTO.getTask_type(), school_id);
         }else {
             if(taskDTO.getDataT2()!=null) {
@@ -77,8 +78,6 @@ public class TaskDAOImpl implements TaskDAO {
 
             }
         }
-        //        sql = "SELECT * FROM task WHERE name = ? AND school_id=?";
-//        TaskDTO created = jdbc.queryForObject(sql, taskMapper, taskDTO.getName(), school_id);
         int i = 0;
         while (i < taskDTO.getUnit_id().size()) {
             sql = "INSERT INTO task_unit (task_id, unit_id) VALUES (?, ?);";
@@ -90,9 +89,14 @@ public class TaskDAOImpl implements TaskDAO {
 
     @Override
     public TaskDTO getTask(String admin , Integer taskId) {
-        Integer school_id = schoolIDDAO.getSchoolId(admin);
-        final String sql = "SELECT * FROM task WHERE id = ?  and school_id = ? LIMIT 1;";
-        return jdbc.queryForObject(sql, taskMapper, taskId, school_id);
+        TaskDTO taskDTO = jdbc.queryForObject("SELECT * FROM task WHERE id = ?",
+                taskMapper, taskId);
+        List<Integer> unitIds = jdbc.queryForList("SELECT unit_id FROM task_unit WHERE task_id = ?",
+                Integer.class, taskId);
+        if (taskDTO != null) {
+            taskDTO.setUnit_id(unitIds);
+        }
+        return taskDTO;
     }
 
     @Override
