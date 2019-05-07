@@ -3,6 +3,7 @@ package com.tpark.back.controller;
 import com.tpark.back.model.dto.ChangePasswordDTO;
 import com.tpark.back.model.dto.AdminDTO;
 import com.tpark.back.model.UserStatus;
+import com.tpark.back.model.dto.IdDTO;
 import com.tpark.back.service.AdminService;
 import com.tpark.back.service.SchoolService;
 import org.slf4j.Logger;
@@ -154,6 +155,33 @@ public class AdminController {
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(UserStatus.WRONG_CREDENTIALS);
+    }
+
+
+    @PostMapping(path = "/delete")
+    public ResponseEntity delete(@ApiIgnore HttpSession httpSession,
+                                 @RequestBody IdDTO idDTO) {
+
+        Object userSession = httpSession.getAttribute("user");
+        if (userSession == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(UserStatus.ACCESS_ERROR);
+        }
+
+        AdminDTO userFromDb = adminService.getAdminByEmail(userSession.toString());
+        if(schoolService.getSchoolByAdmin(userFromDb.getEmail()).getAdmin() == userFromDb.getId()){
+            try {
+                adminService.deleteAdmin(idDTO, userFromDb);
+                return ResponseEntity.ok(UserStatus.SUCCESSFULLY_CHANGED);
+            } catch (NullPointerException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(UserStatus.WRONG_CREDENTIALS);
+            }
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(UserStatus.ACCESS_ERROR);
+        }
     }
 
 

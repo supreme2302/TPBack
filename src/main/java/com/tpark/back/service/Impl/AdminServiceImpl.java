@@ -2,6 +2,7 @@ package com.tpark.back.service.Impl;
 
 import com.tpark.back.dao.AdminDAO;
 import com.tpark.back.model.dto.AdminDTO;
+import com.tpark.back.model.dto.IdDTO;
 import com.tpark.back.service.AdminService;
 import com.tpark.back.service.SchoolService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,5 +60,10 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public List<AdminDTO> getSchoolAdmins(AdminDTO user) {
         return adminDAO.getSchoolAdmins(user);
+    }
+
+    @Override
+    public void deleteAdmin(IdDTO idDTO, AdminDTO userFromDb) {
+        adminDAO.deleteAdmin(idDTO, userFromDb);
     }
 }

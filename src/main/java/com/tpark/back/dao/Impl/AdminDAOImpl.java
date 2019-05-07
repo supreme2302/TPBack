@@ -1,7 +1,10 @@
 package com.tpark.back.dao.Impl;
 import com.tpark.back.dao.AdminDAO;
+import com.tpark.back.dao.SchoolDAO;
 import com.tpark.back.mapper.AdminMapper;
 import com.tpark.back.model.dto.AdminDTO;
+import com.tpark.back.model.dto.IdDTO;
+import com.tpark.back.model.dto.SchoolDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,14 +22,17 @@ public class AdminDAOImpl implements AdminDAO {
 
     private final AdminMapper adminMapper;
     private final SchoolIDDAO schoolIDDAO;
+    private final SchoolDAO schoolDAO;
 
     @Autowired
     public AdminDAOImpl(JdbcTemplate jdbc,
                         SchoolIDDAO schoolIDDAO,
+                        SchoolDAO schoolDAO,
                         AdminMapper adminMapper) {
         this.jdbc = jdbc;
         this.schoolIDDAO = schoolIDDAO;
         this.adminMapper = adminMapper;
+        this.schoolDAO = schoolDAO;
     }
 
     @Override
@@ -71,6 +77,12 @@ public class AdminDAOImpl implements AdminDAO {
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
+    }
+
+    @Override
+    public void deleteAdmin(IdDTO idDTO, AdminDTO userFromDb) {
+        final String SQL = "DELETE FROM ADMIN WHERE id = ? AND school_id=?;";
+        jdbc.update(SQL, idDTO.getId(), userFromDb.getSchoolId());
     }
 
     public void changePassword(String email, String password) {
