@@ -64,11 +64,11 @@ public class TaskDAOImpl implements TaskDAO {
         Integer school_id = schoolIDDAO.getSchoolId(admin);
         Integer id = 0;
         String sql = "";
-        if(taskDTO.getDataT1()!=null) {
+        if (taskDTO.getDataT1() != null ) {
             sql = "INSERT INTO task (name, task_val, task_type, school_id) VALUES (?, ?::jsonb, ?, ?) RETURNING id";
             id = jdbc.queryForObject(sql, Integer.class, taskDTO.getName(), taskDTO.getDataT1(), taskDTO.getTask_type(), school_id);
-        }else {
-            if(taskDTO.getDataT2()!=null) {
+        } else {
+            if (taskDTO.getDataT2() != null) {
                 sql = "INSERT INTO task (name, task_val2, task_type,school_id) VALUES (?, ?::jsonb, ?, ?) RETURNING id";
                 id = jdbc.queryForObject(sql, Integer.class, taskDTO.getName(), taskDTO.getDataT2(), taskDTO.getTask_type(), school_id);
             }

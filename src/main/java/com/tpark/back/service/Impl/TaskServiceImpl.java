@@ -41,24 +41,14 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @SneakyThrows(JsonProcessingException.class)
     public void changeTask(String admin , TaskDTO taskDTO) {
-        String task = objectMapper.writeValueAsString(taskDTO.getDataT1());
-        taskDTO.setDataT1(task);
-        task = objectMapper.writeValueAsString(taskDTO.getDataT2());
-        taskDTO.setDataT2(task);
-        task = objectMapper.writeValueAsString(taskDTO.getDataT3());
-        taskDTO.setDataT3(task);
+        checkAndSetDataToTask(taskDTO);
         taskDAO.changeTask(admin , taskDTO);
     }
 
     @Override
     @SneakyThrows(JsonProcessingException.class)
     public void createTask(String admin , TaskDTO taskDTO) {
-        String task = objectMapper.writeValueAsString(taskDTO.getDataT1());
-        taskDTO.setDataT1(task);
-        task = objectMapper.writeValueAsString(taskDTO.getDataT2());
-        taskDTO.setDataT2(task);
-        task = objectMapper.writeValueAsString(taskDTO.getDataT3());
-        taskDTO.setDataT3(task);
+        checkAndSetDataToTask(taskDTO);
         taskDAO.createTask(admin , taskDTO);
     }
 
@@ -91,5 +81,19 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void addTaskToUnit(String user, TaskUnitDTO task) {
         taskDAO.addTaskToUnit( user, task);
+    }
+
+    private void checkAndSetDataToTask(TaskDTO taskDTO) throws JsonProcessingException {
+        switch (taskDTO.getTask_type()) {
+            case 1:
+                taskDTO.setDataT1(objectMapper.writeValueAsString(taskDTO.getDataT1()));
+                break;
+            case 2:
+                taskDTO.setDataT2(objectMapper.writeValueAsString(taskDTO.getDataT2()));
+                break;
+            case 3:
+                taskDTO.setDataT3(objectMapper.writeValueAsString(taskDTO.getDataT3()));
+                break;
+        }
     }
 }

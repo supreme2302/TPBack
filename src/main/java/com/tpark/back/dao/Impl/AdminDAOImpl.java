@@ -81,7 +81,7 @@ public class AdminDAOImpl implements AdminDAO {
 
     @Override
     public void deleteAdmin(IdDTO idDTO, AdminDTO userFromDb) {
-        final String SQL = "DELETE FROM ADMIN WHERE id = ? AND school_id=?;";
+        final String SQL = "DELETE FROM ADMIN WHERE id = ? AND school_id = ?;";
         jdbc.update(SQL, idDTO.getId(), userFromDb.getSchoolId());
     }
 

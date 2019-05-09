@@ -169,7 +169,7 @@ public class AdminController {
         }
 
         AdminDTO userFromDb = adminService.getAdminByEmail(userSession.toString());
-        if(schoolService.getSchoolByAdmin(userFromDb.getEmail()).getAdmin() == userFromDb.getId()){
+        if (schoolService.getSchoolByAdmin(userFromDb.getEmail()).getAdmin() == userFromDb.getId()) {
             try {
                 adminService.deleteAdmin(idDTO, userFromDb);
                 return ResponseEntity.ok(UserStatus.SUCCESSFULLY_CHANGED);
