@@ -69,6 +69,12 @@ public class SchoolDAOImpl implements SchoolDAO {
         logger.info("createSchool -  created");
     }
 
+    @Override
+    public void savePicture(String link, int id) {
+        String sql = "UPDATE school SET image_link = ? WHERE id = ?";
+        jdbc.update(sql, link, id);
+    }
+
     private final static class AdminIDMapper implements RowMapper<Integer> {
         @Override
         public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {

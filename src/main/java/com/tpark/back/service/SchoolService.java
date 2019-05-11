@@ -2,6 +2,7 @@ package com.tpark.back.service;
 
 import com.tpark.back.model.dto.SchoolDTO;
 import com.tpark.back.model.dto.StudentDTO;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.concurrent.Future;
@@ -18,4 +19,6 @@ public interface SchoolService {
     void makeApp(SchoolDTO schoolDTO) throws IOException;
 
     void sendMessageToUser(SchoolDTO schoolDTO, String receiver);
+
+    String store(MultipartFile file, int id) throws IOException;
 }

@@ -8,12 +8,14 @@ import com.tpark.back.model.dto.StudentDTO;
 import com.tpark.back.model.exception.NotFoundException;
 import com.tpark.back.service.MailSender;
 import com.tpark.back.service.SchoolService;
+import com.tpark.back.util.RandomString;
 import io.swagger.models.auth.In;
 import lombok.ToString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,6 +23,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.concurrent.Future;
+
+import static com.tpark.back.model.Resourses.PATH_SCHOOL_AVATARS_FOLDER;
 
 @Service
 public class SchoolServiceImpl implements SchoolService {
@@ -83,5 +87,14 @@ public class SchoolServiceImpl implements SchoolService {
         System.out.println("email " + email);
         mailSender.send(email, "Welcome to " + schoolDTO.getName(), message);
 //        return message;
+    }
+
+    @Override
+    public String store(MultipartFile file, int id) throws IOException {
+        String link = String.valueOf(id) + "." + RandomString.getRandomString() + ".jpg";
+        File tosave = new File(PATH_SCHOOL_AVATARS_FOLDER + link);
+        file.transferTo(tosave);
+        schoolDAO.savePicture(link, id);
+        return link;
     }
 }

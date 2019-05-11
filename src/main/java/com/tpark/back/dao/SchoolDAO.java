@@ -10,4 +10,6 @@ public interface SchoolDAO {
     SchoolDTO getSchoolByStudent(String student);
 
     void changeSchool(SchoolDTO school, String user);
+
+    void savePicture(String link, int id);
 }

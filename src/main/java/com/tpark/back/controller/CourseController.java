@@ -165,6 +165,7 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.OK).body(link);
     }
 
+    @SuppressWarnings("Duplicates")
     @GetMapping(path = "/image/{imageName}")
     public ResponseEntity getImageByEmail(@PathVariable("imageName") String imageName) throws IOException {
         BufferedImage file;
