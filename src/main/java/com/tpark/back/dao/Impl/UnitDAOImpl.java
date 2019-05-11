@@ -155,8 +155,7 @@ public class UnitDAOImpl implements UnitDAO {
     }
 
     @Transactional
-    public void deleteUnitsByCourse(int id, String email) {
-        Integer schoolId = schoolIDDAO.getSchoolId(email);
+    public void deleteUnitsByCourse(int id, String email, int schoolId) {
         String sql = "SELECT * FROM unit WHERE course_id = ? AND school_id = ?;";
         List<UnitDomain> lst = jdbc.query(sql, unitMapper, id, schoolId);
         for (UnitDomain aLst : lst) {

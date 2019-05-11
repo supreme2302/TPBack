@@ -53,9 +53,9 @@ public class CourseDAOImpl implements CourseDAO {
 
     @Override
     public void deleteCourse(int id, String email) {
-        this.unitDAO.deleteUnitsByCourse(id, email);
         Integer school_id = schoolIDDAO.getSchoolId(email);
         groupDAO.deleteGroupByCourseIdAndSchoolId(id, school_id);
+        this.unitDAO.deleteUnitsByCourse(id, email, school_id);
         jdbc.update("DELETE FROM course WHERE id = ? AND school_id = ?", id, school_id);
     }
 
