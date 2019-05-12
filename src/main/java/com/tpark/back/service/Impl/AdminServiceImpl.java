@@ -3,9 +3,12 @@ package com.tpark.back.service.Impl;
 import com.tpark.back.dao.AdminDAO;
 import com.tpark.back.model.dto.AdminDTO;
 import com.tpark.back.model.dto.IdDTO;
+import com.tpark.back.model.dto.SchoolDTO;
 import com.tpark.back.service.AdminService;
+import com.tpark.back.service.MailSender;
 import com.tpark.back.service.SchoolService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,13 +21,15 @@ public class AdminServiceImpl implements AdminService {
     private final AdminDAO adminDAO;
     private final PasswordEncoder passwordEncoder;
     private final SchoolService schoolService;
+    private final MailSender mailSender;
 
     @Autowired
     public AdminServiceImpl(AdminDAO adminDAO, PasswordEncoder passwordEncoder,
-                            SchoolService schoolService) {
+                            SchoolService schoolService, MailSender mailSender) {
         this.adminDAO = adminDAO;
         this.passwordEncoder = passwordEncoder;
         this.schoolService = schoolService;
+        this.mailSender = mailSender;
     }
 
     @Override
@@ -65,5 +70,20 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void deleteAdmin(IdDTO idDTO, AdminDTO userFromDb) {
         adminDAO.deleteAdmin(idDTO, userFromDb);
+    }
+
+    @Override
+    @Async
+    public void sendWelcomeMessageToAdmin(AdminDTO sender, AdminDTO receiver) {
+        SchoolDTO school = schoolService.getSchoolByAdmin(sender.getEmail());
+        String message = String.format(
+                "Hello! \n" +
+                        "Welcome to %s! \n Your login: %s \n Your password: %s",
+                school.getName(),
+                receiver.getEmail(),
+                receiver.getPassword()
+        );
+        mailSender.send(receiver.getEmail(), "Welcome to " + school.getName(), message);
+
     }
 }

@@ -20,4 +20,6 @@ public interface AdminService {
     List<AdminDTO> getSchoolAdmins(AdminDTO user);
 
     void deleteAdmin(IdDTO idDTO, AdminDTO userFromDb);
+
+    void sendWelcomeMessageToAdmin(AdminDTO user, AdminDTO adminDTO);
 }

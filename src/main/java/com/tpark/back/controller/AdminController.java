@@ -196,15 +196,18 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(UserStatus.ACCESS_ERROR);
         }
-
+        String password = adminDTO.getPassword();
         try {
             adminService.addNewAdmin(userSession.toString(),
                     adminDTO);
-            return ResponseEntity.ok(UserStatus.SUCCESSFULLY_CHANGED);
+
         } catch (DuplicateKeyException exp){
             return ResponseEntity.status(HttpStatus.CONFLICT).body(UserStatus.NOT_UNIQUE_FIELDS_IN_REQUEST);
         }
 
+        adminDTO.setPassword(password);
+        adminService.sendWelcomeMessageToAdmin(adminService.getAdminByEmail(httpSession.getAttribute("user").toString()), adminDTO);
+        return ResponseEntity.ok(UserStatus.SUCCESSFULLY_CHANGED);
     }
 
     @PostMapping(path = "/logout")
