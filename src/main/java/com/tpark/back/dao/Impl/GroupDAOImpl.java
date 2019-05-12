@@ -51,7 +51,7 @@ public class GroupDAOImpl implements GroupDAO {
         List<Integer> ids = jdbc.queryForList("SELECT id FROM group_course " +
                 "WHERE course_id = ? AND school_id = ? ", Integer.class, courseId, schoolId);
         for (Integer id: ids) {
-            jdbc.update("DELETE FROM student_group WHERE id = ?", id);
+            jdbc.update("DELETE FROM student_group WHERE group_id = ?", id);
         }
         jdbc.update("DELETE FROM group_course WHERE course_id = ? AND school_id = ?",
                 courseId, schoolId);
