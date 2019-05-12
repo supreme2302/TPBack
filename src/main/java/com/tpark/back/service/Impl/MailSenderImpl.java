@@ -3,13 +3,17 @@ package com.tpark.back.service.Impl;
 import com.tpark.back.service.MailSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 
 @Service
 public class MailSenderImpl implements MailSender {
+
+//    igINYopC1&y2
 
     private final JavaMailSender mailSender;
 

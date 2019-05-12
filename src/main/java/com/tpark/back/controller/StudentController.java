@@ -53,7 +53,11 @@ public class StudentController {
                     .body(UserStatus.NOT_UNIQUE_FIELDS_IN_REQUEST);
         }
         studentDTO.setPassword(password);
-        studentService.sendWelcomeMessageToUser(existingAdmin, studentDTO);
+        StudentDTO toMail = new StudentDTO();
+        toMail.setEmail(studentDTO.getEmail());
+        toMail.setPassword(studentDTO.getPassword());
+        toMail.setName(studentDTO.getName());
+        studentService.sendWelcomeMessageToUser(existingAdmin, toMail);
         studentDTO.setPassword(null);
         return ResponseEntity.status(HttpStatus.CREATED).body(studentDTO);
     }
