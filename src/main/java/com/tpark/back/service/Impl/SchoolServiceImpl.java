@@ -1,19 +1,14 @@
 package com.tpark.back.service.Impl;
 
-import com.tpark.back.dao.AdminDAO;
 import com.tpark.back.dao.SchoolDAO;
-import com.tpark.back.model.dto.AdminDTO;
 import com.tpark.back.model.dto.SchoolDTO;
-import com.tpark.back.model.dto.StudentDTO;
-import com.tpark.back.model.exception.NotFoundException;
 import com.tpark.back.service.MailSender;
 import com.tpark.back.service.SchoolService;
 import com.tpark.back.util.RandomString;
-import io.swagger.models.auth.In;
-import lombok.ToString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,8 +16,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Map;
-import java.util.concurrent.Future;
 
 import static com.tpark.back.model.Resourses.PATH_SCHOOL_AVATARS_FOLDER;
 
@@ -30,13 +23,12 @@ import static com.tpark.back.model.Resourses.PATH_SCHOOL_AVATARS_FOLDER;
 public class SchoolServiceImpl implements SchoolService {
 
     private final SchoolDAO schoolDAO;
-    private final AdminDAO adminDAO;
     private final MailSender mailSender;
+    private final Logger logger = LoggerFactory.getLogger(SchoolServiceImpl.class);
 
     @Autowired
-    SchoolServiceImpl(SchoolDAO schoolDAO, AdminDAO adminDAO, MailSender mailSender){
+    SchoolServiceImpl(SchoolDAO schoolDAO, MailSender mailSender) {
         this.schoolDAO = schoolDAO;
-        this.adminDAO = adminDAO;
         this.mailSender = mailSender;
     }
 
@@ -62,33 +54,32 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     @Async
-    public void makeApp(SchoolDTO schoolDTO) throws IOException {
-//        SchoolDTO schoolDTO = schoolDAO.getSchoolByAdmin(user);
+    public void makeApp(SchoolDTO schoolDTO, String email) throws IOException {
         ProcessBuilder pb = new ProcessBuilder("src/main/resources/scripts/build.sh", Integer.toString(schoolDTO.getId()), schoolDTO.getMain_color(),
                 schoolDTO.getSecondary_color(), schoolDTO.getName(), schoolDTO.getLanguage());
         Process p = pb.start();
         BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
         String line = "";
         while ((line = reader.readLine()) != null) {
-            System.out.println(line);
+            logger.info(line);
         }
+        sendMessageToUser(schoolDTO, email);
     }
 
     @Override
-    @Async
     public void sendMessageToUser(SchoolDTO schoolDTO, String email) {
         String message = String.format(
                 "Welcome to lingvomake! Link to download the application" +
-                        "\nhttp://lingvomake.ml/%s.apk",
+                        "\nhttps://lingvomake.ml/%s.apk",
                 schoolDTO.getId()
 
         );
-        System.out.println("sending............");
-        System.out.println("email " + email);
+        logger.info("sending............");
+        logger.info("email " + email);
         mailSender.send(email, "Welcome to " + schoolDTO.getName(), message);
-//        return message;
     }
 
+    @SuppressWarnings("Duplicates")
     @Override
     public String store(MultipartFile file, int id) throws IOException {
         String link = String.valueOf(id) + "." + RandomString.getRandomString() + ".jpg";

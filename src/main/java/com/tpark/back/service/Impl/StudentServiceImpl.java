@@ -10,6 +10,7 @@ import com.tpark.back.service.MailSender;
 import com.tpark.back.service.SchoolService;
 import com.tpark.back.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -85,6 +86,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    @Async
     public void sendWelcomeMessageToUser(AdminDTO sender, StudentDTO receiver) {
         SchoolDTO school = schoolService.getSchoolByAdmin(sender.getEmail());
         String message = String.format(
@@ -99,6 +101,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    @Async
     public void sendRestoreMessageToUser(StudentDTO receiver) {
         String message = String.format(
                 "Your password has been reset.\n" +

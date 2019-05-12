@@ -103,14 +103,11 @@ public class SchoolController {
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            // todo механизм на время тестирования, потом переделать
             String adminEmail = session.getAttribute("user").toString();
             SchoolDTO schoolDTO = schoolService.getSchoolByAdmin(adminEmail);
-            schoolService.makeApp(schoolDTO);
-            schoolService.sendMessageToUser(schoolDTO, adminEmail);
-            String message = String.format("http://lingvomake.ml/%s.apk",
-                    schoolDTO.getId()
-            );
+            schoolService.makeApp(schoolDTO, adminEmail);
+            String message = String.format("https://lingvomake.ml/%s.apk",
+                    schoolDTO.getId());
             return ResponseEntity.status(HttpStatus.OK)
                     .body(message);
         } catch (Exception e) {
