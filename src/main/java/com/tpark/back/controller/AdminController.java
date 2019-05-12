@@ -197,9 +197,13 @@ public class AdminController {
                     .body(UserStatus.ACCESS_ERROR);
         }
 
-        adminService.addNewAdmin(userSession.toString(),
-                adminDTO);
-        return ResponseEntity.ok(UserStatus.SUCCESSFULLY_CHANGED);
+        try {
+            adminService.addNewAdmin(userSession.toString(),
+                    adminDTO);
+            return ResponseEntity.ok(UserStatus.SUCCESSFULLY_CHANGED);
+        } catch (DuplicateKeyException exp){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(UserStatus.NOT_UNIQUE_FIELDS_IN_REQUEST);
+        }
 
     }
 
