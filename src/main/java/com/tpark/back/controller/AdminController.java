@@ -4,6 +4,7 @@ import com.tpark.back.model.dto.ChangePasswordDTO;
 import com.tpark.back.model.dto.AdminDTO;
 import com.tpark.back.model.UserStatus;
 import com.tpark.back.model.dto.IdDTO;
+import com.tpark.back.model.dto.SchoolDTO;
 import com.tpark.back.service.AdminService;
 import com.tpark.back.service.SchoolService;
 import org.slf4j.Logger;
@@ -144,13 +145,14 @@ public class AdminController {
         }
 
         AdminDTO userFromDb = adminService.getAdminByEmail(userSession.toString());
+        SchoolDTO schoolOfUser = schoolService.getSchoolByAdmin(userSession.toString());
         boolean passwordIsValid = adminService.checkAdminPassword(
                 changePassword.getOldPassword(),
                 userFromDb.getPassword());
 
-        if (passwordIsValid) {
-            adminService.changeAdminPassword(userSession.toString(),
-                    changePassword.getNewPassword());
+        if (passwordIsValid && schoolOfUser.getAdmin() == userFromDb.getId()) {
+            adminService.changeAdminPassword(schoolOfUser.getId(),
+                    changePassword);
             return ResponseEntity.ok(UserStatus.SUCCESSFULLY_CHANGED);
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)

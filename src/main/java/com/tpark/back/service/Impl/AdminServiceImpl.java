@@ -2,6 +2,7 @@ package com.tpark.back.service.Impl;
 
 import com.tpark.back.dao.AdminDAO;
 import com.tpark.back.model.dto.AdminDTO;
+import com.tpark.back.model.dto.ChangePasswordDTO;
 import com.tpark.back.model.dto.IdDTO;
 import com.tpark.back.model.dto.SchoolDTO;
 import com.tpark.back.service.AdminService;
@@ -52,8 +53,9 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void changeAdminPassword(String email, String password) {
-        adminDAO.changePassword(email, passwordEncoder.encode(password));
+    public void changeAdminPassword(Integer schoolID, ChangePasswordDTO password) {
+        password.setNewPassword(passwordEncoder.encode(password.getNewPassword()));
+        adminDAO.changePassword(schoolID, password);
     }
 
     @Override

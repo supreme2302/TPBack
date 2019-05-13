@@ -3,6 +3,7 @@ import com.tpark.back.dao.AdminDAO;
 import com.tpark.back.dao.SchoolDAO;
 import com.tpark.back.mapper.AdminMapper;
 import com.tpark.back.model.dto.AdminDTO;
+import com.tpark.back.model.dto.ChangePasswordDTO;
 import com.tpark.back.model.dto.IdDTO;
 import com.tpark.back.model.dto.SchoolDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,9 +86,9 @@ public class AdminDAOImpl implements AdminDAO {
         jdbc.update(SQL, idDTO.getId(), userFromDb.getSchoolId());
     }
 
-    public void changePassword(String email, String password) {
-        final String sql = "UPDATE admin SET password = ? WHERE lower(admin.email) = lower(?);";
-        jdbc.update(sql, password, email);
+    public void changePassword(Integer schoolId, ChangePasswordDTO password) {
+        final String sql = "UPDATE admin SET password = ? WHERE lower(admin.email) = lower(?) AND school_id = ?;";
+        jdbc.update(sql, password.getNewPassword(), password.getEmail(), schoolId);
     }
 
 //    public static class AdminMapper implements RowMapper<AdminDTO> {

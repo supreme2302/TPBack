@@ -1,6 +1,7 @@
 package com.tpark.back.service;
 
 import com.tpark.back.model.dto.AdminDTO;
+import com.tpark.back.model.dto.ChangePasswordDTO;
 import com.tpark.back.model.dto.IdDTO;
 
 import java.util.List;
@@ -13,7 +14,7 @@ public interface AdminService {
 
     boolean checkAdminPassword(String rawPassword, String passwordFromDb);
 
-    void changeAdminPassword(String email, String password);
+    void changeAdminPassword(Integer schoolId, ChangePasswordDTO password);
 
     void addNewAdmin(String toString, AdminDTO adminDTO);
 
