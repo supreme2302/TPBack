@@ -148,11 +148,11 @@ public class AdminController {
         AdminDTO userFromDb = adminService.getAdminByEmail(userSession.toString());
         SchoolDTO schoolDTO = schoolService.getSchoolByAdmin(userSession.toString());
         if (userFromDb.getId() == schoolDTO.getAdmin()) {
-            adminService.changeTeacherPassword(schoolDTO.getId(),
-                    changePassword);
             AdminDTO cTeacher = new AdminDTO();
             cTeacher.setPassword(changePassword.getNewPassword());
             cTeacher.setEmail(changePassword.getEmail());
+            adminService.changeTeacherPassword(schoolDTO.getId(),
+                    changePassword);
             adminService.sendNewPasswordMessageToAdmin(userFromDb, cTeacher);
             return ResponseEntity.ok(UserStatus.SUCCESSFULLY_CHANGED);
         }
