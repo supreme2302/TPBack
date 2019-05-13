@@ -150,6 +150,10 @@ public class AdminController {
         if (userFromDb.getId() == schoolDTO.getAdmin()) {
             adminService.changeTeacherPassword(schoolDTO.getId(),
                     changePassword);
+            AdminDTO cTeacher = new AdminDTO();
+            cTeacher.setPassword(changePassword.getNewPassword());
+            cTeacher.setEmail(changePassword.getEmail());
+            adminService.sendNewPasswordMessageToAdmin(userFromDb, cTeacher);
             return ResponseEntity.ok(UserStatus.SUCCESSFULLY_CHANGED);
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)

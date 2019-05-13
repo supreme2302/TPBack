@@ -89,6 +89,21 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    @Async
+    public void sendNewPasswordMessageToAdmin(AdminDTO sender, AdminDTO receiver) {
+        SchoolDTO school = schoolService.getSchoolByAdmin(sender.getEmail());
+        String message = String.format(
+                "Hello! \n" +
+                        "Your password in %s school has been changed. \n Your login: %s \n Your password: %s",
+                school.getName(),
+                receiver.getEmail(),
+                receiver.getPassword()
+        );
+        mailSender.send(receiver.getEmail(), "Changed password at " + school.getName(), message);
+
+    }
+
+    @Override
     public void changeTeacherPassword(int schoolId, ChangePasswordDTO newPassword) {
         newPassword.setNewPassword(passwordEncoder.encode(newPassword.getNewPassword()));
         adminDAO.changeTeacher(schoolId, newPassword);

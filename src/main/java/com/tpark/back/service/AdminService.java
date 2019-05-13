@@ -25,4 +25,6 @@ public interface AdminService {
     void sendWelcomeMessageToAdmin(AdminDTO user, AdminDTO adminDTO);
 
     void changeTeacherPassword(int schoolId, ChangePasswordDTO newPassword);
+
+    void sendNewPasswordMessageToAdmin(AdminDTO user, AdminDTO adminDTO);
 }
