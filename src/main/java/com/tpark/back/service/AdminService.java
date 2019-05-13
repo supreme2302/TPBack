@@ -14,7 +14,7 @@ public interface AdminService {
 
     boolean checkAdminPassword(String rawPassword, String passwordFromDb);
 
-    void changeAdminPassword(Integer schoolId, ChangePasswordDTO password);
+    void changeAdminPassword(String email, String password);
 
     void addNewAdmin(String toString, AdminDTO adminDTO);
 
@@ -23,4 +23,6 @@ public interface AdminService {
     void deleteAdmin(IdDTO idDTO, AdminDTO userFromDb);
 
     void sendWelcomeMessageToAdmin(AdminDTO user, AdminDTO adminDTO);
+
+    void changeTeacherPassword(int schoolId, ChangePasswordDTO newPassword);
 }

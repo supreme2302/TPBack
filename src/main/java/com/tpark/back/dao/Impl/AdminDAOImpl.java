@@ -86,9 +86,15 @@ public class AdminDAOImpl implements AdminDAO {
         jdbc.update(SQL, idDTO.getId(), userFromDb.getSchoolId());
     }
 
-    public void changePassword(Integer schoolId, ChangePasswordDTO password) {
+    @Override
+    public void changeTeacher(int schoolId, ChangePasswordDTO password) {
         final String sql = "UPDATE admin SET password = ? WHERE lower(admin.email) = lower(?) AND school_id = ?;";
-        jdbc.update(sql, password.getNewPassword(), password.getEmail(), schoolId);
+        jdbc.update(sql, password.getNewPassword(), password.getEmail(),schoolId);
+    }
+
+    public void changePassword(String email, String password) {
+        final String sql = "UPDATE admin SET password = ? WHERE lower(admin.email) = lower(?);";
+        jdbc.update(sql, password, email);
     }
 
 //    public static class AdminMapper implements RowMapper<AdminDTO> {

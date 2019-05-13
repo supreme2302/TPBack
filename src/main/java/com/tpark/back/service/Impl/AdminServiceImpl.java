@@ -53,9 +53,8 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void changeAdminPassword(Integer schoolID, ChangePasswordDTO password) {
-        password.setNewPassword(passwordEncoder.encode(password.getNewPassword()));
-        adminDAO.changePassword(schoolID, password);
+    public void changeAdminPassword(String email, String password) {
+        adminDAO.changePassword(email, passwordEncoder.encode(password));
     }
 
     @Override
@@ -87,5 +86,11 @@ public class AdminServiceImpl implements AdminService {
         );
         mailSender.send(receiver.getEmail(), "Welcome to " + school.getName(), message);
 
+    }
+
+    @Override
+    public void changeTeacherPassword(int schoolId, ChangePasswordDTO newPassword) {
+        newPassword.setNewPassword(passwordEncoder.encode(newPassword.getNewPassword()));
+        adminDAO.changeTeacher(schoolId, newPassword);
     }
 }

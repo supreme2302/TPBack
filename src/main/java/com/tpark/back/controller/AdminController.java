@@ -134,6 +134,28 @@ public class AdminController {
         return ResponseEntity.ok(UserStatus.SUCCESSFULLY_AUTHED);
     }
 
+
+    @PostMapping(path = "/changeTeacher")
+    public ResponseEntity changeTeacher(@ApiIgnore HttpSession httpSession,
+                                 @RequestBody ChangePasswordDTO changePassword) {
+
+        Object userSession = httpSession.getAttribute("user");
+        if (userSession == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(UserStatus.ACCESS_ERROR);
+        }
+
+        AdminDTO userFromDb = adminService.getAdminByEmail(userSession.toString());
+        SchoolDTO schoolDTO = schoolService.getSchoolByAdmin(userSession.toString());
+        if (userFromDb.getId() == schoolDTO.getAdmin()) {
+            adminService.changeTeacherPassword(schoolDTO.getId(),
+                    changePassword);
+            return ResponseEntity.ok(UserStatus.SUCCESSFULLY_CHANGED);
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(UserStatus.WRONG_CREDENTIALS);
+    }
+
     @PostMapping(path = "/change")
     public ResponseEntity change(@ApiIgnore HttpSession httpSession,
                                  @RequestBody ChangePasswordDTO changePassword) {
@@ -145,14 +167,13 @@ public class AdminController {
         }
 
         AdminDTO userFromDb = adminService.getAdminByEmail(userSession.toString());
-        SchoolDTO schoolOfUser = schoolService.getSchoolByAdmin(userSession.toString());
         boolean passwordIsValid = adminService.checkAdminPassword(
                 changePassword.getOldPassword(),
                 userFromDb.getPassword());
 
-        if (passwordIsValid && schoolOfUser.getAdmin() == userFromDb.getId()) {
-            adminService.changeAdminPassword(schoolOfUser.getId(),
-                    changePassword);
+        if (passwordIsValid) {
+            adminService.changeAdminPassword(userSession.toString(),
+                    changePassword.getNewPassword());
             return ResponseEntity.ok(UserStatus.SUCCESSFULLY_CHANGED);
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
