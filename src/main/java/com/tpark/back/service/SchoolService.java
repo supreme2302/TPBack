@@ -1,5 +1,6 @@
 package com.tpark.back.service;
 
+import com.tpark.back.model.dto.AdminDTO;
 import com.tpark.back.model.dto.SchoolDTO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,7 +13,7 @@ public interface SchoolService {
 
     SchoolDTO getSchoolByStudent(String student);
 
-    void changeSchool(SchoolDTO schoolDTO, String user);
+    void changeSchool(SchoolDTO schoolDTO, AdminDTO user);
 
     void makeApp(SchoolDTO schoolDTO, String email) throws IOException;
 

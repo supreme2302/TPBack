@@ -2,6 +2,7 @@ package com.tpark.back.controller;
 
 
 import com.tpark.back.model.UserStatus;
+import com.tpark.back.model.dto.AdminDTO;
 import com.tpark.back.model.dto.SchoolDTO;
 import com.tpark.back.service.AdminService;
 import com.tpark.back.service.SchoolService;
@@ -74,14 +75,15 @@ public class SchoolController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserStatus.ACCESS_ERROR);
         }
-        if (adminService.getAdminByEmail(session.getAttribute("user").toString()) == null ||
-                adminService.getAdminByEmail(session.getAttribute("user").toString()).getId() !=
+        AdminDTO user = adminService.getAdminByEmail(session.getAttribute("user").toString());
+        if (user == null ||
+                user.getId() !=
                         schoolService.getSchoolByAdmin(session.getAttribute("user").toString()).getAdmin()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(UserStatus.ACCESS_ERROR);
         }
         try {
-            schoolService.changeSchool(schoolDTO, session.getAttribute("user").toString());
+            schoolService.changeSchool(schoolDTO, user);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(UserStatus.SUCCESSFULLY_CHANGED);
         } catch (DuplicateKeyException e) {
