@@ -101,7 +101,12 @@ public class StudentController {
         String newPassword = RandomString.getRandomString();
         studentDTO.setPassword(newPassword);
         studentService.changePassword(studentDTO, adminSession.toString());
-        studentService.sendRestoreMessageToUser(studentDTO);
+        studentDTO.setPassword(newPassword);
+        StudentDTO toMail = new StudentDTO();
+        toMail.setEmail(studentDTO.getEmail());
+        toMail.setPassword(studentDTO.getPassword());
+        toMail.setName(studentDTO.getName());
+        studentService.sendRestoreMessageToUser(toMail);
         return ResponseEntity.status(HttpStatus.OK).body(UserStatus.SUCCESSFULLY_CHANGED);
     }
 
