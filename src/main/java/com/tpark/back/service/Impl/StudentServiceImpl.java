@@ -113,6 +113,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public void changePassword(StudentDTO studentDTO, String adminEmail) {
+        studentDTO.setPassword(passwordEncoder.encode(studentDTO.getPassword()));
         Integer school_id = schoolIDDAO.getSchoolId(adminEmail);
         studentDTO.setSchool_id(school_id);
         studentDAO.changePassword(studentDTO);
