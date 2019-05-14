@@ -2,6 +2,7 @@ package com.tpark.back.dao.Impl;
 
 import com.tpark.back.dao.SchoolDAO;
 import com.tpark.back.mapper.SchoolMapper;
+import com.tpark.back.model.dto.AdminDTO;
 import com.tpark.back.model.dto.SchoolDTO;
 import com.tpark.back.model.exception.ConflictException;
 import org.slf4j.Logger;
@@ -20,7 +21,6 @@ import java.sql.SQLException;
 public class SchoolDAOImpl implements SchoolDAO {
     private final JdbcTemplate jdbc;
     private final SchoolMapper schoolMapper;
-    private final static AdminIDMapper adminIdMapper = new AdminIDMapper();
     private final Logger logger = LoggerFactory.getLogger(SchoolDAOImpl.class);
 
     @Autowired
@@ -60,12 +60,10 @@ public class SchoolDAOImpl implements SchoolDAO {
 
     @Transactional
     @Override
-    public void changeSchool(SchoolDTO school, String user) {
+    public void changeSchool(SchoolDTO school, AdminDTO user) {
 
-        final String sqlForSelect = "SELECT id FROM admin WHERE email = ?;";
-        int id = jdbc.queryForObject(sqlForSelect, adminIdMapper,user);
         final String sqlForInsert = "UPDATE school SET main_color=?, school_name=?, secondary_color=?, language=? WHERE ownerid=?;";
-        jdbc.update(sqlForInsert, school.getMain_color(),school.getName(), school.getSecondary_color(),school.getLanguage(), id);
+        jdbc.update(sqlForInsert, school.getMain_color(),school.getName(), school.getSecondary_color(),school.getLanguage(), user.getId());
         logger.info("createSchool -  created");
     }
 
@@ -73,12 +71,5 @@ public class SchoolDAOImpl implements SchoolDAO {
     public void savePicture(String link, int id) {
         String sql = "UPDATE school SET image_link = ? WHERE id = ?";
         jdbc.update(sql, link, id);
-    }
-
-    private final static class AdminIDMapper implements RowMapper<Integer> {
-        @Override
-        public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return rs.getInt("id");
-        }
     }
 }

@@ -1,6 +1,7 @@
 package com.tpark.back.service.Impl;
 
 import com.tpark.back.dao.SchoolDAO;
+import com.tpark.back.model.dto.AdminDTO;
 import com.tpark.back.model.dto.SchoolDTO;
 import com.tpark.back.service.MailSender;
 import com.tpark.back.service.SchoolService;
@@ -48,7 +49,7 @@ public class SchoolServiceImpl implements SchoolService {
     }
 
     @Override
-    public void changeSchool(SchoolDTO school, String user) {
+    public void changeSchool(SchoolDTO school, AdminDTO user) {
         schoolDAO.changeSchool(school, user);
     }
 
