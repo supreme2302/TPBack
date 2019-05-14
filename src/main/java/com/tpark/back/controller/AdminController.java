@@ -4,6 +4,7 @@ import com.tpark.back.model.dto.ChangePasswordDTO;
 import com.tpark.back.model.dto.AdminDTO;
 import com.tpark.back.model.UserStatus;
 import com.tpark.back.model.dto.IdDTO;
+import com.tpark.back.model.dto.SchoolDTO;
 import com.tpark.back.service.AdminService;
 import com.tpark.back.service.SchoolService;
 import org.slf4j.Logger;
@@ -133,6 +134,32 @@ public class AdminController {
         return ResponseEntity.ok(UserStatus.SUCCESSFULLY_AUTHED);
     }
 
+
+    @PostMapping(path = "/changeTeacher")
+    public ResponseEntity changeTeacher(@ApiIgnore HttpSession httpSession,
+                                 @RequestBody ChangePasswordDTO changePassword) {
+
+        Object userSession = httpSession.getAttribute("user");
+        if (userSession == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(UserStatus.ACCESS_ERROR);
+        }
+
+        AdminDTO userFromDb = adminService.getAdminByEmail(userSession.toString());
+        SchoolDTO schoolDTO = schoolService.getSchoolByAdmin(userSession.toString());
+        if (userFromDb.getId() == schoolDTO.getAdmin()) {
+            AdminDTO cTeacher = new AdminDTO();
+            cTeacher.setPassword(changePassword.getNewPassword());
+            cTeacher.setEmail(changePassword.getEmail());
+            adminService.changeTeacherPassword(schoolDTO.getId(),
+                    changePassword);
+            adminService.sendNewPasswordMessageToAdmin(userFromDb, cTeacher);
+            return ResponseEntity.ok(UserStatus.SUCCESSFULLY_CHANGED);
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(UserStatus.WRONG_CREDENTIALS);
+    }
+
     @PostMapping(path = "/change")
     public ResponseEntity change(@ApiIgnore HttpSession httpSession,
                                  @RequestBody ChangePasswordDTO changePassword) {
@@ -196,15 +223,18 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(UserStatus.ACCESS_ERROR);
         }
-
+        String password = adminDTO.getPassword();
         try {
             adminService.addNewAdmin(userSession.toString(),
                     adminDTO);
-            return ResponseEntity.ok(UserStatus.SUCCESSFULLY_CHANGED);
+
         } catch (DuplicateKeyException exp){
             return ResponseEntity.status(HttpStatus.CONFLICT).body(UserStatus.NOT_UNIQUE_FIELDS_IN_REQUEST);
         }
 
+        adminDTO.setPassword(password);
+        adminService.sendWelcomeMessageToAdmin(adminService.getAdminByEmail(httpSession.getAttribute("user").toString()), adminDTO);
+        return ResponseEntity.ok(UserStatus.SUCCESSFULLY_CHANGED);
     }
 
     @PostMapping(path = "/logout")
