@@ -57,7 +57,7 @@ public class SchoolServiceImpl implements SchoolService {
     @Async
     public void makeApp(SchoolDTO schoolDTO, String email) throws IOException {
         ProcessBuilder pb = new ProcessBuilder("src/main/resources/scripts/build.sh", Integer.toString(schoolDTO.getId()), schoolDTO.getMain_color(),
-                schoolDTO.getSecondary_color(), schoolDTO.getName(), schoolDTO.getLanguage());
+                schoolDTO.getSecondary_color(), schoolDTO.getName(), schoolDTO.getLanguage(), schoolDTO.getImageLink());
         Process p = pb.start();
         BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
         String line = "";
