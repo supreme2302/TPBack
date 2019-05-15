@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/supreme2302/TPBack.svg?branch=master)](https://travis-ci.org/supreme2302/TPBack)
 
+https://lingvomake.ml/back/swagger-ui.html#/
+
 <h3>Бэкенд сервера для ТП</h3>
 
 Описание апишки:
