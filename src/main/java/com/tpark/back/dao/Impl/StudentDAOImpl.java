@@ -51,7 +51,7 @@ public class StudentDAOImpl implements StudentDAO {
                 + "VALUES (?, ?, ?, ?, ?);";
         jdbc.update(sql, studentDTO.getEmail(), studentDTO.getName(), studentDTO.getSurname(),
                 studentDTO.getPassword(), school_id);
-        sql = "SELECT * FROM student WHERE email = ?;";
+        sql = "SELECT * FROM student WHERE lower(email) = (?);";
         StudentDTO res =jdbc.queryForObject(sql,studentMapper,studentDTO.getEmail());
         int i = 0;
         sql = "INSERT INTO student_group(group_id, student_id) VALUES (?,?);";

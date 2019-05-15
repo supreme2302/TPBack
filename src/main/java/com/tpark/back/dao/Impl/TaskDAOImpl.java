@@ -118,7 +118,7 @@ public class TaskDAOImpl implements TaskDAO {
         final String sql = "SELECT * FROM task JOIN ( task_unit JOIN" +
                 "(SELECT unit.id FROM unit JOIN" +
                 "((SELECT email, group_id FROM student JOIN student_group sg " +
-                "on student.id = sg.student_id AND student.email = ?)" +
+                "on student.id = sg.student_id AND lower(student.email) = lower(?))" +
                 " AS rg JOIN (SELECT id, course_id FROM group_course) AS gc ON gc.id = rg.group_id) " +
                 "AS g ON g.course_id = unit.course_id) AS units" +
                 " ON units.id = task_unit.unit_id)" +
@@ -130,7 +130,7 @@ public class TaskDAOImpl implements TaskDAO {
         final String sql = "SELECT * FROM task JOIN ( task_unit JOIN " +
                 "(SELECT unit.id FROM unit JOIN" +
                 "((SELECT email, group_id FROM student JOIN student_group sg " +
-                "on student.id = sg.student_id AND student.email = ?)" +
+                "on student.id = sg.student_id AND lower(student.email) = lower(?))" +
                 " AS rg JOIN (SELECT id, course_id FROM group_course) AS gc ON gc.id = rg.group_id) " +
                 "AS g ON g.course_id = unit.course_id AND unit.id = ?) AS units" +
                 " ON units.id = task_unit.unit_id) AS task_t ON task_t.task_id = task.id;";

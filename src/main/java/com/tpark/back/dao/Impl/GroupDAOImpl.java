@@ -121,7 +121,7 @@ public class GroupDAOImpl implements GroupDAO {
     public List<GroupDTO> getGroupsForStudent(String student) {
         final String sql = "SELECT * FROM group_course JOIN " +
                 "(student JOIN student_group ON student.id = student_group.student_id " +
-                "AND  student.email = ?) AS gr_r " +
+                "AND  lower(student.email) = lower(?)) AS gr_r " +
                 "ON group_course.id = gr_r.group_id;";
         return jdbc.query(sql, groupMapper, student);
     }
@@ -137,7 +137,7 @@ public class GroupDAOImpl implements GroupDAO {
     public GroupDTO getGroupForStudent(String student, Integer id) {
         final String sql = "SELECT * FROM group_course JOIN " +
                 "(student JOIN student_group ON student.id = student_group.student_id " +
-                "AND  student.email = ?) AS gr_r " +
+                "AND  lower(student.email) = lower(?)) AS gr_r " +
                 "ON group_course.id = ? AND group_course.id = gr_r.group_id LIMIT 1;";
         return jdbc.queryForObject(sql, groupMapper, student, id);
     }

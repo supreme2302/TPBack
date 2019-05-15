@@ -170,7 +170,7 @@ public class UnitDAOImpl implements UnitDAO {
     public UnitDomain getUnitForStudent(Integer unitId, String student) {
         final String sql = "SELECT * FROM unit JOIN" +
                 "((SELECT email, group_id FROM student JOIN student_group sg " +
-                "on student.id = sg.student_id AND student.email = ?)" +
+                "on student.id = sg.student_id AND lower(student.email) = lower(?))" +
                 " AS rg JOIN group_course ON group_course.id = rg.group_id) " +
                 "AS g ON g.course_id = unit.course_id AND unit.id = ?;";
         return jdbc.queryForObject(sql, unitMapper, student, unitId);
@@ -180,7 +180,7 @@ public class UnitDAOImpl implements UnitDAO {
     public List<UnitDomain> getUnitByCourseForStudent(Integer courseId, String student) {
         final String sql = "SELECT * FROM unit JOIN" +
                 "((SELECT email, group_id FROM student JOIN student_group sg " +
-                "on student.id = sg.student_id AND student.email = ?)" +
+                "on student.id = sg.student_id AND lower(student.email) = lower(?))" +
                 " AS rg JOIN group_course ON group_course.id = rg.group_id) " +
                 "AS g ON g.course_id = unit.course_id AND unit.course_id = ?;";
         return sort(jdbc.query(sql, unitMapper, student, courseId));
@@ -197,7 +197,7 @@ public class UnitDAOImpl implements UnitDAO {
     public List<UnitDomain> getUnitsForStudent(String student) {
         final String sql = "SELECT * FROM unit JOIN" +
                 "((SELECT email, group_id FROM student JOIN student_group sg " +
-                "on student.id = sg.student_id AND student.email = ?)" +
+                "on student.id = sg.student_id AND lower(student.email) = lower(?))" +
                 " AS rg JOIN group_course ON group_course.id = rg.group_id) " +
                 "AS g ON g.course_id = unit.course_id ;";
         return sort(jdbc.query(sql, unitMapper, student ));
