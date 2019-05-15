@@ -18,7 +18,7 @@ chmod +x "$set_tag_value"
 source "$set_tag_value" "$flavors_dir"strings.xml string app_name "$4"
 source "$set_tag_value" "$flavors_dir"colors.xml color colorPrimary "$2"
 source "$set_tag_value" "$flavors_dir"colors.xml color colorPrimaryDark "$3"
-source "$set_tag_value" "$flavors_dir"strings.xml string app_name "$4"
+source "$set_tag_value" "$flavors_dir"strings.xml string logo "$4"
 ls
 cp -f "$image_dir/$6" "$icon_dir"
 ## Build
