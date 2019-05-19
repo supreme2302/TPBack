@@ -13,4 +13,5 @@ public class UnitDomain {
     String unit_name;
     String description;
     String tags;
+    String status;
 }

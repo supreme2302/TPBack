@@ -13,4 +13,5 @@ public class UnitDTO {
     String unit_name;
     String description;
     List<String> tags;
+    String status;
 }

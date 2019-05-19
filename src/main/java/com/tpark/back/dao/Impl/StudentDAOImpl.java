@@ -1,12 +1,14 @@
 package com.tpark.back.dao.Impl;
 
 import com.tpark.back.dao.StudentDAO;
+import com.tpark.back.dao.UnitDAO;
 import com.tpark.back.mapper.GroupMapper;
 import com.tpark.back.mapper.StudentMapper;
 import com.tpark.back.mapper.StudentWithGroupMapper;
 import com.tpark.back.model.dto.GroupDTO;
 import com.tpark.back.model.dto.StudentDTO;
 import com.tpark.back.model.dto.StudentWithGroupsDTO;
+import com.tpark.back.model.dto.UnitDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -55,9 +57,15 @@ public class StudentDAOImpl implements StudentDAO {
         StudentDTO res =jdbc.queryForObject(sql,studentMapper,studentDTO.getEmail());
         int i = 0;
         sql = "INSERT INTO student_group(group_id, student_id) VALUES (?,?);";
+        String sqlUnit = "INSERT INTO user_unit(student_id, unit_id) VALUES (?,?);";
         if (studentDTO.getGroup_id() != null) {
             while ( i < studentDTO.getGroup_id().size()) {
                 jdbc.update(sql, studentDTO.getGroup_id().get(i), res.getId());
+                Integer course = jdbc.queryForObject("SELECT course_id FROM group_course WHERE id = ?", Integer.class, studentDTO.getGroup_id().get(i));
+                List<Integer> units= jdbc.queryForList("SELECT id FROM unit WHERE course_id=?;", Integer.class, course);
+                for( int j=0;j<units.size();j++){
+                    jdbc.update(sqlUnit,res.getId(),units.get(j));
+                }
                 i++;
             }
         }
@@ -120,9 +128,9 @@ public class StudentDAOImpl implements StudentDAO {
     public void deleteStudent(Integer id, String admin) {
         Integer school_id = schoolIDDAO.getSchoolId(admin);
         jdbc.update("DELETE FROM student_group WHERE student_id = ?", id);
+        jdbc.update("DELETE FROM user_unit WHERE student_id = ?;",id);
         String sql = "DELETE FROM student WHERE id = ? AND school_id = ?";
         jdbc.update(sql,  id, school_id);
-
     }
 
     @Override
@@ -135,8 +143,14 @@ public class StudentDAOImpl implements StudentDAO {
         jdbc.update(sql, studentDTO.getId());
         int i = 0;
         sql = "INSERT INTO student_group(group_id, student_id) VALUES (?, ?);";
+        String sqlUnit = "INSERT INTO user_unit(student_id, unit_id) VALUES (?,?);";
         while ( i < studentDTO.getGroup_id().size()) {
             jdbc.update(sql, studentDTO.getGroup_id().get(i), studentDTO.getId());
+            Integer course = jdbc.queryForObject("SELECT course_id FROM group_course WHERE id = ?", Integer.class, studentDTO.getGroup_id().get(i));
+            List<Integer> units= jdbc.queryForList("SELECT id FROM unit WHERE course_id=?;", Integer.class, course);
+            for( int j=0;j<units.size();j++){
+                jdbc.update(sqlUnit,studentDTO.getId(),units.get(j));
+            }
             i++;
         }
     }

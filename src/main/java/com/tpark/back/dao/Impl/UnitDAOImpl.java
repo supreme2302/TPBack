@@ -1,8 +1,11 @@
 package com.tpark.back.dao.Impl;
 
+import com.tpark.back.dao.StudentDAO;
 import com.tpark.back.dao.UnitDAO;
 import com.tpark.back.mapper.UnitMapper;
 import com.tpark.back.model.domain.UnitDomain;
+import com.tpark.back.model.dto.StudentDTO;
+import com.tpark.back.model.dto.UnitDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,13 +24,17 @@ public class UnitDAOImpl implements UnitDAO {
     private final UnitMapper unitMapper;
     private final SchoolIDDAO schoolIDDAO;
 
+    private final StudentDAO studentDAO;
+
     @Autowired
     public UnitDAOImpl(JdbcTemplate jdbc,
                        SchoolIDDAO schoolIDDAO,
-                       UnitMapper unitMapper) {
+                       UnitMapper unitMapper,
+                       StudentDAO studentDAO) {
         this.jdbc = jdbc;
         this.schoolIDDAO = schoolIDDAO;
         this.unitMapper = unitMapper;
+        this.studentDAO = studentDAO;
     }
 
     private List<UnitDomain> sort(List<UnitDomain> data) {
@@ -54,15 +61,31 @@ public class UnitDAOImpl implements UnitDAO {
     @Override
     public List<UnitDomain> getUnitsByCourse(Integer courseId, String email) {
         Integer schoolId = schoolIDDAO.getSchoolId(email);
+        StudentDTO studentDTO = studentDAO.getStudentByEmailWithGroupId(email);
         final String sql = "SELECT * FROM unit WHERE course_id = ? AND school_id = ?;";
-        return sort(jdbc.query(sql, unitMapper, courseId, schoolId));
+        List<UnitDomain> units= jdbc.query(sql, unitMapper, courseId, schoolId);
+        if(studentDTO!=null){
+            for(int i=0;i<units.size();i++){
+                units.get(i).setStatus(jdbc.queryForObject(
+                        "SELECT status FROM user_unit WHERE unit_id=? AND student_id=?;"
+                        , String.class,units.get(i).getId(),studentDTO.getId()));
+            }
+        }
+        return sort(units);
     }
 
     @Override
     public UnitDomain getUnit(Integer unitId, String email) {
         Integer schoolId = schoolIDDAO.getSchoolId(email);
         final String sql = "SELECT * FROM unit WHERE id = ? AND school_id=?;";
-        return jdbc.queryForObject(sql, unitMapper, unitId, schoolId);
+        StudentDTO studentDTO = studentDAO.getStudentByEmailWithGroupId(email);
+        UnitDomain unit = jdbc.queryForObject(sql, unitMapper, unitId, schoolId);
+        if(studentDTO!=null && unit!=null){
+            unit.setStatus(jdbc.queryForObject(
+                    "SELECT status FROM user_unit WHERE unit_id=? AND student_id=?;"
+                    , String.class,unit.getId(),studentDTO.getId()));
+        }
+        return unit;
 
     }
 
@@ -71,10 +94,11 @@ public class UnitDAOImpl implements UnitDAO {
     public void createUnit(UnitDomain unitDomain, String email) {
         Integer schoolId = schoolIDDAO.getSchoolId(email);
         String sql = "SELECT * FROM unit WHERE course_id = ? AND  school_id = ? AND next_unit IS null;";
+        Integer id;
         try {
             UnitDomain obj = jdbc.queryForObject(sql, unitMapper, unitDomain.getCourse_id(), schoolId);
-            sql = "INSERT INTO unit(unit_name, course_id, description, school_id, prev_unit, tags) VALUES (?, ?, ?, ?, ?, ?);";
-            jdbc.update(sql, unitDomain.getUnit_name(), unitDomain.getCourse_id(),unitDomain.getDescription(), schoolId, obj.getId(), unitDomain.getTags());
+            sql = "INSERT INTO unit(unit_name, course_id, description, school_id, prev_unit, tags) VALUES (?, ?, ?, ?, ?, ?) RETURNING id;";
+            id = jdbc.queryForObject(sql,Integer.class, unitDomain.getUnit_name(), unitDomain.getCourse_id(),unitDomain.getDescription(), schoolId, obj.getId(), unitDomain.getTags());
             sql = "SELECT * FROM unit WHERE unit_name = ? AND course_id=?";
             UnitDomain res = jdbc.queryForObject(sql, unitMapper, unitDomain.getUnit_name(), unitDomain.getCourse_id());
             //TODO unique constraint на имя и курс
@@ -84,11 +108,19 @@ public class UnitDAOImpl implements UnitDAO {
             unitDomain.setCourse_id(res.getCourse_id());
             unitDomain.setNext_pos(res.getNext_pos());
             unitDomain.setPrev_pos(res.getPrev_pos());
+
         } catch (EmptyResultDataAccessException exept) {
             sql = "INSERT INTO unit(unit_name, course_id, description,school_id, tags) VALUES (?, ?, ?, ?, ?) RETURNING id";
-            Integer id = jdbc.queryForObject(sql, Integer.class,
+            id = jdbc.queryForObject(sql, Integer.class,
                     unitDomain.getUnit_name(), unitDomain.getCourse_id(),unitDomain.getDescription(), schoolId, unitDomain.getTags());
             unitDomain.setId(id);
+        }
+        sql = "INSERT INTO user_unit(student_id, unit_id) VALUES (?,?);";
+        List<Integer> students = jdbc.queryForList("SELECT student.id FROM student JOIN " +
+                "(student_group JOIN group_course ON group_id = group_course.id AND course_id=?)" +
+                "ON student.id = student_group.student_id;", Integer.class, unitDomain.getCourse_id());
+        for (Integer student : students) {
+            jdbc.update(sql, student, id);
         }
     }
 
@@ -115,6 +147,13 @@ public class UnitDAOImpl implements UnitDAO {
             jdbc.update(sql,unitDomain.getId(),unitDomain.getNext_pos());
             sql = "UPDATE unit SET unit_name = ?, course_id = ?, prev_unit=?, next_unit = ?, description=? WHERE id = ? AND school_id=?;";
             jdbc.update(sql, unitDomain.getUnit_name(), unitDomain.getCourse_id(), unitDomain.getPrev_pos(), unitDomain.getNext_pos(), unitDomain.getDescription(), unitDomain.getId(), schoolId);
+        }
+        sql = "INSERT INTO user_unit(student_id, unit_id) VALUES (?,?);";
+        List<Integer> students = jdbc.queryForList("SELECT student.id FROM student JOIN " +
+                "(student_group JOIN group_course ON group_id = group_course.id AND course_id=?)" +
+                "ON student.id = student_group.student_id;", Integer.class, unitDomain.getCourse_id());
+        for (Integer student : students) {
+            jdbc.update(sql, student, unitDomain.getId());
         }
     }
 
@@ -150,6 +189,8 @@ public class UnitDAOImpl implements UnitDAO {
         jdbc.update(sql, id);
         sql = "UPDATE group_course SET current_unit = NULL WHERE course_id=? AND school_id = ?";
         jdbc.update(sql,temp, schoolId);
+        sql = "DELETE FROM user_unit WHERE unit_id=?;";
+        jdbc.update(sql,id);
         sql ="DELETE FROM unit WHERE id = ? AND school_id = ?;";
         jdbc.update(sql,id, schoolId);
     }
@@ -161,6 +202,8 @@ public class UnitDAOImpl implements UnitDAO {
         for (UnitDomain aLst : lst) {
             sql = "DELETE FROM task_unit WHERE unit_id = ? ;";
             jdbc.update(sql, aLst.getId());
+            sql = "DELETE FROM user_unit WHERE unit_id=?;";
+            jdbc.update(sql,aLst.getId());
         }
         sql ="DELETE FROM unit WHERE course_id = ? AND school_id = ?;";
         jdbc.update(sql,id, schoolId);
@@ -173,6 +216,13 @@ public class UnitDAOImpl implements UnitDAO {
                 "on student.id = sg.student_id AND lower(student.email) = lower(?))" +
                 " AS rg JOIN group_course ON group_course.id = rg.group_id) " +
                 "AS g ON g.course_id = unit.course_id AND unit.id = ?;";
+
+        UnitDomain unit= jdbc.queryForObject(sql, unitMapper, student, unitId);
+        StudentDTO studentDTO = studentDAO.getStudentByEmailWithGroupId(student);
+        if(studentDTO!=null && unit !=null){
+            unit.setStatus(jdbc.queryForObject("SELECT status FROM user_unit WHERE unit_id=? AND student_id=?;"
+                        , String.class,unit.getId(),studentDTO.getId()));
+        }
         return jdbc.queryForObject(sql, unitMapper, student, unitId);
     }
 
@@ -183,6 +233,14 @@ public class UnitDAOImpl implements UnitDAO {
                 "on student.id = sg.student_id AND lower(student.email) = lower(?))" +
                 " AS rg JOIN group_course ON group_course.id = rg.group_id) " +
                 "AS g ON g.course_id = unit.course_id AND unit.course_id = ?;";
+        List<UnitDomain> units= jdbc.query(sql, unitMapper, student, courseId);
+        StudentDTO studentDTO = studentDAO.getStudentByEmailWithGroupId(student);
+        if(studentDTO!=null && units !=null){
+            for(int i=0;i<units.size();i++) {
+                units.get(i).setStatus(jdbc.queryForObject("SELECT status FROM user_unit WHERE unit_id=? AND student_id=?;"
+                        , String.class, units.get(i).getId(), studentDTO.getId()));
+            }
+        }
         return sort(jdbc.query(sql, unitMapper, student, courseId));
     }
 
