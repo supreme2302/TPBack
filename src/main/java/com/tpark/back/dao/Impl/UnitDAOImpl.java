@@ -190,7 +190,7 @@ public class UnitDAOImpl implements UnitDAO {
     public List<UnitDomain> getUnits(String user) {
         Integer schoolId = schoolIDDAO.getSchoolId(user);
         final String sql = "SELECT * FROM unit WHERE school_id = ?;";
-        return sort(jdbc.query(sql, unitMapper, schoolId));
+        return jdbc.query(sql, unitMapper, schoolId);
     }
 
     @Override
