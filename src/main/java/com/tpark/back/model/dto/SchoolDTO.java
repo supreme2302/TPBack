@@ -10,4 +10,5 @@ public class SchoolDTO {
     private String secondary_color = "#AAAAAA";//303F9F
     private String language = "english";
     private String imageLink;
+    private String appName = "app";
 }
