@@ -15,7 +15,7 @@ echo "$4"
 
 chmod +x "$set_tag_value"
 
-source "$set_tag_value" "$flavors_dir"strings.xml string app_name "$4"
+source "$set_tag_value" "$flavors_dir"strings.xml string app_name "$7"
 source "$set_tag_value" "$flavors_dir"colors.xml color colorPrimary "$2"
 source "$set_tag_value" "$flavors_dir"colors.xml color colorPrimaryDark "$3"
 source "$set_tag_value" "$flavors_dir"strings.xml string logo "$4"

@@ -34,10 +34,10 @@ public class SchoolDAOImpl implements SchoolDAO {
     @Override
     public void createSchool(String schoolName, int id) {
         logger.info("createSchool -  in");
-        final String sqlForInsert = "INSERT INTO school(school_name, ownerid,main_color,secondary_color,language)  VALUES (?,?,?,?,?) RETURNING id";
+        final String sqlForInsert = "INSERT INTO school(school_name, ownerid,main_color,secondary_color,language, app_name)  VALUES (?,?,?,?,?) RETURNING id";
         Integer schoolId;
         try {
-            schoolId = jdbc.queryForObject(sqlForInsert, Integer.class, schoolName, id,"#3F51B5","#303F9F","english");
+            schoolId = jdbc.queryForObject(sqlForInsert, Integer.class, schoolName, id,"#3F51B5","#303F9F","english",schoolName );
             logger.info("createSchool -  created");
         } catch (DuplicateKeyException e) {
             throw new ConflictException();
@@ -62,8 +62,8 @@ public class SchoolDAOImpl implements SchoolDAO {
     @Override
     public void changeSchool(SchoolDTO school, AdminDTO user) {
 
-        final String sqlForInsert = "UPDATE school SET main_color=?, school_name=?, secondary_color=?, language=? WHERE ownerid=?;";
-        jdbc.update(sqlForInsert, school.getMain_color(),school.getName(), school.getSecondary_color(),school.getLanguage(), user.getId());
+        final String sqlForInsert = "UPDATE school SET main_color=?, school_name=?, secondary_color=?, language=?, app_name=? WHERE ownerid=?;";
+        jdbc.update(sqlForInsert, school.getMain_color(),school.getName(), school.getSecondary_color(),school.getLanguage(),school.getAppName(), user.getId());
         logger.info("createSchool -  created");
     }
 

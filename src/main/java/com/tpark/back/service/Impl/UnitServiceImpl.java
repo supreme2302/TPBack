@@ -79,6 +79,7 @@ public class UnitServiceImpl implements UnitService {
         unitDTO.setDescription(unitDomain.getDescription());
         unitDTO.setPrev_pos(unitDomain.getPrev_pos());
         unitDTO.setNext_pos(unitDomain.getNext_pos());
+        unitDTO.setStatus(unitDomain.getStatus());
         unitDTO.setTags(unitDomain.getTags() == null ? null :
                 Arrays.asList(unitDomain.getTags().split(",")));
         return unitDTO;
@@ -92,6 +93,7 @@ public class UnitServiceImpl implements UnitService {
                 .next_pos(unitDTO.getNext_pos())
                 .prev_pos(unitDTO.getPrev_pos())
                 .unit_name(unitDTO.getUnit_name())
+                .status(unitDTO.getStatus())
                 .tags(unitDTO.getTags().isEmpty() ? null : String.join(",",
                         unitDTO.getTags().stream().limit(3).collect(Collectors.toList())))
                 .build();

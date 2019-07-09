@@ -18,6 +18,7 @@ public class SchoolMapper implements RowMapper<SchoolDTO> {
         schoolDTO.setSecondary_color(rs.getString("secondary_color"));
         schoolDTO.setLanguage(rs.getString("language"));
         schoolDTO.setImageLink(rs.getString("image_link"));
+        schoolDTO.setAppName(rs.getString("app_name"));
         return schoolDTO;
     }
 }
